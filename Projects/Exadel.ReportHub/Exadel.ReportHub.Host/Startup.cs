@@ -1,9 +1,17 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using Exadel.ReportHub.RA;
+using Microsoft.OpenApi.Models;
 
 namespace Exadel.ReportHub.Host;
 
 public class Startup
 {
+    private readonly IConfiguration _configuration;
+
+    public Startup(IConfiguration configuration)
+    {
+        _configuration = configuration;
+    }
+
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddControllers();
@@ -16,6 +24,7 @@ public class Startup
         });
 
         services.AddAuthorization();
+        services.ConfigureInfrastructureServices(_configuration);
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
