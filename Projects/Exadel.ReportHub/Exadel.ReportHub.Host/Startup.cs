@@ -1,4 +1,5 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using Exadel.ReportHub.Host.Filters;
+using Microsoft.OpenApi.Models;
 
 namespace Exadel.ReportHub.Host;
 
@@ -6,7 +7,10 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddControllers();
+        services.AddControllers(options =>
+        {
+            options.Filters.Add<GlobalExceptionFilter>();
+        });
 
         services.AddSwaggerGen(c =>
         {
@@ -20,6 +24,11 @@ public class Startup
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
+        if (env.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage();
+        }
+
         app.UseSwagger();
         app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Report Hub API"));
 
