@@ -10,22 +10,24 @@ public class Startup
 
         services.AddSwaggerGen(c =>
         {
-            c.CustomSchemaIds(type => type.ToString());
-            c.IncludeXmlComments(string.Format(@"{0}\ReportHub.xml", System.AppDomain.CurrentDomain.BaseDirectory));
-            c.SwaggerDoc("v1", new OpenApiInfo { Title = "ReportHubAPI", Version = "v1" });
+            const string apiVersion = "v1";
+
+            c.SwaggerDoc(apiVersion, new OpenApiInfo { Title = "ReportHubAPI", Version = apiVersion });
         });
+
+        services.AddAuthorization();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
         app.UseSwagger();
-        app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ReportHubAPI"));
+        app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Report Hub API"));
 
         app.UseRouting();
 
         app.UseHttpsRedirection();
-        app.UseAuthorization();
         app.UseAuthentication();
+        app.UseAuthorization();
 
         app.UseEndpoints(endpoints =>
         {
