@@ -5,7 +5,7 @@ VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{A8ECB1D2-3858-4B88-A148-DC4BFD9B4383}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exdael.ReportHub.Data", "Exdael.ReportHub.Data\Exdael.ReportHub.Data.csproj", "{AE2F5310-D677-4237-9323-11E83E6E9E62}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exadel.ReportHub.Data", "Exdael.ReportHub.Data\Exadel.ReportHub.Data.csproj", "{AE2F5310-D677-4237-9323-11E83E6E9E62}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exadel.ReportHub.RA", "Exadel.ReportHub.RA\Exadel.ReportHub.RA.csproj", "{91F731B0-7337-4303-986D-B45A8AA0CE2F}"
 EndProject
