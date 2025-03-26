@@ -1,4 +1,5 @@
-﻿using Exadel.ReportHub.Host.Filters;
+﻿using Exadel.ReportHub.Handlers;
+using Exadel.ReportHub.Host.Filters;
 using Microsoft.OpenApi.Models;
 
 namespace Exadel.ReportHub.Host;
@@ -7,6 +8,8 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection services)
     {
+        services.AddHandlers();
+
         services.AddControllers(options =>
         {
             options.Filters.Add<ExceptionFilter>();
