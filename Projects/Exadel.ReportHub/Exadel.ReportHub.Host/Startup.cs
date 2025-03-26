@@ -9,7 +9,7 @@ public class Startup
     {
         services.AddControllers(options =>
         {
-            options.Filters.Add<GlobalExceptionFilter>();
+            options.Filters.Add<ExceptionFilter>();
         });
 
         services.AddSwaggerGen(c =>
@@ -24,11 +24,6 @@ public class Startup
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
-        if (env.IsDevelopment())
-        {
-            app.UseDeveloperExceptionPage();
-        }
-
         app.UseSwagger();
         app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Report Hub API"));
 
