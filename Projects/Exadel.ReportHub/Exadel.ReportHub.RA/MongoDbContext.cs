@@ -4,6 +4,7 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 
 namespace Exadel.ReportHub.RA;
+
 public class MongoDbContext
 {
     private readonly IMongoDatabase _database;
