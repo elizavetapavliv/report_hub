@@ -19,6 +19,7 @@ namespace Exadel.ReportHub.Host.Filters
             {
                 return new ObjectResult(new { Message = exception.Message });
             }
+
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
     }
