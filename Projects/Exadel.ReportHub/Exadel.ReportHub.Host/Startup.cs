@@ -1,18 +1,9 @@
-﻿using Exadel.ReportHub.Host.Deployment.Mongo;
-using Microsoft.OpenApi.Models;
-using MongoDB.Driver;
+﻿using Microsoft.OpenApi.Models;
 
 namespace Exadel.ReportHub.Host;
 
 public class Startup
 {
-    public Startup(IConfiguration configuration)
-    {
-        Configuration = configuration;
-    }
-
-    public IConfiguration Configuration { get; }
-
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddControllers();
@@ -25,20 +16,14 @@ public class Startup
         });
 
         services.AddAuthorization();
-
-        var connectionString = Configuration["MongoDbSettings:ConnectionString"];
-        services.AddSingleton<IMongoClient>(new MongoClient(connectionString));
     }
 
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMongoClient mongoClient)
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
         app.UseSwagger();
         app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Report Hub API"));
 
         app.UseRouting();
-
-        var nameDb = Configuration["MongoDbSettings:DatabaseName"];
-        InvoiceSeeder.ExecuteSeedScriptAsync(mongoClient, nameDb).GetAwaiter().GetResult();
 
         app.UseHttpsRedirection();
         app.UseAuthentication();
