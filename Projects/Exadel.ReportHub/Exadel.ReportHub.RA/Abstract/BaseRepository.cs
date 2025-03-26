@@ -24,7 +24,7 @@ public abstract class BaseRepository<TDocument>
     protected async Task<TDocument> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.Eq(x => x.Id, id);
-        return await GetCollection().Find(filter).FirstOrDefaultAsync();
+        return await GetCollection().Find(filter).SingleOrDefaultAsync();
     }
 
     protected async Task AddAsync(TDocument entity, CancellationToken cancellationToken)
