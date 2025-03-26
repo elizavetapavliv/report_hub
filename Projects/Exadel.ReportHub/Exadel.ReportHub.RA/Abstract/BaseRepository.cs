@@ -3,39 +3,46 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Exadel.ReportHub.RA.Abstract;
-public class BaseRepository<TDocument>
+
+public abstract class BaseRepository<TDocument>
     where TDocument : IDocument
 {
-    private readonly IMongoCollection<TDocument> _collection;
+    private readonly MongoDbContext _context;
     private static readonly FilterDefinitionBuilder<TDocument> _filterBuilder = Builders<TDocument>.Filter;
 
-    public BaseRepository(MongoDbContext context)
+    protected BaseRepository(MongoDbContext context)
     {
-        _collection = context.GetCollection<TDocument>();
+        _context = context;
     }
 
-    public async Task<IEnumerable<TDocument>> GetAllAsync(CancellationToken cancellationToken = default)
+    protected async Task<IEnumerable<TDocument>> GetAllAsync(CancellationToken cancellationToken)
     {
-        return await _collection.Find(_filterBuilder.Empty).ToListAsync();
+        var filter = _filterBuilder.Empty;
+        return await GetCollection().Find(filter).ToListAsync();
     }
 
-    public async Task<TDocument> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    protected async Task<TDocument> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        return await _collection.Find(_filterBuilder.Eq(x => x.Id, id)).FirstOrDefaultAsync();
+        var filter = _filterBuilder.Eq(x => x.Id, id);
+        return await GetCollection().Find(filter).FirstOrDefaultAsync();
     }
 
-    public async Task AddAsync(TDocument entity, CancellationToken cancellationToken = default)
+    protected async Task AddAsync(TDocument entity, CancellationToken cancellationToken)
     {
-        await _collection.InsertOneAsync(entity);
+        await GetCollection().InsertOneAsync(entity);
     }
 
-    public async Task UpdateAsync(Guid id, TDocument entity, CancellationToken cancellationToken = default)
+    protected async Task UpdateAsync(Guid id, TDocument entity, CancellationToken cancellationToken)
     {
-        await _collection.ReplaceOneAsync(_filterBuilder.Eq(x => x.Id, id), entity);
+        var filter = _filterBuilder.Eq(x => x.Id, id);
+        await GetCollection().ReplaceOneAsync(filter, entity);
     }
 
-    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+    protected async Task DeleteAsync(Guid id, CancellationToken cancellationToken)
     {
-        await _collection.DeleteOneAsync(_filterBuilder.Eq(x => x.Id, id));
+        var filter = _filterBuilder.Eq(x => x.Id, id);
+        await GetCollection().DeleteOneAsync(filter);
     }
+
+    private IMongoCollection<TDocument> GetCollection() => _context.GetCollection<TDocument>();
 }

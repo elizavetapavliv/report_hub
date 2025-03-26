@@ -10,7 +10,7 @@ public class Invoice : IDocument
 {
     public Guid Id { get; set; }
 
-    public Guid InvoiceId { get; set; } = Guid.NewGuid();
+    public string InvoiceId { get; set; }
 
     public DateTime IssueDate { get; set; }
 
