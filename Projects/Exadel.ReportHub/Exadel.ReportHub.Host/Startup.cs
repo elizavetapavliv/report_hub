@@ -1,4 +1,5 @@
-﻿using Exadel.ReportHub.RA;
+﻿using Exadel.ReportHub.Host.Registration;
+using Exadel.ReportHub.RA;
 using Exadel.ReportHub.RA.Abstract;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
@@ -18,7 +19,7 @@ public class Startup
             c.SwaggerDoc(apiVersion, new OpenApiInfo { Title = "ReportHubAPI", Version = apiVersion });
         });
 
-        services.AddSingleton<MongoDbContext>();
+        services.AddMongo();
         services.AddAuthorization();
     }
 
