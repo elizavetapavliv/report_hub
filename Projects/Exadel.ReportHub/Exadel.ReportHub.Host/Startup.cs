@@ -18,6 +18,7 @@ public class Startup
             c.SwaggerDoc(apiVersion, new OpenApiInfo { Title = "ReportHubAPI", Version = apiVersion });
         });
 
+        services.AddSingleton<MongoDbContext>();
         services.AddAuthorization();
     }
 
