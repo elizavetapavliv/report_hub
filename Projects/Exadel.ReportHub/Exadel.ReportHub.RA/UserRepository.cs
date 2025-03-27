@@ -9,10 +9,9 @@ using Exadel.ReportHub.RA.Interfaces;
 using MongoDB.Driver;
 
 namespace Exadel.ReportHub.RA;
+
 public class UserRepository : BaseRepository<User>, IUserRepository
 {
-    private static readonly FilterDefinitionBuilder<User> _filterBuilder = Builders<User>.Filter;
-
     public UserRepository(MongoDbContext context)
         : base(context)
     {
@@ -38,7 +37,7 @@ public class UserRepository : BaseRepository<User>, IUserRepository
     public async Task<bool> IsActiveAsync(Guid id, CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.Eq(x => x.Id, id);
-        var user = await GetCollection().Find(filter).Project(x => x.IsActive).SingleOrDefaultAsync(cancellationToken);
-        return user;
+        var isActive = await GetCollection().Find(filter).Project(x => x.IsActive).SingleOrDefaultAsync(cancellationToken);
+        return isActive;
     }
 }

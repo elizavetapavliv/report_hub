@@ -7,8 +7,8 @@ namespace Exadel.ReportHub.RA.Abstract;
 public abstract class BaseRepository<TDocument>
     where TDocument : IDocument
 {
+    protected static readonly FilterDefinitionBuilder<TDocument> _filterBuilder = Builders<TDocument>.Filter;
     private readonly MongoDbContext _context;
-    private static readonly FilterDefinitionBuilder<TDocument> _filterBuilder = Builders<TDocument>.Filter;
 
     protected BaseRepository(MongoDbContext context)
     {
