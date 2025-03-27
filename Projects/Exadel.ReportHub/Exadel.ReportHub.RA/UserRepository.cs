@@ -11,6 +11,8 @@ using MongoDB.Driver;
 namespace Exadel.ReportHub.RA;
 public class UserRepository : BaseRepository<User>, IUserRepository
 {
+    private static readonly FilterDefinitionBuilder<User> _filterBuilder = Builders<User>.Filter;
+
     public UserRepository(MongoDbContext context)
         : base(context)
     {
@@ -23,21 +25,20 @@ public class UserRepository : BaseRepository<User>, IUserRepository
 
     public async Task<IEnumerable<User>> GetAllActiveAsync(CancellationToken cancellationToken)
     {
-        var filter = Builders<User>.Filter.Eq(x => x.IsActive, true);
-        return await GetCollection().Find(filter).ToListAsync(cancellationToken);
+        var filter = _filterBuilder.Eq(x => x.IsActive, true);
+        return await GetAsync(filter, cancellationToken);
     }
 
-    public async Task UpdateActivityAsync(Guid id, CancellationToken cancellationToken)
+    public async Task UpdateActivityAsync(Guid id, bool isActive, CancellationToken cancellationToken)
     {
-        var filter = Builders<User>.Filter.Eq(x => x.Id, id);
-        var update = Builders<User>.Update.Set(x => x.IsActive, false);
-        await GetCollection().UpdateOneAsync(filter, update, cancellationToken: cancellationToken);
+        var update = Builders<User>.Update.Set(x => x.IsActive, isActive);
+        await UpdateAsync(id, update, cancellationToken);
     }
 
-    public async Task<bool> IsActiveByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<bool> IsActiveAsync(Guid id, CancellationToken cancellationToken)
     {
-        var filter = Builders<User>.Filter.Eq(x => x.Id, id);
-        var user = await GetCollection().Find(filter).SingleOrDefaultAsync(cancellationToken);
-        return user?.IsActive ?? false;
+        var filter = _filterBuilder.Eq(x => x.Id, id);
+        var user = await GetCollection().Find(filter).Project(x => x.IsActive).SingleOrDefaultAsync(cancellationToken);
+        return user;
     }
 }

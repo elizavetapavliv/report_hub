@@ -14,7 +14,7 @@ public interface IUserRepository
 
     Task AddUserAsync(User user, CancellationToken cancellationToken);
 
-    Task UpdateActivityAsync(Guid id, CancellationToken cancellationToken);
+    Task UpdateActivityAsync(Guid id, bool isActive, CancellationToken cancellationToken);
 
-    Task<bool> IsActiveByIdAsync(Guid id, CancellationToken cancellationToken);
+    Task<bool> IsActiveAsync(Guid id, CancellationToken cancellationToken);
 }

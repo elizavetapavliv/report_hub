@@ -16,5 +16,5 @@ public class User : IDocument
 
     public string Password { get; set; }
 
-    public bool IsActive { get; set; }
+    public bool IsActive { get; set; } = true;
 }

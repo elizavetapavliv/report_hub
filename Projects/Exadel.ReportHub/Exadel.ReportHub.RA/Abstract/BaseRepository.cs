@@ -21,6 +21,11 @@ public abstract class BaseRepository<TDocument>
         return await GetCollection().Find(filter).ToListAsync(cancellationToken);
     }
 
+    protected async Task<IEnumerable<TDocument>> GetAsync(FilterDefinition<TDocument> filter, CancellationToken cancellationToken)
+    {
+        return await GetCollection().Find(filter).ToListAsync(cancellationToken);
+    }
+
     protected async Task<TDocument> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.Eq(x => x.Id, id);
@@ -36,6 +41,12 @@ public abstract class BaseRepository<TDocument>
     {
         var filter = _filterBuilder.Eq(x => x.Id, id);
         await GetCollection().ReplaceOneAsync(filter, entity, cancellationToken: cancellationToken);
+    }
+
+    protected async Task UpdateAsync(Guid id, UpdateDefinition<TDocument> update, CancellationToken cancellationToken)
+    {
+        var filter = _filterBuilder.Eq(x => x.Id, id);
+        await GetCollection().UpdateOneAsync(filter, update, cancellationToken: cancellationToken);
     }
 
     protected async Task DeleteAsync(Guid id, CancellationToken cancellationToken)
