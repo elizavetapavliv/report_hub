@@ -1,14 +1,16 @@
-﻿load("migrationHistory.js")
-
-const ScriptName = "SeedInvoices";
-const Version = "1.0";
+﻿const ScriptName = "SeedInvoices";
+const Version = NumberInt(1);
 
 if (db.MigrationHistory.findOne({ ScriptName, Version })) {
     print(`${ScriptName} v${Version} already applied`);
     quit();
 }
 
-db.createCollection("Invoices");
+db.createCollection("Invoices", {
+    collation: {
+        locale: "en"
+    }
+});
 
 db.Invoices.insertMany([
     {
@@ -160,7 +162,7 @@ db.Invoices.insertMany([
 db.MigrationHistory.insertOne({
     ScriptName,
     Version,
-    ScriptRunTime: new Date()
+    ScriptRunTime: ISODate(new Date())
 });
 
 print("All invoices inserted successfully!");
