@@ -1,5 +1,4 @@
 ﻿using ErrorOr;
-using Exadel.ReportHub.Handlers.Common.Errors;
 using MediatR;
 
 namespace Exadel.ReportHub.Handlers.Test;
@@ -12,7 +11,7 @@ public class CreateHandler : IRequestHandler<CreateRequest, ErrorOr<Created>>
     {
         if (request.getError)
         {
-            return Task.FromResult<ErrorOr<Created>>(Errors.Test.AlreadyExist("Already exist error."));
+            return Task.FromResult<ErrorOr<Created>>(Error.Validation(description: "Test not valid."));
         }
 
         return Task.FromResult<ErrorOr<Created>>(Result.Created);

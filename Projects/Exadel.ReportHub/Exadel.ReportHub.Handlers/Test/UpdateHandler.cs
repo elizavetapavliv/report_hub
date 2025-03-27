@@ -1,5 +1,4 @@
 ﻿using ErrorOr;
-using Exadel.ReportHub.Handlers.Common.Errors;
 using MediatR;
 
 namespace Exadel.ReportHub.Handlers.Test;
@@ -12,7 +11,7 @@ public class UpdateHandler : IRequestHandler<UpdateRequest, ErrorOr<Updated>>
     {
         if (request.getError)
         {
-            return Task.FromResult<ErrorOr<Updated>>(Errors.Test.ValidationError("Test name is not valid."));
+            return Task.FromResult<ErrorOr<Updated>>(Error.Validation(description: "Test not valid."));
         }
 
         return Task.FromResult<ErrorOr<Updated>>(Result.Updated);

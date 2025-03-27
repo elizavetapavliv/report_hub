@@ -8,32 +8,25 @@ namespace Exadel.ReportHub.Host.Services;
 [Route("api/[controller]")]
 public abstract class BaseService : ControllerBase
 {
-    protected readonly ISender _sender;
-
-    protected BaseService(ISender sender)
-    {
-        _sender = sender;
-    }
-
     protected IActionResult FromResult(ErrorOr<Created> result)
     {
         return result.Match(
             success => Created(),
-            errors => Problem(errors));
+            errors => GetErrorResult(errors));
     }
 
     protected IActionResult FromResult(ErrorOr<Updated> result)
     {
         return result.Match(
             success => NoContent(),
-            errors => Problem(errors));
+            errors => GetErrorResult(errors));
     }
 
     protected IActionResult FromResult(ErrorOr<Deleted> result)
     {
         return result.Match(
             success => NoContent(),
-            errors => Problem(errors));
+            errors => GetErrorResult(errors));
     }
 
     protected IActionResult FromResult<TResult>(ErrorOr<TResult> result)
@@ -41,26 +34,26 @@ public abstract class BaseService : ControllerBase
     {
         return result.Match(
             success => Ok(success),
-            errors => Problem(errors));
+            errors => GetErrorResult(errors));
     }
 
-    private IActionResult Problem(List<Error> errors)
+    private IActionResult GetErrorResult(List<Error> errors)
     {
         if (errors.Count == 0)
         {
             return Problem();
         }
 
-        return Problem(errors[0]);
+        return GetErrorResult(errors[0]);
     }
 
-    private IActionResult Problem(Error error)
+    private IActionResult GetErrorResult(Error error)
     {
         var statusCode = error.Type switch
         {
             ErrorType.Validation => StatusCodes.Status400BadRequest,
+            ErrorType.Forbidden => StatusCodes.Status403Forbidden,
             ErrorType.NotFound => StatusCodes.Status404NotFound,
-            ErrorType.Conflict => StatusCodes.Status409Conflict,
             _ => StatusCodes.Status500InternalServerError
         };
 

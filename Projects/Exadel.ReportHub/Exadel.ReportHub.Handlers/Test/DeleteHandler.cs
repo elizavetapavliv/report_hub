@@ -1,5 +1,4 @@
 ﻿using ErrorOr;
-using Exadel.ReportHub.Handlers.Common.Errors;
 using MediatR;
 
 namespace Exadel.ReportHub.Handlers.Test;
@@ -12,7 +11,7 @@ public class DeleteHandler : IRequestHandler<DeleteRequest, ErrorOr<Deleted>>
     {
         if (request.getError)
         {
-            return Task.FromResult<ErrorOr<Deleted>>(Errors.Test.DoesNotExist("Does not exist error."));
+            return Task.FromResult<ErrorOr<Deleted>>(Error.NotFound(description: "Test does not exist."));
         }
 
         return Task.FromResult<ErrorOr<Deleted>>(Result.Deleted);

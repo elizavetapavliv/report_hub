@@ -6,9 +6,11 @@ namespace Exadel.ReportHub.Host.Services;
 
 public class TestService : BaseService
 {
+    protected readonly ISender _sender;
+
     public TestService(ISender sender)
-        : base(sender)
     {
+        _sender = sender;
     }
 
     [HttpGet]

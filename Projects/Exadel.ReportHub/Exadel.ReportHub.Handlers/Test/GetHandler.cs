@@ -1,5 +1,4 @@
 ﻿using ErrorOr;
-using Exadel.ReportHub.Handlers.Common.Errors;
 using MediatR;
 
 namespace Exadel.ReportHub.Handlers.Test;
@@ -12,7 +11,7 @@ public class GetHandler : IRequestHandler<GetRequest, ErrorOr<string>>
     {
         if (request.getError)
         {
-            return Task.FromResult<ErrorOr<string>>(Errors.Test.DoesNotExist("Does not exist error."));
+            return Task.FromResult<ErrorOr<string>>(Error.NotFound(description: "Test does not exist."));
         }
 
         return Task.FromResult<ErrorOr<string>>("Get test success.");
