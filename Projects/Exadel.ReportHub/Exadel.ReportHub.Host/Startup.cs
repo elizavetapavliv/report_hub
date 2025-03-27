@@ -1,5 +1,5 @@
 using Exadel.ReportHub.Host.Filters;
-using Exadel.ReportHub.Host.Registration;
+using Exadel.ReportHub.Host.Registrations;
 using Exadel.ReportHub.RA;
 using Exadel.ReportHub.RA.Abstract;
 using Microsoft.OpenApi.Models;

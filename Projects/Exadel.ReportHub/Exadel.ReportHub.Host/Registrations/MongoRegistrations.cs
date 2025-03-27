@@ -1,8 +1,8 @@
 ﻿using Exadel.ReportHub.RA;
 
-namespace Exadel.ReportHub.Host.Registration;
+namespace Exadel.ReportHub.Host.Registrations;
 
-public static class MongoRegistration
+public static class MongoRegistrations
 {
     public static IServiceCollection AddMongo(this IServiceCollection services)
     {
