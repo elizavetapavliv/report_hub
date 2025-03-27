@@ -1,19 +1,20 @@
-﻿const ScriptName = "SeedInvoices";
-const Version = NumberInt(1);
+﻿const scriptName = "01_create_Invoice.js";
+const version = NumberInt(1);
 
-if (db.MigrationHistory.findOne({ ScriptName, Version })) {
-    print(`${ScriptName} v${Version} already applied`);
+if (db.MigrationHistory.findOne({ scriptName, version })) {
+    print(`${scriptName} v${version} is already applied`);
     quit();
 }
 
-db.createCollection("Invoices", {
+db.createCollection("Invoice", {
     collation: {
         locale: "en"
     }
 });
 
-db.Invoices.insertMany([
+db.Invoice.insertMany([
     {
+        _id: UUID(),
         invoiceId: "INV2025002",
         issueDate: ISODate("2025-01-20T00:00:00Z"),
         dueDate: ISODate("2025-02-20T00:00:00Z"),
@@ -22,6 +23,7 @@ db.Invoices.insertMany([
         paymentStatus: "Unpaid"
     },
     {
+        _id: UUID(),
         invoiceId: "INV2024001",
         issueDate: ISODate("2024-04-28T00:00:00Z"),
         dueDate: ISODate("2024-06-19T00:00:00Z"),
@@ -30,6 +32,7 @@ db.Invoices.insertMany([
         paymentStatus: "Overdue"
     },
     {
+        _id: UUID(),
         invoiceId: "INV2025005",
         issueDate: ISODate("2025-08-09T00:00:00Z"),
         dueDate: ISODate("2025-09-17T00:00:00Z"),
@@ -38,6 +41,7 @@ db.Invoices.insertMany([
         paymentStatus: "Unpaid"
     },
     {
+        _id: UUID(),
         invoiceId: "INV2024002",
         issueDate: ISODate("2024-08-12T00:00:00Z"),
         dueDate: ISODate("2024-09-05T00:00:00Z"),
@@ -46,6 +50,7 @@ db.Invoices.insertMany([
         paymentStatus: "Cancelled"
     },
     {
+        _id: UUID(),
         invoiceId: "INV2024003",
         issueDate: ISODate("2024-08-20T00:00:00Z"),
         dueDate: ISODate("2024-09-17T00:00:00Z"),
@@ -54,6 +59,7 @@ db.Invoices.insertMany([
         paymentStatus: "Partially Paid"
     },
     {
+        _id: UUID(),
         invoiceId: "INV2024004",
         issueDate: ISODate("2024-10-24T00:00:00Z"),
         dueDate: ISODate("2024-12-10T00:00:00Z"),
@@ -62,6 +68,7 @@ db.Invoices.insertMany([
         paymentStatus: "Paid"
     },
     {
+        _id: UUID(),
         invoiceId: "INV2024005",
         issueDate: ISODate("2024-10-25T00:00:00Z"),
         dueDate: ISODate("2024-12-18T00:00:00Z"),
@@ -70,6 +77,7 @@ db.Invoices.insertMany([
         paymentStatus: "Pending"
     },
     {
+        _id: UUID(),
         invoiceId: "INV2025010",
         issueDate: ISODate("2025-09-21T00:00:00Z"),
         dueDate: ISODate("2025-10-15T00:00:00Z"),
@@ -78,6 +86,7 @@ db.Invoices.insertMany([
         paymentStatus: "Pending"
     },
     {
+        _id: UUID(),
         invoiceId: "INV2024006",
         issueDate: ISODate("2024-04-03T00:00:00Z"),
         dueDate: ISODate("2024-04-19T00:00:00Z"),
@@ -86,6 +95,7 @@ db.Invoices.insertMany([
         paymentStatus: "Pending"
     },
     {
+        _id: UUID(),
         invoiceId: "INV2025012",
         issueDate: ISODate("2025-10-24T00:00:00Z"),
         dueDate: ISODate("2025-11-04T00:00:00Z"),
@@ -94,6 +104,7 @@ db.Invoices.insertMany([
         paymentStatus: "Cancelled"
     },
     {
+        _id: UUID(),
         invoiceId: "INV2025013",
         issueDate: ISODate("2025-01-07T00:00:00Z"),
         dueDate: ISODate("2025-01-26T00:00:00Z"),
@@ -102,6 +113,7 @@ db.Invoices.insertMany([
         paymentStatus: "Partially Paid"
     },
     {
+        _id: UUID(),
         invoiceId: "INV2025015",
         issueDate: ISODate("2025-12-20T00:00:00Z"),
         dueDate: ISODate("2025-12-31T00:00:00Z"),
@@ -110,6 +122,7 @@ db.Invoices.insertMany([
         paymentStatus: "Paid"
     },
     {
+        _id: UUID(),
         invoiceId: "INV2025014",
         issueDate: ISODate("2025-07-11T00:00:00Z"),
         dueDate: ISODate("2025-07-18T00:00:00Z"),
@@ -118,6 +131,7 @@ db.Invoices.insertMany([
         paymentStatus: "Pending"
     },
     {
+        _id: UUID(),
         invoiceId: "INV2025016",
         issueDate: ISODate("2025-11-10T00:00:00Z"),
         dueDate: ISODate("2025-12-31T00:00:00Z"),
@@ -126,6 +140,7 @@ db.Invoices.insertMany([
         paymentStatus: "Cancelled"
     },
     {
+        _id: UUID(),
         invoiceId: "INV2024007",
         issueDate: ISODate("2024-07-20T00:00:00Z"),
         dueDate: ISODate("2024-08-28T00:00:00Z"),
@@ -134,6 +149,7 @@ db.Invoices.insertMany([
         paymentStatus: "Overdue"
     },
     {
+        _id: UUID(),
         invoiceId: "INV2025018",
         issueDate: ISODate("2025-08-14T00:00:00Z"),
         dueDate: ISODate("2025-08-28T00:00:00Z"),
@@ -142,6 +158,7 @@ db.Invoices.insertMany([
         paymentStatus: "Unpaid"
     },
     {
+        _id: UUID(),
         invoiceId: "INV2025019",
         issueDate: ISODate("2025-10-05T00:00:00Z"),
         dueDate: ISODate("2025-10-26T00:00:00Z"),
@@ -150,6 +167,7 @@ db.Invoices.insertMany([
         paymentStatus: "Paid"
     },
     {
+        _id: UUID(),
         invoiceId: "INV2025020",
         issueDate: ISODate("2025-06-29T00:00:00Z"),
         dueDate: ISODate("2025-07-22T00:00:00Z"),
@@ -160,9 +178,9 @@ db.Invoices.insertMany([
 ]);
 
 db.MigrationHistory.insertOne({
-    ScriptName,
-    Version,
-    ScriptRunTime: ISODate(new Date())
+    scriptName,
+    version,
+    scriptRunTime: new Date()
 });
 
-print("All invoices inserted successfully!");
+print("All invoices are inserted successfully!");

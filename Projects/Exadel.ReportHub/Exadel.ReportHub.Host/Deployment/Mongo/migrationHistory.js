@@ -1,7 +1,7 @@
-﻿db.createCollection("MigrationHistory");
+﻿db.createCollection("00_create_MigrationHistory.js");
 
 db.MigrationHistory.createIndex(
-    { ScriptName: 1, Version: 1 },
+    { scriptName: 1, version: 1 },
     {
         unique: true,
         background: true
