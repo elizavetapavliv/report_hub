@@ -18,31 +18,31 @@ public abstract class BaseRepository<TDocument>
     protected async Task<IEnumerable<TDocument>> GetAllAsync(CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.Empty;
-        return await GetCollection().Find(filter).ToListAsync();
+        return await GetCollection().Find(filter).ToListAsync(cancellationToken);
     }
 
     protected async Task<TDocument> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.Eq(x => x.Id, id);
-        return await GetCollection().Find(filter).SingleOrDefaultAsync();
+        return await GetCollection().Find(filter).SingleOrDefaultAsync(cancellationToken);
     }
 
     protected async Task AddAsync(TDocument entity, CancellationToken cancellationToken)
     {
-        await GetCollection().InsertOneAsync(entity);
+        await GetCollection().InsertOneAsync(entity, cancellationToken: cancellationToken);
     }
 
     protected async Task UpdateAsync(Guid id, TDocument entity, CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.Eq(x => x.Id, id);
-        await GetCollection().ReplaceOneAsync(filter, entity);
+        await GetCollection().ReplaceOneAsync(filter, entity, cancellationToken: cancellationToken);
     }
 
     protected async Task DeleteAsync(Guid id, CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.Eq(x => x.Id, id);
-        await GetCollection().DeleteOneAsync(filter);
+        await GetCollection().DeleteOneAsync(filter, cancellationToken: cancellationToken);
     }
 
-    private IMongoCollection<TDocument> GetCollection() => _context.GetCollection<TDocument>();
+    protected IMongoCollection<TDocument> GetCollection() => _context.GetCollection<TDocument>();
 }
