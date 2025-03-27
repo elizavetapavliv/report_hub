@@ -1,4 +1,9 @@
-﻿using Microsoft.OpenApi.Models;
+using Exadel.ReportHub.Host.Filters;
+using Exadel.ReportHub.Host.Registrations;
+using Exadel.ReportHub.RA;
+using Exadel.ReportHub.RA.Abstract;
+using Microsoft.OpenApi.Models;
+using MongoDB.Driver;
 
 namespace Exadel.ReportHub.Host;
 
@@ -6,7 +11,10 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddControllers();
+        services.AddControllers(options =>
+        {
+            options.Filters.Add<ExceptionFilter>();
+        });
 
         services.AddSwaggerGen(c =>
         {
@@ -15,6 +23,7 @@ public class Startup
             c.SwaggerDoc(apiVersion, new OpenApiInfo { Title = "ReportHubAPI", Version = apiVersion });
         });
 
+        services.AddMongo();
         services.AddAuthorization();
     }
 
