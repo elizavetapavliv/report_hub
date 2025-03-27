@@ -1,13 +1,16 @@
-﻿using Exadel.ReportHub.Handlers.Features.TestFeatures.Commands.AddTest;
-using Exadel.ReportHub.Handlers.Features.TestFeatures.Commands.DeleteTest;
-using Exadel.ReportHub.Handlers.Features.TestFeatures.Commands.UpdateTest;
-using Exadel.ReportHub.Handlers.Features.TestFeatures.Queries.GetTest;
+﻿using Exadel.ReportHub.Handlers.Test;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Exadel.ReportHub.Host.Services;
 
 public class TestService : BaseService
 {
+    public TestService(ISender sender)
+        : base(sender)
+    {
+    }
+
     [HttpGet]
     public IActionResult GetSampleAnswer()
     {
@@ -17,41 +20,33 @@ public class TestService : BaseService
     [HttpGet("{getError}")]
     public async Task<IActionResult> GetTest([FromRoute] GetRequest request)
     {
-        var result = await Mediator.Send(request);
+        var result = await _sender.Send(request);
 
-        return result.Match(
-            success => Ok(success),
-            errors => Problem(errors));
+        return FromResult(result);
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddTest([FromBody] AddRequest request)
+    public async Task<IActionResult> AddTest([FromBody] CreateRequest request)
     {
-        var result = await Mediator.Send(request);
+        var result = await _sender.Send(request);
 
-        return result.Match(
-            success => Created(),
-            errors => Problem(errors));
+        return FromResult(result);
     }
 
     [HttpPut("{id:Guid}")]
-    public async Task<IActionResult> UpdateTest([FromRoute] Guid id, [FromBody] AddRequest request)
+    public async Task<IActionResult> UpdateTest([FromRoute] Guid id, [FromBody] CreateRequest request)
     {
         var updateRequest = new UpdateRequest(id, request.name, request.getError);
-        var result = await Mediator.Send(updateRequest);
+        var result = await _sender.Send(updateRequest);
 
-        return result.Match(
-            success => NoContent(),
-            errors => Problem(errors));
+        return FromResult(result);
     }
 
     [HttpDelete("{id:guid}/{getError}")]
     public async Task<IActionResult> DeleteTest([FromRoute] DeleteRequest request)
     {
-        var result = await Mediator.Send(request);
+        var result = await _sender.Send(request);
 
-        return result.Match(
-            success => NoContent(),
-            errors => Problem(errors));
+        return FromResult(result);
     }
 }

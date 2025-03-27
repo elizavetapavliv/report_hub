@@ -8,11 +8,43 @@ namespace Exadel.ReportHub.Host.Services;
 [Route("api/[controller]")]
 public abstract class BaseService : ControllerBase
 {
-    private IMediator _mediator;
+    protected readonly ISender _sender;
 
-    protected IMediator Mediator => _mediator ?? HttpContext.RequestServices.GetService<IMediator>();
+    protected BaseService(ISender sender)
+    {
+        _sender = sender;
+    }
 
-    protected IActionResult Problem(List<Error> errors)
+    protected IActionResult FromResult(ErrorOr<Created> result)
+    {
+        return result.Match(
+            success => Created(),
+            errors => Problem(errors));
+    }
+
+    protected IActionResult FromResult(ErrorOr<Updated> result)
+    {
+        return result.Match(
+            success => NoContent(),
+            errors => Problem(errors));
+    }
+
+    protected IActionResult FromResult(ErrorOr<Deleted> result)
+    {
+        return result.Match(
+            success => NoContent(),
+            errors => Problem(errors));
+    }
+
+    protected IActionResult FromResult<TResult>(ErrorOr<TResult> result)
+        where TResult : class
+    {
+        return result.Match(
+            success => Ok(success),
+            errors => Problem(errors));
+    }
+
+    private IActionResult Problem(List<Error> errors)
     {
         if (errors.Count == 0)
         {
