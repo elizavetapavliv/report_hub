@@ -14,20 +14,19 @@ public class PasswordHasher
     private const int iterations = 100000;
     private static readonly HashAlgorithmName hashAlgorithm = HashAlgorithmName.SHA512;
 
-    public static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+    public static void CreatePasswordHash(string password, out string passwordHash, out string passwordSalt)
     {
-        passwordSalt = RandomNumberGenerator.GetBytes(saltSize);
-        passwordHash = Rfc2898DeriveBytes.Pbkdf2(password,passwordSalt,iterations,hashAlgorithm, hashSize);
+        byte[] saltData = RandomNumberGenerator.GetBytes(saltSize);
+        passwordSalt = Convert.ToBase64String(saltData);
+        byte[] hashedData = Rfc2898DeriveBytes.Pbkdf2(password,saltData,iterations,hashAlgorithm, hashSize);
+        passwordHash = Convert.ToBase64String(hashedData);
     }
 
-    public static bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
+    public static string GetPasswordHash(string password, string passwordSalt)
     {
-        byte[] inputHash = Rfc2898DeriveBytes.Pbkdf2(password, passwordSalt, iterations, hashAlgorithm, hashSize);
-        
-        if(CryptographicOperations.FixedTimeEquals(inputHash, passwordHash))
-        {
-            return true;
-        }
-        throw new UnauthorizedAccessException("Password is incorrect");
+        byte[] saltData = Convert.FromBase64String(passwordSalt);
+        byte[] hashedData = Rfc2898DeriveBytes.Pbkdf2(password, saltData, iterations, hashAlgorithm, hashSize);
+
+        return Convert.ToBase64String(hashedData);
     }
 }
