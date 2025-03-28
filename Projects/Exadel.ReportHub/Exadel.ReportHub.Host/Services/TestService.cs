@@ -4,15 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Exadel.ReportHub.Host.Services;
 
-public class TestService : BaseService
+public class TestService(ISender sender) : BaseService
 {
-    protected readonly ISender _sender;
-
-    public TestService(ISender sender)
-    {
-        _sender = sender;
-    }
-
     [HttpGet]
     public IActionResult GetSampleAnswer()
     {
@@ -22,7 +15,7 @@ public class TestService : BaseService
     [HttpGet("{getError}")]
     public async Task<IActionResult> GetTest([FromRoute] GetRequest request)
     {
-        var result = await _sender.Send(request);
+        var result = await sender.Send(request);
 
         return FromResult(result);
     }
@@ -30,7 +23,7 @@ public class TestService : BaseService
     [HttpPost]
     public async Task<IActionResult> AddTest([FromBody] CreateRequest request)
     {
-        var result = await _sender.Send(request);
+        var result = await sender.Send(request);
 
         return FromResult(result);
     }
@@ -39,7 +32,7 @@ public class TestService : BaseService
     public async Task<IActionResult> UpdateTest([FromRoute] Guid id, [FromBody] CreateRequest request)
     {
         var updateRequest = new UpdateRequest(id, request.name, request.getError);
-        var result = await _sender.Send(updateRequest);
+        var result = await sender.Send(updateRequest);
 
         return FromResult(result);
     }
@@ -47,7 +40,7 @@ public class TestService : BaseService
     [HttpDelete("{id:guid}/{getError}")]
     public async Task<IActionResult> DeleteTest([FromRoute] DeleteRequest request)
     {
-        var result = await _sender.Send(request);
+        var result = await sender.Send(request);
 
         return FromResult(result);
     }
