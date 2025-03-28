@@ -12,7 +12,7 @@ public class TestService(ISender sender) : BaseService
         return Ok();
     }
 
-    [HttpGet("{getError}")]
+    [HttpGet("{GetError}")]
     public async Task<IActionResult> GetTest([FromRoute] GetRequest request)
     {
         var result = await sender.Send(request);
@@ -37,7 +37,7 @@ public class TestService(ISender sender) : BaseService
         return FromResult(result);
     }
 
-    [HttpDelete("{id:guid}/{getError}")]
+    [HttpDelete("{Id:guid}/{GetError}")]
     public async Task<IActionResult> DeleteTest([FromRoute] DeleteRequest request)
     {
         var result = await sender.Send(request);
