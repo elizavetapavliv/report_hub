@@ -21,6 +21,22 @@ public class UserRepository : BaseRepository<User>, IUserRepository
         await AddAsync(user, cancellationToken);
     }
 
+    public async Task<User> GetUserByIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        return await GetByIdAsync(id, cancellationToken);
+    }
+
+    public async Task<User> GetUserByEmailAsync(string email, CancellationToken cancellationToken)
+    {
+        var filter = _filterBuilder.Eq(x => x.Email, email);
+        return await GetCollection().Find(filter).SingleOrDefaultAsync(cancellationToken);
+    }
+
+    public async Task<IEnumerable<User>> GetAllUsersAsync(CancellationToken cancellationToken)
+    {
+        return await GetAllAsync(cancellationToken);
+    }
+
     public async Task<IEnumerable<User>> GetAllActiveAsync(CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.Eq(x => x.IsActive, true);
