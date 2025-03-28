@@ -1,6 +1,7 @@
 ﻿const scriptName = "03_create_User";
 const version = NumberInt(1);
-const demoPassword = "Pa$$word"
+const demoPasswordHash = "J4jyN3Qpyto3ioa0/UVri74uz8PW0aDAnTV4NwNBdWEs0KhV4kEW2KMpG/OUYbj8uZqJbnJmhCx1MDuwleovHw==";
+const demoPasswordSalt = "bQSPPP6fkMp1aKLIZY4Tdw==";
 
 if (db.MigrationHistory.findOne({ scriptName, version })) {
     print(`${scriptName} v${version} is already applied`);
@@ -17,29 +18,33 @@ db.User.InsertMany([
     {
         _id: UUID(),
         Email: "demo.user1@gmail.com",
-        FullName: "Dmitry Rohau",
-        Password: demoPassword,
+        FullName: "Tony Stark",
+        PasswordHash: demoPasswordHash,
+        PasswordSalt: demoPasswordSalt,
         IsActive: false
     },
     {
         _id: UUID(),
         Email: "demo.user2@gmail.com",
-        FullName: "Makar Kniazeu",
-        Password: demoPassword,
+        FullName: "Jim Carrey",
+        PasswordHash: demoPasswordHash,
+        PasswordSalt: demoPasswordSalt,
         IsActive: false
     },
     {
         _id: UUID(),
         Email: "demo.user3@gmail.com",
-        FullName: "Giorgi Chekurishvili",
-        Password: demoPassword,
+        FullName: "Benedict Cumberbatch",
+        PasswordHash: demoPasswordHash,
+        PasswordSalt: demoPasswordSalt,
         IsActive: true
     },
     {
         _id: UUID(),
         Email: "demo.user4@gmail.com",
-        FullName: "Tengo Giorgadze",
-        Password: demoPassword,
+        FullName: "Hugh Jackman",
+        PasswordHash: demoPasswordHash,
+        PasswordSalt: demoPasswordSalt,
         IsActive: true
     }
 ]);
