@@ -43,3 +43,11 @@ db.User.InsertMany([
         IsActive: true
     }
 ]);
+
+db.MigrationHistory.insertOne({
+    SriptName: scriptName,
+    Version: version,
+    ScriptRunTime: new Date()
+});
+
+print("All users are inserted successfully!");
