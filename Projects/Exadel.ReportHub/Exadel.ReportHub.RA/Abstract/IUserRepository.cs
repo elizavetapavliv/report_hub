@@ -9,7 +9,13 @@ namespace Exadel.ReportHub.RA.Abstract;
 
 public interface IUserRepository
 {
+    Task<User> GetUserByIdAsync(Guid id, CancellationToken cancellationToken);
+
+    Task<IEnumerable<User>> GetAllUsersAsync(CancellationToken cancellationToken);
+
     Task<IEnumerable<User>> GetAllActiveAsync(CancellationToken cancellationToken);
+
+    Task<User> GetUserByEmailAsync(string email, CancellationToken cancellationToken);
 
     Task AddUserAsync(User user, CancellationToken cancellationToken);
 
