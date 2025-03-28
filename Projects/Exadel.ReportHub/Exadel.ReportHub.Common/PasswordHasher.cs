@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Exadel.ReportHub.Common;
+
 public class PasswordHasher
 {
     private const int saltSize = 16;
