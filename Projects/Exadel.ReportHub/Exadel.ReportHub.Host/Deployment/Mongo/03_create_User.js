@@ -3,7 +3,7 @@ const version = NumberInt(1);
 const demoPasswordHash = "J4jyN3Qpyto3ioa0/UVri74uz8PW0aDAnTV4NwNBdWEs0KhV4kEW2KMpG/OUYbj8uZqJbnJmhCx1MDuwleovHw==";
 const demoPasswordSalt = "bQSPPP6fkMp1aKLIZY4Tdw==";
 
-if (db.MigrationHistory.findOne({ scriptName, version })) {
+if (db.MigrationHistory.findOne({ ScriptName: scriptName, Version: version })) {
     print(`${scriptName} v${version} is already applied`);
     quit();
 }
@@ -14,7 +14,7 @@ db.createCollection("User", {
     }
 });
 
-db.User.InsertMany([
+db.User.insertMany([
     {
         _id: UUID(),
         Email: "demo.user1@gmail.com",
@@ -50,7 +50,7 @@ db.User.InsertMany([
 ]);
 
 db.MigrationHistory.insertOne({
-    SriptName: scriptName,
+    ScriptName: scriptName,
     Version: version,
     ScriptRunTime: new Date()
 });

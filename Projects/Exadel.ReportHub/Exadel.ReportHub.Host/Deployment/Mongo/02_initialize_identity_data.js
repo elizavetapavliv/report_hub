@@ -1,5 +1,6 @@
 ﻿const scriptName = "02_initialize_identity_data";
 const version = NumberInt(1);
+const reportHubService_ClientSecret = process.env.ReportHubService_ClientSecret
 
 if (db.MigrationHistory.findOne({ scriptName, version })) {
     print(`${scriptName} v${version} is already applied`);
@@ -97,7 +98,7 @@ db.Client.insertMany([
 ]);
 
 db.MigrationHistory.insertOne({
-    SriptName: scriptName,
+    ScriptName: scriptName,
     Version: version,
     ScriptRunTime: new Date()
 });
