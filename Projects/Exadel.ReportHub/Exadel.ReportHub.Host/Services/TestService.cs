@@ -31,7 +31,7 @@ public class TestService(ISender sender) : BaseService
     [HttpPut("{id:Guid}")]
     public async Task<IActionResult> UpdateTest([FromRoute] Guid id, [FromBody] CreateRequest request)
     {
-        var updateRequest = new UpdateRequest(id, request.name, request.getError);
+        var updateRequest = new UpdateRequest(id, request.Name, request.GetError);
         var result = await sender.Send(updateRequest);
 
         return FromResult(result);
