@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Exadel.ReportHub.Data.Models;
-using Exadel.ReportHub.RA.Abstract;
 
-namespace Exadel.ReportHub.RA.Interfaces;
+namespace Exadel.ReportHub.RA.Abstract;
 
 public interface IUserRepository
 {
