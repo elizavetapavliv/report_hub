@@ -1,4 +1,5 @@
 ﻿using ErrorOr;
+using Exadel.ReportHub.Common;
 using Exadel.ReportHub.Data.Models;
 using Exadel.ReportHub.RA.Abstract;
 using Exadel.ReportHub.SDK.DTOs.User;
@@ -12,12 +13,15 @@ public class CreateUserHandler(IUserRepository userRepository) : IRequestHandler
 {
     public async Task<ErrorOr<UserDTO>> Handle(CreateUserRequest request, CancellationToken cancellationToken)
     {
+        var (passwordHash, passwordSalt) = PasswordHasher.CreatePasswordHash(request.Password);
+
         var user = new User
         {
             Id = Guid.NewGuid(),
             Email = request.Email,
             FullName = request.FullName,
-            Password = request.Password
+            PasswordHash = passwordHash,
+            PasswordSalt = passwordSalt
         };
 
         await userRepository.AddAsync(user, cancellationToken);
@@ -26,7 +30,7 @@ public class CreateUserHandler(IUserRepository userRepository) : IRequestHandler
         {
             Id = user.Id,
             Email = user.Email,
-            FullName = user.FullName,
+            FullName = user.FullName
         };
     }
 }
