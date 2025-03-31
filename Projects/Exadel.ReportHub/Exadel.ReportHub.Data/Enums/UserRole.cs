@@ -1,6 +1,6 @@
 ﻿namespace Exadel.ReportHub.Data.Enums;
 
-public enum Roles
+public enum UserRole
 {
     Regular,
     Admin

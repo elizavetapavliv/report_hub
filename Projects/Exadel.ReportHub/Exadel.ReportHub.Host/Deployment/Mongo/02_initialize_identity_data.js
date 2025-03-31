@@ -86,14 +86,14 @@ db.Client.insertMany([
         ClientName: "Report Hub Service",
         AllowedGrantTypes: ["client_credentials"],
         ClientSecrets: [{ Value: reportHubServiceClientSecret }],
-        AllowedScopes: ["openid", "profile", "email", "role", "report_hub_api"]
+        AllowedScopes: ["report_hub_api"]
     },
     {
         _id: UUID(),
-        ClientId: "resource_owner",
+        ClientId: "report_hub_resource_owner",
         ClientName: "Resource Owner",
         AllowedGrantTypes: ["resource_owner_password"],
-        AllowedScopes: ["openid", "profile", "email", "role", "report_hub_api"]
+        AllowedScopes: ["report_hub_api"]
     }
 ]);
 

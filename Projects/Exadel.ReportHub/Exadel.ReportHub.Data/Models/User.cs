@@ -14,7 +14,7 @@ public class User : IDocument
 
     public string PasswordSalt { get; set; }
 
-    public Roles Role { get; set; } = Roles.Regular;
+    public UserRole Role { get; set; }
 
     public bool IsActive { get; set; } = true;
 }
