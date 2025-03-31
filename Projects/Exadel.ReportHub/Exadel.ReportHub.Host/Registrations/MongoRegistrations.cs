@@ -1,7 +1,9 @@
 ﻿using Exadel.ReportHub.RA;
 using Exadel.ReportHub.RA.Abstract;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Conventions;
+using MongoDB.Bson.Serialization.Serializers;
 
 namespace Exadel.ReportHub.Host.Registrations;
 
@@ -15,6 +17,7 @@ public static class MongoRegistrations
             new EnumRepresentationConvention(BsonType.String)
         }, _ => true);
         services.AddSingleton<IUserRepository, UserRepository>();
+        BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
         return services;
     }
 }
