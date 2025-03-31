@@ -15,7 +15,8 @@ db.createCollection("User", {
 db.User.createIndex(
     { Email: 1 },
     {
-        unique: true
+        unique: true,
+        background: true
     });
 
 db.User.insertMany([
