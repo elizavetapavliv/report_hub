@@ -1,13 +1,13 @@
 ﻿using Exadel.ReportHub.RA.Abstract;
 using FluentValidation;
 
-namespace Exadel.ReportHub.Handlers.UserHandlers.Validators;
+namespace Exadel.ReportHub.Handlers.User.Create.Validators;
 
-public class CreateUserValidator : AbstractValidator<CreateUserRequest>
+public class CreateUserRequestValidator : AbstractValidator<CreateUserRequest>
 {
     private readonly IUserRepository _userRepository;
 
-    public CreateUserValidator(IUserRepository userRepository)
+    public CreateUserRequestValidator(IUserRepository userRepository)
     {
         _userRepository = userRepository;
         ConfigureRules();
@@ -15,17 +15,19 @@ public class CreateUserValidator : AbstractValidator<CreateUserRequest>
 
     private void ConfigureRules()
     {
-        RuleFor(x => x.Email)
-            .Cascade(CascadeMode.Stop)
+        RuleLevelCascadeMode = CascadeMode.Stop;
+
+        RuleFor(x => x.CreateUserDTO.Email)
             .NotEmpty()
             .EmailAddress()
-            .MustAsync(async (email, cancellationToken) => await EmailMustNotExistAsync(email, cancellationToken))
+            .WithMessage(Constants.Validation.User.EmailInvalidMessage)
+            .MustAsync(EmailMustNotExistAsync)
             .WithMessage(Constants.Validation.User.EmailTakenMessage);
 
-        RuleFor(x => x.FullName)
+        RuleFor(x => x.CreateUserDTO.FullName)
             .NotEmpty();
 
-        RuleFor(x => x.Password)
+        RuleFor(x => x.CreateUserDTO.Password.ToString())
             .NotEmpty()
             .MinimumLength(Constants.Validation.User.PasswordMinimumLength)
             .WithMessage(Constants.Validation.User.PasswordMinLengthMessage)
@@ -41,7 +43,7 @@ public class CreateUserValidator : AbstractValidator<CreateUserRequest>
 
     private async Task<bool> EmailMustNotExistAsync(string email, CancellationToken cancellationToken)
     {
-        var emailAddress = await _userRepository.EmailExistsAsync(email, cancellationToken);
-        return !emailAddress;
+        var emailExists = await _userRepository.EmailExistsAsync(email, cancellationToken);
+        return !emailExists;
     }
 }

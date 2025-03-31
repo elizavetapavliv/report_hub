@@ -1,4 +1,4 @@
-﻿using Exadel.ReportHub.Handlers.UserHandlers.Validators.Exceptions;
+﻿using Exadel.ReportHub.Handlers.User.Create.Validators.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
@@ -12,19 +12,19 @@ public class ExceptionFilter(ILogger<ExceptionFilter> logger, IHostEnvironment h
 
         if(context.Exception is HttpStatusCodeException httpStatusCodeException)
         {
-            context.Result = CreateErrorResult(httpStatusCodeException);
-            context.ExceptionHandled = true;
+            context.Result = CreateStatusCodeErrorResult(httpStatusCodeException);
         }
         else
         {
             context.Result = CreateErrorResult(context.Exception, hostEnvironment);
-            context.ExceptionHandled = true;
         }
+
+        context.ExceptionHandled = true;
     }
 
-    private IActionResult CreateErrorResult(HttpStatusCodeException exception)
+    private IActionResult CreateStatusCodeErrorResult(HttpStatusCodeException exception)
     {
-        return new BadRequestObjectResult(new { Message = exception.Message } );
+        return new BadRequestObjectResult(new { Errors = exception.Errors } );
     }
 
     private IActionResult CreateErrorResult(Exception exception, IHostEnvironment hostEnvironment)

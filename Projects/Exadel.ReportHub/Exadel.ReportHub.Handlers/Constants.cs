@@ -7,6 +7,7 @@
             public static class User
             {
                 public const string EmailTakenMessage = "Email is taken.";
+                public const string EmailInvalidMessage = "Email is invalid.";
 
                 public const int PasswordMinimumLength = 8;
                 public const string PasswordUppercaseMessage = "Password must have at least one uppercase letter.";

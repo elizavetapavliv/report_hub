@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Exadel.ReportHub.SDK.DTOs.UserDTO;
+namespace Exadel.ReportHub.SDK.DTOs.User;
 
 public class CreateUserDTO
 {
@@ -12,5 +13,5 @@ public class CreateUserDTO
 
     public string FullName { get; set; }
 
-    public string Password { get; set; }
+    public SecureString Password { get; set; }
 }
