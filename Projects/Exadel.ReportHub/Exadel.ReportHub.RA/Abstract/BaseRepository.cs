@@ -15,21 +15,21 @@ public abstract class BaseRepository<TDocument>
         _context = context;
     }
 
-    protected async Task<IEnumerable<TDocument>> GetAllAsync(CancellationToken cancellationToken)
+    public async Task<IEnumerable<TDocument>> GetAllAsync(CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.Empty;
         return await GetCollection().Find(filter).ToListAsync(cancellationToken);
     }
 
-    protected async Task<IEnumerable<TDocument>> GetAsync(FilterDefinition<TDocument> filter, CancellationToken cancellationToken)
-    {
-        return await GetCollection().Find(filter).ToListAsync(cancellationToken);
-    }
-
-    protected async Task<TDocument> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<TDocument> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.Eq(x => x.Id, id);
         return await GetCollection().Find(filter).SingleOrDefaultAsync(cancellationToken);
+    }
+
+    protected async Task<IEnumerable<TDocument>> GetAsync(FilterDefinition<TDocument> filter, CancellationToken cancellationToken)
+    {
+        return await GetCollection().Find(filter).ToListAsync(cancellationToken);
     }
 
     protected async Task AddAsync(TDocument entity, CancellationToken cancellationToken)

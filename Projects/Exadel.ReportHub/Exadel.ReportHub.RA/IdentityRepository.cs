@@ -10,15 +10,5 @@ namespace Exadel.ReportHub.RA
             : base(context)
         {
         }
-
-        public async Task<IEnumerable<TDocument>> GetAllAsync(CancellationToken cancellationToken)
-        {
-            return await base.GetAllAsync(cancellationToken);
-        }
-
-        public async Task<TDocument> GetByIdAsync(Guid id, CancellationToken cancellationToken)
-        {
-            return await base.GetByIdAsync(id, cancellationToken);
-        }
     }
 }

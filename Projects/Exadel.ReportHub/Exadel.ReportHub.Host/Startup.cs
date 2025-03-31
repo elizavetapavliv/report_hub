@@ -1,5 +1,7 @@
 using Exadel.ReportHub.Host.Filters;
 using Exadel.ReportHub.Host.Registrations;
+using Exadel.ReportHub.RA;
+using Exadel.ReportHub.RA.Abstract;
 using Microsoft.OpenApi.Models;
 
 namespace Exadel.ReportHub.Host;
@@ -24,6 +26,7 @@ public class Startup
         services.AddAuthorization();
 
         services.AddMediatr();
+        services.AddScoped(typeof(IIdentityRepository<>), typeof(IdentityRepository<>));
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
