@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exadel.ReportHub.SDK", "Exa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exadel.ReportHub.Common", "Exadel.ReportHub.Common\Exadel.ReportHub.Common.csproj", "{F1C32F37-C6DA-48E9-BBE3-EEE4C0310E5D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exadel.ReportHub.IDServer", "Exadel.ReportHub.IDServer\Exadel.ReportHub.IDServer.csproj", "{025CFF1B-8825-488D-AEF3-D1EA8CCB460E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +59,10 @@ Global
 		{F1C32F37-C6DA-48E9-BBE3-EEE4C0310E5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F1C32F37-C6DA-48E9-BBE3-EEE4C0310E5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F1C32F37-C6DA-48E9-BBE3-EEE4C0310E5D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{025CFF1B-8825-488D-AEF3-D1EA8CCB460E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{025CFF1B-8825-488D-AEF3-D1EA8CCB460E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{025CFF1B-8825-488D-AEF3-D1EA8CCB460E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{025CFF1B-8825-488D-AEF3-D1EA8CCB460E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
