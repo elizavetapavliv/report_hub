@@ -23,8 +23,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exadel.ReportHub.SDK", "Exa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exadel.ReportHub.Common", "Exadel.ReportHub.Common\Exadel.ReportHub.Common.csproj", "{F1C32F37-C6DA-48E9-BBE3-EEE4C0310E5D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exadel.ReportHub.SDK", "Exadel.ReportHub.SDK\Exadel.ReportHub.SDK.csproj", "{0DFE34E1-81B3-4DC7-9776-B080786E1A10}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
