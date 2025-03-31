@@ -10,7 +10,7 @@ public class ExceptionFilter(ILogger<ExceptionFilter> logger, IHostEnvironment h
     {
         logger.LogError(context.Exception, "An exception occurred while processing the request");
 
-        if(context.Exception is HttpStatusCodeException httpStatusCodeException)
+        if (context.Exception is HttpStatusCodeException httpStatusCodeException)
         {
             context.Result = CreateStatusCodeErrorResult(httpStatusCodeException);
         }
@@ -24,17 +24,17 @@ public class ExceptionFilter(ILogger<ExceptionFilter> logger, IHostEnvironment h
 
     private IActionResult CreateStatusCodeErrorResult(HttpStatusCodeException exception)
     {
-        return new BadRequestObjectResult(new ErrorResponce { Errors = exception.Message });
+        return new BadRequestObjectResult(new ErrorResponce { Errors = exception.Errors });
     }
 
     private IActionResult CreateErrorResult(Exception exception, IHostEnvironment hostEnvironment)
     {
         if (hostEnvironment.IsDevelopment())
         {
-            return new ObjectResult(new ErrorResponce { Errors = exception.Message });
+            return new ObjectResult(new ErrorResponce { Errors = new List<string> { exception.Message } });
         }
 
-        return new ObjectResult(new ErrorResponce { Errors = "An unexpected error occured" })
+        return new ObjectResult(new ErrorResponce { Errors = new List<string> { "An unexpected error uccurred" } })
         {
             StatusCode = StatusCodes.Status500InternalServerError
         };
@@ -42,6 +42,6 @@ public class ExceptionFilter(ILogger<ExceptionFilter> logger, IHostEnvironment h
 
     private sealed class ErrorResponce
     {
-        public string Errors { get; set; }
+        public IList<string> Errors { get; set; }
     }
 }

@@ -4,11 +4,14 @@ namespace Exadel.ReportHub.Handlers.User.Create.Exceptions;
 
 public class HttpStatusCodeException : Exception
 {
-    public IEnumerable<string> Errors { get; }
+    public HttpStatusCode StatusCode { get; }
 
-    public HttpStatusCodeException(IEnumerable<string> errors)
+    public IList<string> Errors { get; }
+
+    public HttpStatusCodeException(IList<string> errors, HttpStatusCode statusCode)
         : base(string.Join(',', errors))
     {
         Errors = errors;
+        StatusCode = statusCode;
     }
 }

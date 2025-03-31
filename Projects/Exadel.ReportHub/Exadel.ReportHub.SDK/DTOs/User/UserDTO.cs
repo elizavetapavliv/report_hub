@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Exadel.ReportHub.SDK.DTOs.User;
 
-public class UserDto
+public class UserDTO
 {
     public Guid Id { get; set; }
 

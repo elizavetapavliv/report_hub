@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Exadel.ReportHub.SDK.DTOs.User;
 
-public class CreateUserDto
+public class CreateUserDTO
 {
     public string Email { get; set; }
 

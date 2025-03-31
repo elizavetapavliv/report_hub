@@ -15,7 +15,7 @@ public class CreateUserRequestValidator : AbstractValidator<CreateUserRequest>
 
     private void ConfigureRules()
     {
-        RuleFor(x => x.CreateUserDTO)
+        RuleFor(x => x.CreateUserDto)
             .ChildRules(child =>
             {
                 child.RuleLevelCascadeMode = CascadeMode.Stop;
