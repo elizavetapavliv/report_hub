@@ -12,6 +12,12 @@ db.createCollection("User", {
     }
 });
 
+db.User.createIndex(
+    { Email: 1 },
+    {
+        unique: true
+    });
+
 db.User.insertMany([
     {
         _id: UUID(),
