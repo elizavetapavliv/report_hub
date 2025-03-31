@@ -13,6 +13,8 @@ public interface IUserRepository
 
     Task AddUserAsync(User user, CancellationToken cancellationToken);
 
+    Task<User> GetByEmailAsync(string email, CancellationToken cancellationToken);
+
     Task UpdateActivityAsync(Guid id, bool isActive, CancellationToken cancellationToken);
 
     Task<bool> IsActiveAsync(Guid id, CancellationToken cancellationToken);
