@@ -1,7 +1,5 @@
 ﻿const scriptName = "03_create_User";
 const version = NumberInt(1);
-const demoPasswordHash = "J4jyN3Qpyto3ioa0/UVri74uz8PW0aDAnTV4NwNBdWEs0KhV4kEW2KMpG/OUYbj8uZqJbnJmhCx1MDuwleovHw==";
-const demoPasswordSalt = "bQSPPP6fkMp1aKLIZY4Tdw==";
 
 if (db.MigrationHistory.findOne({ ScriptName: scriptName, Version: version })) {
     print(`${scriptName} v${version} is already applied`);
@@ -19,32 +17,40 @@ db.User.insertMany([
         _id: UUID(),
         Email: "demo.user1@gmail.com",
         FullName: "Tony Stark",
-        PasswordHash: demoPasswordHash,
-        PasswordSalt: demoPasswordSalt,
+        // Pa$$word
+        PasswordHash: "fA0ifIwA6cePXixAIKglM/WYky9Eg5cf0rTQM/i4VPCweTEFZlaRFXbNbze7AxCg8ph8bVGaby9ja8Jv1JGtAw==",
+        PasswordSalt: "g2X1ISQcfqmdvtxH1QEeww==",
+        Role: "Regular",
         IsActive: false
     },
     {
         _id: UUID(),
         Email: "demo.user2@gmail.com",
         FullName: "Jim Carrey",
-        PasswordHash: demoPasswordHash,
-        PasswordSalt: demoPasswordSalt,
+        // Dem0Pass
+        PasswordHash: "MCX7P74ysH4lGSFFnjSxLgG85yClViLoqExm9zuFbtPW2GivIYzg7UsnLO6AsGpjX9iWHSc9VYotfWYcglvxqg==",
+        PasswordSalt: "X7VVi0KB03QUOV422OGouw==",
+        Role: "Admin",
         IsActive: false
     },
     {
         _id: UUID(),
         Email: "demo.user3@gmail.com",
         FullName: "Benedict Cumberbatch",
-        PasswordHash: demoPasswordHash,
-        PasswordSalt: demoPasswordSalt,
+        // UserPaSS
+        PasswordHash: "cMwDkUtR/0q+WTZSTju7zncdBn6u3vjpJQsPZPSkF7M0dGKrD3HsTE7hIhHNKuypdm78/ycGv1hfXp8VCnVpww==",
+        PasswordSalt: "IvV1bQJQHmVgc38aUvYG4A==",
+        Role: "Regular",
         IsActive: true
     },
     {
         _id: UUID(),
         Email: "demo.user4@gmail.com",
         FullName: "Hugh Jackman",
-        PasswordHash: demoPasswordHash,
-        PasswordSalt: demoPasswordSalt,
+        // AdminPa$$
+        PasswordHash: "ILbBFLxfZi+Vn6/vXyiDOK8dQrdSMAKJMpZPEdQwex9HH2Xy1e84yk4FJLufxf76YqerG8yoPWKegK+/qY/PfQ==",
+        PasswordSalt: "7XRYciM8IydOwzaUWbYo2Q==",
+        Role: "Admin",
         IsActive: true
     }
 ]);
