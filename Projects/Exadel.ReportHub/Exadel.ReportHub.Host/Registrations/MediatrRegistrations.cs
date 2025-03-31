@@ -1,5 +1,5 @@
-﻿using Exadel.ReportHub.Handlers.Test;
-using Exadel.ReportHub.Handlers.UserHandlers.Validators;
+﻿using System.Reflection;
+using Exadel.ReportHub.Handlers.Test;
 using Exadel.ReportHub.Host.Mediatr;
 using FluentValidation;
 using MediatR;
@@ -10,9 +10,15 @@ public static class MediatrRegistrations
 {
     public static void AddMediatr(this IServiceCollection services)
     {
-        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CreateHandler).Assembly));
+        var assembly = typeof(CreateHandler).Assembly;
 
-        services.AddValidatorsFromAssembly(typeof(CreateUserValidator).Assembly);
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(assembly));
+        services.AddValidator(assembly);
+    }
+
+    private static void AddValidator(this IServiceCollection services, Assembly assembly)
+    {
+        services.AddValidatorsFromAssembly(assembly);
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(RequestValidationBehavior<,>));
     }
 }
