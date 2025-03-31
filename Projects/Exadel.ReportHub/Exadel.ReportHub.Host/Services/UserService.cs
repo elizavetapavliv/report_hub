@@ -13,7 +13,7 @@ namespace Exadel.ReportHub.Host.Services;
 public class UserService(ISender sender) : BaseService
 {
     [HttpPost]
-    public async Task<IActionResult> AddUser([FromBody] CreateUserDTO createUserDto)
+    public async Task<IActionResult> AddUser([FromBody] CreateUserDto createUserDto)
     {
         var result = await sender.Send(new CreateUserRequest(createUserDto));
 

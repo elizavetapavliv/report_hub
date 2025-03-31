@@ -5,11 +5,11 @@ using MediatR;
 
 namespace Exadel.ReportHub.Handlers.User.Get;
 
-public record GetUserByIdRequest(Guid Id) : IRequest<ErrorOr<UserDTO>>;
+public record GetUserByIdRequest(Guid Id) : IRequest<ErrorOr<UserDto>>;
 
-public class GetUserByIdHandler(IUserRepository userRepository) : IRequestHandler<GetUserByIdRequest, ErrorOr<UserDTO>>
+public class GetUserByIdHandler(IUserRepository userRepository) : IRequestHandler<GetUserByIdRequest, ErrorOr<UserDto>>
 {
-    public async Task<ErrorOr<UserDTO>> Handle(GetUserByIdRequest request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<UserDto>> Handle(GetUserByIdRequest request, CancellationToken cancellationToken)
     {
         var user = await userRepository.GetByIdAsync(request.Id, cancellationToken);
         if (user is null)
@@ -17,7 +17,7 @@ public class GetUserByIdHandler(IUserRepository userRepository) : IRequestHandle
             return Error.NotFound();
         }
 
-        var userDTO = new UserDTO
+        var userDTO = new UserDto
         {
             Id = user.Id,
             Email = user.Email,

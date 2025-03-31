@@ -1,4 +1,4 @@
-﻿using Exadel.ReportHub.Handlers.User.Create.Validators.Exceptions;
+﻿using Exadel.ReportHub.Handlers.User.Create.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
@@ -24,16 +24,24 @@ public class ExceptionFilter(ILogger<ExceptionFilter> logger, IHostEnvironment h
 
     private IActionResult CreateStatusCodeErrorResult(HttpStatusCodeException exception)
     {
-        return new BadRequestObjectResult(new { Errors = exception.Errors } );
+        return new BadRequestObjectResult(new ErrorResponce { Errors = exception.Message });
     }
 
     private IActionResult CreateErrorResult(Exception exception, IHostEnvironment hostEnvironment)
     {
         if (hostEnvironment.IsDevelopment())
         {
-            return new ObjectResult(new { Message = exception.Message });
+            return new ObjectResult(new ErrorResponce { Errors = exception.Message });
         }
 
-        return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+        return new ObjectResult(new ErrorResponce { Errors = "An unexpected error occured" })
+        {
+            StatusCode = StatusCodes.Status500InternalServerError
+        };
+    }
+
+    private sealed class ErrorResponce
+    {
+        public string Errors { get; set; }
     }
 }

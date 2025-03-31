@@ -5,14 +5,14 @@ using MediatR;
 
 namespace Exadel.ReportHub.Handlers.User.GetAllActive;
 
-public record GetActiveUsersRequest : IRequest<ErrorOr<IEnumerable<UserDTO>>>;
+public record GetActiveUsersRequest : IRequest<ErrorOr<IEnumerable<UserDto>>>;
 
-public class GetActiveUsersHandler(IUserRepository userRepository) : IRequestHandler<GetActiveUsersRequest, ErrorOr<IEnumerable<UserDTO>>>
+public class GetActiveUsersHandler(IUserRepository userRepository) : IRequestHandler<GetActiveUsersRequest, ErrorOr<IEnumerable<UserDto>>>
 {
-    public async Task<ErrorOr<IEnumerable<UserDTO>>> Handle(GetActiveUsersRequest request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<IEnumerable<UserDto>>> Handle(GetActiveUsersRequest request, CancellationToken cancellationToken)
     {
         var users = await userRepository.GetAllActiveAsync(cancellationToken);
-        var userDtos = users.Select(u => new UserDTO
+        var userDtos = users.Select(u => new UserDto
         {
             Id = u.Id,
             Email = u.Email,
