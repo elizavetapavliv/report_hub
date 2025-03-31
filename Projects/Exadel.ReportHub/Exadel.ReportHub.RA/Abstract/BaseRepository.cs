@@ -4,7 +4,7 @@ using MongoDB.Driver;
 
 namespace Exadel.ReportHub.RA.Abstract;
 
-public abstract class BaseRepository<TDocument> : IBaseRepository<TDocument>
+public abstract class BaseRepository<TDocument>
     where TDocument : IDocument
 {
     protected static readonly FilterDefinitionBuilder<TDocument> _filterBuilder = Builders<TDocument>.Filter;

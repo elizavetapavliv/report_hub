@@ -1,25 +1,26 @@
-﻿using ErrorOr;
+﻿using System.Runtime.InteropServices;
+using ErrorOr;
 using Exadel.ReportHub.Common;
 using Exadel.ReportHub.Data.Models;
 using Exadel.ReportHub.RA.Abstract;
 using Exadel.ReportHub.SDK.DTOs.User;
 using MediatR;
 
-namespace Exadel.ReportHub.Handlers.UserHandlers.Create;
+namespace Exadel.ReportHub.Handlers.User.Create;
 
-public record CreateUserRequest(string Email, string FullName, string Password) : IRequest<ErrorOr<UserDTO>>;
+public record CreateUserRequest(CreateUserDTO CreateUserDTO) : IRequest<ErrorOr<UserDTO>>;
 
 public class CreateUserHandler(IUserRepository userRepository) : IRequestHandler<CreateUserRequest, ErrorOr<UserDTO>>
 {
     public async Task<ErrorOr<UserDTO>> Handle(CreateUserRequest request, CancellationToken cancellationToken)
     {
-        var (passwordHash, passwordSalt) = PasswordHasher.CreatePasswordHash(request.Password);
+        var (passwordHash, passwordSalt) = PasswordHasher.CreatePasswordHash(request.CreateUserDTO.Password);
 
-        var user = new User
+        var user = new Data.Models.User
         {
             Id = Guid.NewGuid(),
-            Email = request.Email,
-            FullName = request.FullName,
+            Email = request.CreateUserDTO.Email,
+            FullName = request.CreateUserDTO.FullName,
             PasswordHash = passwordHash,
             PasswordSalt = passwordSalt
         };

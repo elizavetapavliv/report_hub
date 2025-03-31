@@ -11,6 +11,11 @@ public class UserRepository : BaseRepository<User>, IUserRepository
     {
     }
 
+    public async Task<User> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        return await base.GetByIdAsync(id, cancellationToken);
+    }
+
     public async Task<User> GetByEmailAsync(string email, CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.Eq(x => x.Email, email);

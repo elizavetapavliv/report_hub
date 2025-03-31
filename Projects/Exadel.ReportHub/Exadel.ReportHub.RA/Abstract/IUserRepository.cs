@@ -7,11 +7,15 @@ using Exadel.ReportHub.Data.Models;
 
 namespace Exadel.ReportHub.RA.Abstract;
 
-public interface IUserRepository : IBaseRepository<User>
+public interface IUserRepository
 {
     Task<IEnumerable<User>> GetAllActiveAsync(CancellationToken cancellationToken);
 
     Task<User> GetByEmailAsync(string email, CancellationToken cancellationToken);
+
+    Task<User> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+
+    Task AddAsync(User user, CancellationToken cancellationToken);
 
     Task UpdateActivityAsync(Guid id, bool isActive, CancellationToken cancellationToken);
 

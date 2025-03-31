@@ -3,7 +3,7 @@ using Exadel.ReportHub.RA.Abstract;
 using Exadel.ReportHub.SDK.DTOs.User;
 using MediatR;
 
-namespace Exadel.ReportHub.Handlers.UserHandlers.Get;
+namespace Exadel.ReportHub.Handlers.User.Get;
 
 public record GetUserByIdRequest(Guid Id) : IRequest<ErrorOr<UserDTO>>;
 
@@ -14,7 +14,7 @@ public class GetUserByIdHandler(IUserRepository userRepository) : IRequestHandle
         var user = await userRepository.GetByIdAsync(request.Id, cancellationToken);
         if (user is null)
         {
-            return await Task.FromResult<ErrorOr<UserDTO>>(Error.NotFound());
+            return Error.NotFound();
         }
 
         var userDTO = new UserDTO
@@ -24,6 +24,6 @@ public class GetUserByIdHandler(IUserRepository userRepository) : IRequestHandle
             FullName = user.FullName
         };
 
-        return await Task.FromResult<ErrorOr<UserDTO>>(userDTO);
+        return userDTO;
     }
 }

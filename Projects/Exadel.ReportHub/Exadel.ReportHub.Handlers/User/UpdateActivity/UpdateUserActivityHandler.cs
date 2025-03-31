@@ -7,7 +7,7 @@ using ErrorOr;
 using Exadel.ReportHub.RA.Abstract;
 using MediatR;
 
-namespace Exadel.ReportHub.Handlers.UserHandlers.UpdateActivity;
+namespace Exadel.ReportHub.Handlers.User.UpdateActivity;
 
 public record UpdateUserActivityRequest(Guid Id, bool IsActive) : IRequest<ErrorOr<Updated>>;
 
@@ -18,10 +18,10 @@ public class UpdateUserActivityHandler(IUserRepository userRepository) : IReques
         var isExists = await userRepository.IsExistsAsync(request.Id, cancellationToken);
         if (!isExists)
         {
-            return await Task.FromResult<ErrorOr<Updated>>(Error.NotFound());
+            return Error.NotFound();
         }
 
         await userRepository.UpdateActivityAsync(request.Id, request.IsActive, cancellationToken);
-        return await Task.FromResult<ErrorOr<Updated>>(Result.Updated);
+        return Result.Updated;
     }
 }
