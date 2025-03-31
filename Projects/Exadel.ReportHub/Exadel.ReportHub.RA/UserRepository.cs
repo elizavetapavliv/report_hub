@@ -21,10 +21,11 @@ public class UserRepository : BaseRepository<User>, IUserRepository
         await AddAsync(user, cancellationToken);
     }
 
-    public async Task<User> GetByEmailAsync(string email, CancellationToken cancellationToken)
+    public async Task<bool> EmailExistsAsync(string email, CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.Eq(x => x.Email, email);
-        return await GetCollection().Find(filter).SingleOrDefaultAsync(cancellationToken);
+        var existedEmail = await GetCollection().Find(filter).SingleOrDefaultAsync(cancellationToken);
+        return existedEmail != null;
     }
 
     public async Task<IEnumerable<User>> GetAllActiveAsync(CancellationToken cancellationToken)

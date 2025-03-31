@@ -12,7 +12,7 @@ public class ExceptionFilter(ILogger<ExceptionFilter> logger, IHostEnvironment h
 
         if(context.Exception is HttpStatusCodeException httpStatusCodeException)
         {
-            context.Result = CreateErrorResult(httpStatusCodeException, hostEnvironment);
+            context.Result = CreateErrorResult(httpStatusCodeException);
             context.ExceptionHandled = true;
         }
         else
@@ -20,6 +20,11 @@ public class ExceptionFilter(ILogger<ExceptionFilter> logger, IHostEnvironment h
             context.Result = CreateErrorResult(context.Exception, hostEnvironment);
             context.ExceptionHandled = true;
         }
+    }
+
+    private IActionResult CreateErrorResult(HttpStatusCodeException exception)
+    {
+        return new BadRequestObjectResult(new { Message = exception.Message } );
     }
 
     private IActionResult CreateErrorResult(Exception exception, IHostEnvironment hostEnvironment)

@@ -1,8 +1,5 @@
 using Exadel.ReportHub.Host.Filters;
-using Exadel.ReportHub.Host.Mediatr;
 using Exadel.ReportHub.Host.Registrations;
-using FluentValidation;
-using MediatR;
 using Microsoft.OpenApi.Models;
 
 namespace Exadel.ReportHub.Host;
@@ -26,7 +23,7 @@ public class Startup
         services.AddAuthorization();
 
         services.AddMongo();
-        services.AddMediatr();
+        services.AddMediatR();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

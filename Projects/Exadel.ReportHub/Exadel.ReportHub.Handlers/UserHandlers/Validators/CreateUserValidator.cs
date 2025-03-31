@@ -1,6 +1,5 @@
 ﻿using Exadel.ReportHub.RA.Abstract;
 using FluentValidation;
-using Consts = Exadel.ReportHub.Handlers.Constants.Validation.User;
 
 namespace Exadel.ReportHub.Handlers.UserHandlers.Validators;
 
@@ -18,25 +17,31 @@ public class CreateUserValidator : AbstractValidator<CreateUserRequest>
     {
         RuleFor(x => x.Email)
             .Cascade(CascadeMode.Stop)
-            .NotEmpty().WithMessage(Consts.EmailRequiredMessage)
-            .EmailAddress().WithMessage(Consts.InvalidEmailMessage)
-            .MustAsync(async (email, cancellationToken) => await EmailMustNotExistAsync(email, cancellationToken)).WithMessage(Consts.EmailTakenMessage);
+            .NotEmpty()
+            .EmailAddress()
+            .MustAsync(async (email, cancellationToken) => await EmailMustNotExistAsync(email, cancellationToken))
+            .WithMessage(Constants.Validation.User.EmailTakenMessage);
 
         RuleFor(x => x.FullName)
-            .NotEmpty().WithMessage(Consts.FullNameRequiredMessage);
+            .NotEmpty();
 
         RuleFor(x => x.Password)
-            .NotEmpty().WithMessage(Consts.PasswordRequiredMessage)
-            .MinimumLength(Consts.PasswordMinimumLength).WithMessage(Consts.PasswordMinLengthMessage)
-            .Matches("[A-Z]").WithMessage(Consts.PasswordUppercaseMessage)
-            .Matches("[a-z]").WithMessage(Consts.PasswordLowercaseMessage)
-            .Matches("[0-9]").WithMessage(Consts.PasswordDigitMessage)
-            .Matches("[^a-zA-Z0-9]").WithMessage(Consts.PasswordSpecialCharacterMessage);
+            .NotEmpty()
+            .MinimumLength(Constants.Validation.User.PasswordMinimumLength)
+            .WithMessage(Constants.Validation.User.PasswordMinLengthMessage)
+            .Matches("[A-Z]")
+            .WithMessage(Constants.Validation.User.PasswordUppercaseMessage)
+            .Matches("[a-z]")
+            .WithMessage(Constants.Validation.User.PasswordLowercaseMessage)
+            .Matches("[0-9]")
+            .WithMessage(Constants.Validation.User.PasswordDigitMessage)
+            .Matches("[^a-zA-Z0-9]")
+            .WithMessage(Constants.Validation.User.PasswordSpecialCharacterMessage);
     }
 
     private async Task<bool> EmailMustNotExistAsync(string email, CancellationToken cancellationToken)
     {
-        var emailAddress = await _userRepository.GetByEmailAsync(email, cancellationToken);
-        return emailAddress == null;
+        var emailAddress = await _userRepository.EmailExistsAsync(email, cancellationToken);
+        return !emailAddress;
     }
 }
