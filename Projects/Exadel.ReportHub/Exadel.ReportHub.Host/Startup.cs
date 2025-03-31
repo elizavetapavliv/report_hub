@@ -26,7 +26,6 @@ public class Startup
         services.AddAuthorization();
 
         services.AddMediatr();
-        services.AddScoped(typeof(IIdentityRepository<>), typeof(IdentityRepository<>));
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

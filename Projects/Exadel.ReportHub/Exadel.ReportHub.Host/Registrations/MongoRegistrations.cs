@@ -9,6 +9,7 @@ public static class MongoRegistrations
     {
         services.AddSingleton<MongoDbContext>();
         services.AddSingleton<IUserRepository, UserRepository>();
+        services.AddSingleton(typeof(IIdentityRepository<>), typeof(IdentityRepository<>));
         return services;
     }
 }
