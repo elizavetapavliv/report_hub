@@ -91,7 +91,7 @@ db.Client.insertMany([
     {
         _id: UUID(),
         ClientId: "report_hub_resource_owner",
-        ClientName: "Resource Owner",
+        ClientName: "Report Hub Resource Owner",
         AllowedGrantTypes: ["resource_owner_password"],
         AllowedScopes: ["report_hub_api"]
     }
