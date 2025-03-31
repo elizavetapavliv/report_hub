@@ -15,7 +15,7 @@ public class UpdateUserActivityHandler(IUserRepository userRepository) : IReques
 {
     public async Task<ErrorOr<Updated>> Handle(UpdateUserActivityRequest request, CancellationToken cancellationToken)
     {
-        var isExists = await userRepository.IsExistsAsync(request.Id, cancellationToken);
+        var isExists = await userRepository.ExistsAsync(request.Id, cancellationToken);
         if (!isExists)
         {
             return Error.NotFound();

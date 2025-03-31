@@ -36,7 +36,7 @@ public class UserRepository : BaseRepository<User>, IUserRepository
         return isActive;
     }
 
-    public async Task<bool> IsExistsAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.Eq(x => x.Id, id);
         var count = await GetCollection().Find(filter).CountDocumentsAsync(cancellationToken);

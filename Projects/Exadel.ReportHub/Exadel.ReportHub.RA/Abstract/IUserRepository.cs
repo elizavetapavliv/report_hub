@@ -21,5 +21,5 @@ public interface IUserRepository
 
     Task<bool> IsActiveAsync(Guid id, CancellationToken cancellationToken);
 
-    Task<bool> IsExistsAsync(Guid id, CancellationToken cancellationToken);
+    Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken);
 }
