@@ -1,6 +1,5 @@
 ﻿using System.Net;
-using System.Net.NetworkInformation;
-using Exadel.ReportHub.Handlers.Exceptions;
+using Exadel.ReportHub.Handlers.UserHandlers.Validators.Exceptions;
 using FluentValidation;
 using MediatR;
 

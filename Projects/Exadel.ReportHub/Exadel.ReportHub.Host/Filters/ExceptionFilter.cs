@@ -1,4 +1,4 @@
-﻿using Exadel.ReportHub.Handlers.Exceptions;
+﻿using Exadel.ReportHub.Handlers.UserHandlers.Validators.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
