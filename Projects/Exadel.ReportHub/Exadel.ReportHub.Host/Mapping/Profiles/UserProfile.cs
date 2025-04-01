@@ -8,8 +8,7 @@ public class UserProfile : Profile
 {
     public UserProfile()
     {
-        CreateMap<User, UserDTO>()
-            .ReverseMap();
+        CreateMap<User, UserDTO>();
         CreateMap<CreateUserDTO, User>();
     }
 }
