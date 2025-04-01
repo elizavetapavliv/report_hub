@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Exadel.ReportHub.Common
+namespace Exadel.ReportHub.Common;
+public interface IUserProvider
 {
-    internal class IUserProvider
-    {
-    }
+    Guid GetUserId();
 }
