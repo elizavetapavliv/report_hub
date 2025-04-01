@@ -8,13 +8,13 @@ namespace Exadel.ReportHub.Handlers.User.GetAllActive;
 
 public record GetActiveUsersRequest : IRequest<ErrorOr<IEnumerable<UserDTO>>>;
 
-public class GetActiveUsersHandler(IUserRepository userRepository, IMapper _mapper) : IRequestHandler<GetActiveUsersRequest, ErrorOr<IEnumerable<UserDTO>>>
+public class GetActiveUsersHandler(IUserRepository userRepository, IMapper mapper) : IRequestHandler<GetActiveUsersRequest, ErrorOr<IEnumerable<UserDTO>>>
 {
     public async Task<ErrorOr<IEnumerable<UserDTO>>> Handle(GetActiveUsersRequest request, CancellationToken cancellationToken)
     {
         var users = await userRepository.GetAllActiveAsync(cancellationToken);
 
-        var userDtos = _mapper.Map<ErrorOr<IEnumerable<UserDTO>>>(users);
+        var userDtos = mapper.Map<List<UserDTO>>(users);
 
         return userDtos;
     }

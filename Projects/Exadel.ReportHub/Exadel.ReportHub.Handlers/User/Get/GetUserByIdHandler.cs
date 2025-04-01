@@ -8,7 +8,7 @@ namespace Exadel.ReportHub.Handlers.User.Get;
 
 public record GetUserByIdRequest(Guid Id) : IRequest<ErrorOr<UserDTO>>;
 
-public class GetUserByIdHandler(IUserRepository userRepository, IMapper _mapper) : IRequestHandler<GetUserByIdRequest, ErrorOr<UserDTO>>
+public class GetUserByIdHandler(IUserRepository userRepository, IMapper mapper) : IRequestHandler<GetUserByIdRequest, ErrorOr<UserDTO>>
 {
     public async Task<ErrorOr<UserDTO>> Handle(GetUserByIdRequest request, CancellationToken cancellationToken)
     {
@@ -18,7 +18,7 @@ public class GetUserByIdHandler(IUserRepository userRepository, IMapper _mapper)
             return Error.NotFound();
         }
 
-        var userDTO = _mapper.Map<UserDTO>(user);
+        var userDTO = mapper.Map<UserDTO>(user);
 
         return userDTO;
     }
