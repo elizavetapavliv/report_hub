@@ -24,6 +24,7 @@ public class Startup
 
         services.AddMongo();
         services.AddMediatR();
+        services.AddAutoMapper(typeof(Startup));
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
