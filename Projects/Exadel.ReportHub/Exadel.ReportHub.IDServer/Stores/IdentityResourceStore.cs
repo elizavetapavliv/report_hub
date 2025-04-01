@@ -1,57 +1,36 @@
 ﻿using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Stores;
+using Exadel.ReportHub.RA.Abstract;
 
 namespace Exadel.ReportHub.IDServer.Stores;
 
-public class IdentityResourceStore : IResourceStore
+public class IdentityResourceStore(IIdentityRepository identityRepository) : IResourceStore
 {
-    public Task<IEnumerable<ApiResource>> FindApiResourcesByNameAsync(IEnumerable<string> apiResourceNames)
+    public async Task<IEnumerable<ApiResource>> FindApiResourcesByNameAsync(IEnumerable<string> apiResourceNames)
     {
-        return Task.FromResult<IEnumerable<ApiResource>>(new ApiResource[]
-        {
-            new ApiResource("myApi")
-            {
-                Scopes = new List<string>{ "myApi.read","myApi.write" },
-                ApiSecrets = new List<Secret>{ new Secret("supersecret".Sha256()) }
-            }
-        });
+        return await identityRepository.GetByNamesAsync<ApiResource>(apiResourceNames, CancellationToken.None);
     }
 
-    public Task<IEnumerable<ApiResource>> FindApiResourcesByScopeNameAsync(IEnumerable<string> scopeNames)
+    public async Task<IEnumerable<ApiResource>> FindApiResourcesByScopeNameAsync(IEnumerable<string> scopeNames)
     {
-        return Task.FromResult<IEnumerable<ApiResource>>(new ApiResource[]
-        {
-            new ApiResource("myApi")
-            {
-                Scopes = new List<string>{ "myApi.read","myApi.write" },
-                ApiSecrets = new List<Secret>{ new Secret("supersecret".Sha256()) }
-            }
-        });
+        return await identityRepository.GetApiResourcesByScopeNameAsync(scopeNames, CancellationToken.None);
     }
 
-    public Task<IEnumerable<ApiScope>> FindApiScopesByNameAsync(IEnumerable<string> scopeNames)
+    public async Task<IEnumerable<ApiScope>> FindApiScopesByNameAsync(IEnumerable<string> scopeNames)
     {
-        return Task.FromResult<IEnumerable<ApiScope>>(new ApiScope[]
-        {
-            new ApiScope("myApi.read"),
-            new ApiScope("myApi.write"),
-        });
+        return await identityRepository.GetByNamesAsync<ApiScope>(scopeNames, CancellationToken.None);
     }
 
-    public Task<IEnumerable<IdentityResource>> FindIdentityResourcesByScopeNameAsync(IEnumerable<string> scopeNames)
+    public async Task<IEnumerable<IdentityResource>> FindIdentityResourcesByScopeNameAsync(IEnumerable<string> scopeNames)
     {
-        return Task.FromResult<IEnumerable<IdentityResource>>(new IdentityResource[]
-        {
-            new IdentityResources.OpenId(),
-            new IdentityResources.Profile(),
-        });
+        return await identityRepository.GetByNamesAsync<IdentityResource>(scopeNames, CancellationToken.None);
     }
 
     public async Task<Resources> GetAllResourcesAsync()
     {
-        var apiResources = await FindApiResourcesByNameAsync(new[] { "string" });
-        var identityResources = await FindIdentityResourcesByScopeNameAsync(new[] { "string" });
-        var apiScopes = await FindApiScopesByNameAsync(new[] { "string" });
+        var identityResources = await identityRepository.GetAllAsync<IdentityResource>(CancellationToken.None);
+        var apiResources = await identityRepository.GetAllAsync<ApiResource>(CancellationToken.None);
+        var apiScopes = await identityRepository.GetAllAsync<ApiScope>(CancellationToken.None);
 
         return new Resources(identityResources, apiResources, apiScopes);
     }

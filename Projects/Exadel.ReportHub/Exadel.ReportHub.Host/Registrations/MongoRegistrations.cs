@@ -17,7 +17,7 @@ public static class MongoRegistrations
             new EnumRepresentationConvention(BsonType.String)
         }, _ => true);
         services.AddSingleton<IUserRepository, UserRepository>();
-        services.AddSingleton(typeof(IIdentityRepository<>), typeof(IdentityRepository<>));
+        services.AddSingleton(typeof(IIdentityRepository), typeof(IdentityRepository));
         BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
         return services;
     }
