@@ -1,4 +1,5 @@
-﻿using Exadel.ReportHub.IDServer.Stores;
+﻿using Exadel.ReportHub.Identity.Registrations;
+using Exadel.ReportHub.IDServer.Stores;
 
 namespace Exadel.ReportHub.IDServer;
 
@@ -10,6 +11,8 @@ public class Startup
             .AddClientStore<IdentityClientStore>()
             .AddResourceStore<IdentityResourceStore>()
             .AddDeveloperSigningCredential();
+
+        services.AddMongo();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
