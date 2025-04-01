@@ -1,8 +1,8 @@
 using AutoMapper;
+using Exadel.ReportHub.Common;
 using Exadel.ReportHub.Host.Filters;
 using Exadel.ReportHub.Host.Registrations;
 using Exadel.ReportHub.RA;
-using Exadel.ReportHub.RA.Abstract;
 using Microsoft.OpenApi.Models;
 
 namespace Exadel.ReportHub.Host;
