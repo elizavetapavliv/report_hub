@@ -6,6 +6,8 @@ namespace Exadel.ReportHub.RA;
 
 public class UserRepository : BaseRepository, IUserRepository
 {
+    private static readonly FilterDefinitionBuilder<User> _filterBuilder = Builders<User>.Filter;
+
     public UserRepository(MongoDbContext context)
         : base(context)
     {
@@ -13,14 +15,14 @@ public class UserRepository : BaseRepository, IUserRepository
 
     public async Task<bool> EmailExistsAsync(string email, CancellationToken cancellationToken)
     {
-        var filter = Builders<User>.Filter.Eq(x => x.Email, email);
+        var filter = _filterBuilder.Eq(x => x.Email, email);
         var count = await GetCollection<User>().Find(filter).CountDocumentsAsync(cancellationToken);
         return count > 0;
     }
 
     public async Task<IEnumerable<User>> GetAllActiveAsync(CancellationToken cancellationToken)
     {
-        var filter = Builders<User>.Filter.Eq(x => x.IsActive, true);
+        var filter = _filterBuilder.Eq(x => x.IsActive, true);
         return await GetAsync(filter, cancellationToken);
     }
 
@@ -32,21 +34,21 @@ public class UserRepository : BaseRepository, IUserRepository
 
     public async Task<bool> IsActiveAsync(Guid id, CancellationToken cancellationToken)
     {
-        var filter = Builders<User>.Filter.Eq(x => x.Id, id);
+        var filter = _filterBuilder.Eq(x => x.Id, id);
         var isActive = await GetCollection<User>().Find(filter).Project(x => x.IsActive).SingleOrDefaultAsync(cancellationToken);
         return isActive;
     }
 
     public async Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken)
     {
-        var filter = Builders<User>.Filter.Eq(x => x.Id, id);
+        var filter = _filterBuilder.Eq(x => x.Id, id);
         var count = await GetCollection<User>().Find(filter).CountDocumentsAsync(cancellationToken);
         return count > 0;
     }
 
     public async Task AddAsync(User user, CancellationToken cancellationToken)
     {
-        await AddAsync<User>(user, cancellationToken);
+        await base.AddAsync(user, cancellationToken);
     }
 
     public async Task<User> GetByIdAsync(Guid id, CancellationToken cancellationToken)

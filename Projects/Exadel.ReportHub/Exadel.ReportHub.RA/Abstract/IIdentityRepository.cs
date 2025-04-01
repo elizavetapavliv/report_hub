@@ -11,5 +11,5 @@ public interface IIdentityRepository
 
     Task<IEnumerable<ApiResource>> GetApiResourcesByScopeNameAsync(IEnumerable<string> scopeNames, CancellationToken cancellationToken);
 
-    Task<Client> GetClientByClientIdAsync(string ClientId, CancellationToken cancellationToken);
+    Task<Client> GetClientByIdAsync(string ClientId, CancellationToken cancellationToken);
 }

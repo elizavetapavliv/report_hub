@@ -16,6 +16,10 @@ public static class MongoRegistrations
         {
             new EnumRepresentationConvention(BsonType.String)
         }, _ => true);
+        ConventionRegistry.Register("IgnoreExtraElements", new ConventionPack
+        {
+            new IgnoreExtraElementsConvention(true)
+        }, _ => true);
         services.AddSingleton<IUserRepository, UserRepository>();
         services.AddSingleton(typeof(IIdentityRepository), typeof(IdentityRepository));
         BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));

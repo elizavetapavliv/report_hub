@@ -1,6 +1,6 @@
-﻿using Exadel.ReportHub.IDServer.Stores;
+﻿using Exadel.ReportHub.Identity.Stores;
 
-namespace Exadel.ReportHub.Identity.Registrations;
+namespace Exadel.ReportHub.Host.Registrations;
 
 public static class IdentityServerRegistrations
 {

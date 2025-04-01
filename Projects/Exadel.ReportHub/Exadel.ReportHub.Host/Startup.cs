@@ -22,6 +22,7 @@ public class Startup
 
         services.AddAuthorization();
 
+        services.AddIdentity();
         services.AddMongo();
         services.AddMediatR();
     }
@@ -32,6 +33,8 @@ public class Startup
         app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Report Hub API"));
 
         app.UseRouting();
+
+        app.UseIdentityServer();
 
         app.UseHttpsRedirection();
         app.UseAuthentication();

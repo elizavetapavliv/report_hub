@@ -2,7 +2,7 @@
 using Duende.IdentityServer.Stores;
 using Exadel.ReportHub.RA.Abstract;
 
-namespace Exadel.ReportHub.IDServer.Stores;
+namespace Exadel.ReportHub.Identity.Stores;
 
 public class IdentityResourceStore(IIdentityRepository identityRepository) : IResourceStore
 {
