@@ -12,7 +12,6 @@ internal class UpdateUserRoleRequestValidator : AbstractValidator<UpdateUserRole
     private void ConfigureRules()
     {
         RuleFor(x => x.Role)
-            .NotNull()
             .IsInEnum();
     }
 }
