@@ -14,5 +14,5 @@ jobs:
       - name: Ensure PR has linked issues
         if: ${{ steps.get-issues.outputs.issues == '' }}
         run: |
-          echo "No linked issues found. Please link an issue to this PR."
+          echo "No linked issues found. Please link an issue to this Pull Request."
           exit 1
