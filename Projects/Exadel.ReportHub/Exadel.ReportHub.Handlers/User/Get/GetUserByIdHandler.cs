@@ -18,8 +18,8 @@ public class GetUserByIdHandler(IUserRepository userRepository, IMapper mapper) 
             return Error.NotFound();
         }
 
-        var userDTO = mapper.Map<UserDTO>(user);
+        var userDto = mapper.Map<UserDTO>(user);
 
-        return userDTO;
+        return userDto;
     }
 }
