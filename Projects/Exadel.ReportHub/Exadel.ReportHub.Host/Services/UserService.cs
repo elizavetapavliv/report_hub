@@ -47,7 +47,7 @@ public class UserService(ISender sender) : BaseService
         return FromResult(result);
     }
 
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = nameof(UserRole.Admin))]
     [HttpPatch("{id:guid}/role")]
     public async Task<IActionResult> UpdateUserRole([FromRoute] Guid id, [FromBody] UserRole userRole)
     {
