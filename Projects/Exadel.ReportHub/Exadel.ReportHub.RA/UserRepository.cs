@@ -1,4 +1,5 @@
-﻿using Exadel.ReportHub.Data.Models;
+﻿using Exadel.ReportHub.Data.Enums;
+using Exadel.ReportHub.Data.Models;
 using Exadel.ReportHub.RA.Abstract;
 using MongoDB.Driver;
 
@@ -54,5 +55,11 @@ public class UserRepository : BaseRepository, IUserRepository
     public async Task<User> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return await GetByIdAsync<User>(id, cancellationToken);
+    }
+
+    public async Task UpdateRoleAsync(Guid id, UserRole userRole, CancellationToken cancellationToken)
+    {
+        var update = Builders<User>.Update.Set(x => x.Role, userRole);
+        await UpdateAsync(id, update, cancellationToken);
     }
 }
