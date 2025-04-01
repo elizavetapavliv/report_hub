@@ -1,4 +1,4 @@
-name: Deploy Service and Evaluate Mongo
+name: Deploy Service and Run Mongo
 
 on:
   workflow_dispatch:
@@ -34,8 +34,8 @@ jobs:
 
     - name: Load Mongo scripts
       run: |
-        mongosh "${{ env.Db_Connection_Uri }}/${{ env.Db_Name }}" --apiVersion 1 -u ${{ env.Db_User_Name }} -p ${{ env.Db_User_Password }} <<EOF
-          load("${{ env.Mongo_Scripts_Path }}/00_create_MigrationHistory.js")
-          load("${{ env.Mongo_Scripts_Path }}/01_create_Invoice.js")
-        EOF
+        for script in "${{ env.Mongo_Scripts_Path }}"/*.js; do
+        echo $script
+        mongosh "${{ env.Db_Connection_Uri }}/${{ env.Db_Name }}" --apiVersion 1 -u ${{ env.Db_User_Name }} -p ${{ env.Db_User_Password }} "$script"
+        done
     
