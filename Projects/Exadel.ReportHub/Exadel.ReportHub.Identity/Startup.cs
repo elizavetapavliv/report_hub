@@ -1,5 +1,4 @@
 ﻿using Exadel.ReportHub.Identity.Registrations;
-using Exadel.ReportHub.IDServer.Stores;
 
 namespace Exadel.ReportHub.IDServer;
 
@@ -7,10 +6,7 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddIdentityServer()
-            .AddClientStore<IdentityClientStore>()
-            .AddResourceStore<IdentityResourceStore>()
-            .AddDeveloperSigningCredential();
+        services.AddIdentity();
 
         services.AddMongo();
     }
