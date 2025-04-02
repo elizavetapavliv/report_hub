@@ -25,7 +25,7 @@ jobs:
         
     - name: Deploy
       run: |
-          curl -X POST ${{ env.Render_Deploy_Hook }}
+          curl -X POST "${{ env.Render_Deploy_Hook }}"
 
     - name: Install MongoSh
       run: |
