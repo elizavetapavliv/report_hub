@@ -5,7 +5,7 @@ using Microsoft.OpenApi.Models;
 
 namespace Exadel.ReportHub.Host;
 
-public class Startup
+public class Startup(IConfiguration configuration)
 {
     public void ConfigureServices(IServiceCollection services)
     {
@@ -17,40 +17,33 @@ public class Startup
         services.AddSwaggerGen(c =>
         {
             const string apiVersion = "v1";
-            var applicationUrl = Environment.GetEnvironmentVariable("ASPNETCORE_URLS").Split(';')[0];
-            var authorizationUrl = new Uri($"{applicationUrl}/connect/authorize");
-            var tokenUrl = new Uri($"{applicationUrl}/connect/token");
+            const string scopeName = "report_hub_api";
+            const string scopeDescription = "Full access to Report Hub API";
+
+            var tokenUrl = new Uri(configuration["Authority"]);
 
             c.SwaggerDoc(apiVersion, new OpenApiInfo { Title = "ReportHubAPI", Version = apiVersion });
-            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
             {
                 Type = SecuritySchemeType.OAuth2,
                 Flows = new OpenApiOAuthFlows
                 {
                     ClientCredentials = new OpenApiOAuthFlow
                     {
-                        AuthorizationUrl = authorizationUrl,
-                        TokenUrl = tokenUrl
+                        TokenUrl = tokenUrl,
+                        Scopes = new Dictionary<string, string>
+                        {
+                            { scopeName, scopeDescription }
+                        }
                     },
                     Password = new OpenApiOAuthFlow
                     {
-                        AuthorizationUrl = authorizationUrl,
-                        TokenUrl = tokenUrl
-                    }
-                }
-            });
-            c.AddSecurityRequirement(new OpenApiSecurityRequirement
-            {
-                {
-                    new OpenApiSecurityScheme
-                    {
-                        Reference = new OpenApiReference
+                        TokenUrl = tokenUrl,
+                        Scopes = new Dictionary<string, string>
                         {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "Bearer"
+                            { scopeName, scopeDescription }
                         }
-                    },
-                    new string[] { }
+                    }
                 }
             });
         });

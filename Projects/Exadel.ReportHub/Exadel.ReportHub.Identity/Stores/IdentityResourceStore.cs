@@ -33,6 +33,6 @@ public class IdentityResourceStore(IIdentityRepository identityRepository) : IRe
         var apiScopesTask = identityRepository.GetAllAsync<ApiScope>(CancellationToken.None);
 
         await Task.WhenAll(identityResourcesTask, apiResourcesTask, apiScopesTask);
-        return new Resources(await identityResourcesTask, await apiResourcesTask, await apiScopesTask);
+        return new Resources(identityResourcesTask.Result, apiResourcesTask.Result, apiScopesTask.Result);
     }
 }

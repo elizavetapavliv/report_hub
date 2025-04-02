@@ -1,11 +1,8 @@
-﻿using Duende.IdentityModel;
-using Duende.IdentityServer.Models;
+﻿using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Validation;
 using Exadel.ReportHub.Common;
-using Exadel.ReportHub.Data.Models;
 using Exadel.ReportHub.RA.Abstract;
-using System.Security.Claims;
-using static Duende.IdentityModel.OidcConstants;
+using Duende.IdentityModel;
 
 namespace Exadel.ReportHub.Identity;
 
@@ -29,7 +26,7 @@ public class ResourceOwnerPasswordValidator(IUserRepository userRepository) : IR
 
         context.Result = new GrantValidationResult(
             subject: user.Id.ToString(),
-            authenticationMethod: AuthenticationMethods.Password);
+            authenticationMethod: OidcConstants.AuthenticationMethods.Password);
         return;
     }
 }
