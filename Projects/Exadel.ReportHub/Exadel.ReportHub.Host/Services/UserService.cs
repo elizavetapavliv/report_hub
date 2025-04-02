@@ -1,8 +1,10 @@
-﻿using Exadel.ReportHub.Data.Enums;
+﻿using System.Security;
+using Exadel.ReportHub.Data.Enums;
 using Exadel.ReportHub.Handlers.User.Create;
 using Exadel.ReportHub.Handlers.User.Get;
 using Exadel.ReportHub.Handlers.User.GetAllActive;
 using Exadel.ReportHub.Handlers.User.UpdateActivity;
+using Exadel.ReportHub.Handlers.User.UpdatePassword;
 using Exadel.ReportHub.Handlers.User.UpdateRole;
 using Exadel.ReportHub.SDK.DTOs.User;
 using MediatR;
@@ -53,6 +55,14 @@ public class UserService(ISender sender) : BaseService
     {
         var result = await sender.Send(new UpdateUserRoleRequest(id, userRole));
 
+        return FromResult(result);
+    }
+
+    [Authorize]
+    [HttpPatch("password")]
+    public async Task<IActionResult> UpdateUserPassword([FromBody] SecureString password)
+    {
+        var result = await sender.Send(new UpdateUserPasswordRequest(password));
         return FromResult(result);
     }
 }
