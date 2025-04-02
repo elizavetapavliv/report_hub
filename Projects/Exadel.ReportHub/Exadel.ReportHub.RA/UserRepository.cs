@@ -51,11 +51,11 @@ public class UserRepository : BaseRepository<User>, IUserRepository
         await UpdateAsync(id, update, cancellationToken);
     }
 
-    public async Task UpdatePasswordAsync(Guid id, string PasswordHash, string PasswordSalt, CancellationToken cancellationToken)
+    public async Task UpdatePasswordAsync(Guid id, string passwordHash, string passwordSalt, CancellationToken cancellationToken)
     {
         var update = Builders<User>.Update
-            .Set(x => x.PasswordHash, PasswordHash)
-            .Set(x => x.PasswordSalt, PasswordSalt);
+            .Set(x => x.PasswordHash, passwordHash)
+            .Set(x => x.PasswordSalt, passwordSalt);
         await UpdateAsync(id, update, cancellationToken);
     }
 }

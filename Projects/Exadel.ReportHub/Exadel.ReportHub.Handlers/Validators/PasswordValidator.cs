@@ -4,7 +4,7 @@ using FluentValidation;
 
 namespace Exadel.ReportHub.Handlers.Validators;
 
-public class PasswordValidator : AbstractValidator<SecureString>
+public class PasswordValidator : AbstractValidator<string>
 {
     public PasswordValidator()
     {
@@ -15,7 +15,7 @@ public class PasswordValidator : AbstractValidator<SecureString>
     {
         RuleLevelCascadeMode = CascadeMode.Stop;
 
-        RuleFor(x => SecureStringToString(x))
+        RuleFor(x => x)
             .NotEmpty()
             .MinimumLength(Constants.Validation.User.PasswordMinimumLength)
             .WithMessage(Constants.Validation.User.PasswordMinLengthMessage)
@@ -27,22 +27,5 @@ public class PasswordValidator : AbstractValidator<SecureString>
             .WithMessage(Constants.Validation.User.PasswordDigitMessage)
             .Matches("[^a-zA-Z0-9]")
             .WithMessage(Constants.Validation.User.PasswordSpecialCharacterMessage);
-    }
-
-    private string SecureStringToString(SecureString secureString)
-    {
-        IntPtr bstr = IntPtr.Zero;
-        try
-        {
-            bstr = Marshal.SecureStringToBSTR(secureString);
-            return Marshal.PtrToStringBSTR(bstr);
-        }
-        finally
-        {
-            if (bstr != IntPtr.Zero)
-            {
-                Marshal.ZeroFreeBSTR(bstr);
-            }
-        }
     }
 }

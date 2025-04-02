@@ -21,5 +21,5 @@ public interface IUserRepository
 
     Task UpdateRoleAsync(Guid id, UserRole userRole, CancellationToken cancellationToken);
 
-    Task UpdatePasswordAsync(Guid id, string PasswordHash, string PasswordSalt, CancellationToken cancellationToken);
+    Task UpdatePasswordAsync(Guid id, string passwordHash, string passwordSalt, CancellationToken cancellationToken);
 }

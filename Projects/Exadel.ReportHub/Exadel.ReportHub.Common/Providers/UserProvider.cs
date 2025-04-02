@@ -1,10 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Net;
+using Microsoft.AspNetCore.Http;
 
 namespace Exadel.ReportHub.Common.Providers;
 
@@ -14,7 +9,6 @@ public class UserProvider(IHttpContextAccessor httpContextAccessor) : IUserProvi
     {
         var user = httpContextAccessor.HttpContext?.User;
         var userClaim = user?.FindFirst("sub")?.Value;
-
 
         if (string.IsNullOrEmpty(userClaim))
         {
