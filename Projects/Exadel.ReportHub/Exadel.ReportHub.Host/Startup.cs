@@ -54,6 +54,9 @@ public class Startup(IConfiguration configuration)
         services.AddMongo();
         services.AddMediatR();
         services.AddAutoMapper(typeof(Startup));
+
+        services.AddHttpContextAccessor();
+        services.AddScoped<IUserProvider, UserProvider>();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)
