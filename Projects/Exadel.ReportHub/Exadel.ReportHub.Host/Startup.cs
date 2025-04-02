@@ -17,8 +17,42 @@ public class Startup
         services.AddSwaggerGen(c =>
         {
             const string apiVersion = "v1";
+            var applicationUrl = Environment.GetEnvironmentVariable("ASPNETCORE_URLS").Split(';')[0];
+            var authorizationUrl = new Uri($"{applicationUrl}/connect/authorize");
+            var tokenUrl = new Uri($"{applicationUrl}/connect/token");
 
             c.SwaggerDoc(apiVersion, new OpenApiInfo { Title = "ReportHubAPI", Version = apiVersion });
+            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Type = SecuritySchemeType.OAuth2,
+                Flows = new OpenApiOAuthFlows
+                {
+                    ClientCredentials = new OpenApiOAuthFlow
+                    {
+                        AuthorizationUrl = authorizationUrl,
+                        TokenUrl = tokenUrl
+                    },
+                    Password = new OpenApiOAuthFlow
+                    {
+                        AuthorizationUrl = authorizationUrl,
+                        TokenUrl = tokenUrl
+                    }
+                }
+            });
+            c.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    new string[] { }
+                }
+            });
         });
 
         services.AddAuthorization();
@@ -31,7 +65,7 @@ public class Startup
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)
     {
-        //mapper.ConfigurationProvider.AssertConfigurationIsValid();
+        mapper.ConfigurationProvider.AssertConfigurationIsValid();
 
         app.UseSwagger();
         app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Report Hub API"));
