@@ -35,9 +35,6 @@ public class ExceptionFilter(ILogger<ExceptionFilter> logger, IHostEnvironment h
             return new ObjectResult(new ErrorResponse { Errors = new List<string> { exception.Message } });
         }
 
-        return new ObjectResult(new ErrorResponse { Errors = new List<string> { "An unexpected error uccurred" } })
-        {
-            StatusCode = StatusCodes.Status500InternalServerError
-        };
+        return new StatusCodeResult(StatusCodes.Status500InternalServerError);
     }
 }
