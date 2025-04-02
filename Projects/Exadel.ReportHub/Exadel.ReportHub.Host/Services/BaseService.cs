@@ -33,7 +33,7 @@ public abstract class BaseService : ControllerBase
         where TResult : class
     {
         return result.Match(
-            success => new ObjectResult(success) { StatusCode = statusCode },
+            success => StatusCode(statusCode, success),
             errors => GetErrorResult(errors));
     }
 
