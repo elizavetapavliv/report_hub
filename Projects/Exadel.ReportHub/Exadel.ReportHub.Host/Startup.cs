@@ -30,7 +30,7 @@ public class Startup
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)
     {
-        // mapper.ConfigurationProvider.AssertConfigurationIsValid();
+        mapper.ConfigurationProvider.AssertConfigurationIsValid();
 
         app.UseSwagger();
         app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Report Hub API"));

@@ -11,21 +11,21 @@ public abstract class BaseService : ControllerBase
     protected IActionResult FromResult(ErrorOr<Created> result)
     {
         return result.Match(
-            success => Created(),
+            _ => Created(),
             errors => GetErrorResult(errors));
     }
 
     protected IActionResult FromResult(ErrorOr<Updated> result)
     {
         return result.Match(
-            success => NoContent(),
+            _ => NoContent(),
             errors => GetErrorResult(errors));
     }
 
     protected IActionResult FromResult(ErrorOr<Deleted> result)
     {
         return result.Match(
-            success => NoContent(),
+            _ => NoContent(),
             errors => GetErrorResult(errors));
     }
 
