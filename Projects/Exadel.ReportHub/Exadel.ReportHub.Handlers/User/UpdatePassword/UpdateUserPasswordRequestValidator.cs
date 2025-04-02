@@ -1,14 +1,13 @@
 ﻿using System.Security;
-using Exadel.ReportHub.Handlers.Validators;
 using FluentValidation;
 
 namespace Exadel.ReportHub.Handlers.User.UpdatePassword;
 
 public class UpdateUserPasswordRequestValidator : AbstractValidator<UpdateUserPasswordRequest>
 {
-    private readonly PasswordValidator _passwordValidator;
+    private readonly IValidator<string> _passwordValidator;
 
-    public UpdateUserPasswordRequestValidator(PasswordValidator passwordValidator)
+    public UpdateUserPasswordRequestValidator(IValidator<string> passwordValidator)
     {
         _passwordValidator = passwordValidator;
         ConfigureRules();

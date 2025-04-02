@@ -60,7 +60,7 @@ public class UserService(ISender sender) : BaseService
 
     [Authorize]
     [HttpPatch("password")]
-    public async Task<IActionResult> UpdateUserPassword([FromBody] SecureString password)
+    public async Task<IActionResult> UpdateUserPassword([FromBody] string password)
     {
         var result = await sender.Send(new UpdateUserPasswordRequest(password));
         return FromResult(result);
