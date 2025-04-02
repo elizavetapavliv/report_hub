@@ -1,5 +1,5 @@
 ﻿const scriptName = "02_initialize_identity_data";
-const version = NumberInt(1);
+const version = NumberInt(2);
 const reportHubServiceClientSecret = process.env.ReportHubService_ClientSecret
 
 if (db.MigrationHistory.findOne({ ScriptName: scriptName, Version: version })) {

@@ -28,10 +28,11 @@ public class IdentityResourceStore(IIdentityRepository identityRepository) : IRe
 
     public async Task<Resources> GetAllResourcesAsync()
     {
-        var identityResources = await identityRepository.GetAllAsync<IdentityResource>(CancellationToken.None);
-        var apiResources = await identityRepository.GetAllAsync<ApiResource>(CancellationToken.None);
-        var apiScopes = await identityRepository.GetAllAsync<ApiScope>(CancellationToken.None);
+        var identityResourcesTask = identityRepository.GetAllAsync<IdentityResource>(CancellationToken.None);
+        var apiResourcesTask = identityRepository.GetAllAsync<ApiResource>(CancellationToken.None);
+        var apiScopesTask = identityRepository.GetAllAsync<ApiScope>(CancellationToken.None);
 
-        return new Resources(identityResources, apiResources, apiScopes);
+        await Task.WhenAll(identityResourcesTask, apiResourcesTask, apiScopesTask);
+        return new Resources(await identityResourcesTask, await apiResourcesTask, await apiScopesTask);
     }
 }

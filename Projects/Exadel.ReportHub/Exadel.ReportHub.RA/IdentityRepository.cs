@@ -24,9 +24,9 @@ public class IdentityRepository : BaseRepository, IIdentityRepository
         return await GetCollection<ApiResource>().Find(filter).ToListAsync();
     }
 
-    public async Task<Client> GetClientByIdAsync(string ClientId, CancellationToken cancellationToken)
+    public async Task<Client> GetClientByIdAsync(string clientId, CancellationToken cancellationToken)
     {
-        var filter = Builders<Client>.Filter.Eq(x => x.ClientId, ClientId);
+        var filter = Builders<Client>.Filter.Eq(x => x.ClientId, clientId);
         return await GetCollection<Client>().Find(filter).SingleOrDefaultAsync();
     }
 }

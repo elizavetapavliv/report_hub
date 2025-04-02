@@ -5,6 +5,7 @@ using Exadel.ReportHub.Common;
 using Exadel.ReportHub.Data.Models;
 using Exadel.ReportHub.RA.Abstract;
 using System.Security.Claims;
+using static Duende.IdentityModel.OidcConstants;
 
 namespace Exadel.ReportHub.Identity;
 
@@ -28,19 +29,7 @@ public class ResourceOwnerPasswordValidator(IUserRepository userRepository) : IR
 
         context.Result = new GrantValidationResult(
             subject: user.Id.ToString(),
-            authenticationMethod: "pwd",
-            claims: GetUserClaims(user));
+            authenticationMethod: AuthenticationMethods.Password);
         return;
-    }
-
-    public static IEnumerable<Claim> GetUserClaims(User user)
-    {
-        return new List<Claim>
-        {
-            new Claim(JwtClaimTypes.Id, user.Id.ToString()),
-            new Claim(JwtClaimTypes.Name, user.FullName),
-            new Claim(JwtClaimTypes.Email, user.Email),
-            new Claim(JwtClaimTypes.Role, user.Role.ToString())
-        };
     }
 }
