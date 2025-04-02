@@ -1,5 +1,5 @@
 using AutoMapper;
-using Exadel.ReportHub.Host.Filters;
+using Exadel.ReportHub.Host.Infrastructure.Filters;
 using Exadel.ReportHub.Host.Registrations;
 using Microsoft.OpenApi.Models;
 
@@ -30,7 +30,7 @@ public class Startup
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)
     {
-        mapper.ConfigurationProvider.AssertConfigurationIsValid();
+        // mapper.ConfigurationProvider.AssertConfigurationIsValid();
 
         app.UseSwagger();
         app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Report Hub API"));

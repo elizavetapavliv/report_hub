@@ -1,5 +1,5 @@
 ﻿using ErrorOr;
-using MediatR;
+using Exadel.ReportHub.Host.Infrastructure.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Exadel.ReportHub.Host.Services;
@@ -41,22 +41,44 @@ public abstract class BaseService : ControllerBase
     {
         if (errors.Count == 0)
         {
-            return Problem();
+            return new ObjectResult(new ErrorResponse())
+            {
+                StatusCode = StatusCodes.Status500InternalServerError
+            };
         }
 
-        return GetErrorResult(errors[0]);
-    }
-
-    private IActionResult GetErrorResult(Error error)
-    {
-        var statusCode = error.Type switch
+        var errorResponse = new ErrorResponse
         {
-            ErrorType.Validation => StatusCodes.Status400BadRequest,
-            ErrorType.Forbidden => StatusCodes.Status403Forbidden,
-            ErrorType.NotFound => StatusCodes.Status404NotFound,
-            _ => StatusCodes.Status500InternalServerError
+            Errors = errors.Select(e => e.Description).ToList()
         };
 
-        return Problem(statusCode: statusCode, title: error.Description);
+        if (errors.Any(e => e.Type == ErrorType.Validation))
+        {
+            return new ObjectResult(errorResponse)
+            {
+                StatusCode = StatusCodes.Status400BadRequest
+            };
+        }
+
+        if (errors.Any(e => e.Type == ErrorType.Forbidden))
+        {
+            return new ObjectResult(errorResponse)
+            {
+                StatusCode = StatusCodes.Status403Forbidden
+            };
+        }
+
+        if (errors.Any(e => e.Type == ErrorType.NotFound))
+        {
+            return new ObjectResult(errorResponse)
+            {
+                StatusCode = StatusCodes.Status404NotFound
+            };
+        }
+
+        return new ObjectResult(errorResponse)
+        {
+            StatusCode = StatusCodes.Status500InternalServerError
+        };
     }
 }
