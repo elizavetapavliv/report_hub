@@ -11,6 +11,6 @@ public static class IdentityServerRegistrations
             .AddClientStore<IdentityClientStore>()
             .AddResourceStore<IdentityResourceStore>()
             .AddResourceOwnerValidator<ResourceOwnerPasswordValidator>()
-            .AddDeveloperSigningCredential();
+            .AddDeveloperSigningCredential(false);
     }
 }
