@@ -1,5 +1,5 @@
 ﻿using System.Net;
-using Exadel.ReportHub.Host.Infrastructure.Exceptions;
+using Exadel.ReportHub.Common;
 using FluentValidation;
 using MediatR;
 

@@ -1,4 +1,5 @@
 using AutoMapper;
+using Exadel.ReportHub.Common.Providers;
 using Exadel.ReportHub.Host.Filters;
 using Exadel.ReportHub.Host.Registrations;
 using Microsoft.OpenApi.Models;
@@ -26,6 +27,9 @@ public class Startup
         services.AddMongo();
         services.AddMediatR();
         services.AddAutoMapper(typeof(Startup));
+
+        services.AddHttpContextAccessor();
+        services.AddScoped<IUserProvider, UserProvider>();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)
