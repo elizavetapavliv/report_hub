@@ -8,7 +8,7 @@ public class HttpStatusCodeException : Exception
 
     public IList<string> Errors { get; }
 
-    public HttpStatusCodeException(IList<string> errors, HttpStatusCode statusCode)
+    public HttpStatusCodeException(HttpStatusCode statusCode, IList<string> errors)
         : base(string.Join(',', errors))
     {
         Errors = errors;

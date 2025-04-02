@@ -24,9 +24,10 @@ public class ExceptionFilter(ILogger<ExceptionFilter> logger, IHostEnvironment h
 
     private IActionResult CreateStatusCodeErrorResult(HttpStatusCodeException exception)
     {
+        int statusCode = Convert.ToInt32(exception.StatusCode);
         return new ObjectResult(new ErrorResponce { Errors = exception.Errors })
         {
-            StatusCode = (int)exception.StatusCode
+            StatusCode = statusCode
         };
     }
 
