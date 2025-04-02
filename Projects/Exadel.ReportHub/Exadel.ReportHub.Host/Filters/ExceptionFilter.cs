@@ -24,7 +24,10 @@ public class ExceptionFilter(ILogger<ExceptionFilter> logger, IHostEnvironment h
 
     private IActionResult CreateStatusCodeErrorResult(HttpStatusCodeException exception)
     {
-        return new BadRequestObjectResult(new ErrorResponce { Errors = exception.Errors });
+        return new ObjectResult(new ErrorResponce { Errors = exception.Errors })
+        {
+            StatusCode = (int)exception.StatusCode
+        };
     }
 
     private IActionResult CreateErrorResult(Exception exception, IHostEnvironment hostEnvironment)
