@@ -7,7 +7,7 @@ using MediatR;
 
 namespace Exadel.ReportHub.Handlers.User.UpdatePassword;
 
-public record UpdateUserPasswordRequest(SecureString Password) : IRequest<ErrorOr<Updated>>;
+public record UpdateUserPasswordRequest(string Password) : IRequest<ErrorOr<Updated>>;
 
 public class UpdateUserPasswordHandler(IUserRepository userRepository, IUserProvider userProvider) : IRequestHandler<UpdateUserPasswordRequest, ErrorOr<Updated>>
 {

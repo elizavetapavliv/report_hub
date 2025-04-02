@@ -1,4 +1,4 @@
-﻿using Exadel.ReportHub.Handlers.Validators;
+﻿using System.Security;
 using Exadel.ReportHub.RA.Abstract;
 using FluentValidation;
 
@@ -7,12 +7,12 @@ namespace Exadel.ReportHub.Handlers.User.Create;
 public class CreateUserRequestValidator : AbstractValidator<CreateUserRequest>
 {
     private readonly IUserRepository _userRepository;
-    private readonly PasswordValidator _passwordValidator;
+    private readonly IValidator<string> _validator;
 
-    public CreateUserRequestValidator(IUserRepository userRepository, PasswordValidator passwordValidator)
+    public CreateUserRequestValidator(IUserRepository userRepository, IValidator<string> validator)
     {
         _userRepository = userRepository;
-        _passwordValidator = passwordValidator;
+        _validator = validator;
         ConfigureRules();
     }
 
@@ -34,7 +34,7 @@ public class CreateUserRequestValidator : AbstractValidator<CreateUserRequest>
                     .NotEmpty();
 
                 child.RuleFor(x => x.Password)
-                    .SetValidator(_passwordValidator);
+                    .SetValidator(_validator);
             });
     }
 
