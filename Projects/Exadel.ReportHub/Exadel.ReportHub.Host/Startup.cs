@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
 using AutoMapper;
 using Exadel.ReportHub.Common.Providers;
-using Exadel.ReportHub.Host.Filters;
+using Exadel.ReportHub.Host.Infrastructure.Filters;
 using Exadel.ReportHub.Host.Registrations;
 using Exadel.ReportHub.RA;
 using Microsoft.OpenApi.Models;
