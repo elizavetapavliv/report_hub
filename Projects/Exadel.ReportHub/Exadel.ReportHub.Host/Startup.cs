@@ -1,6 +1,8 @@
 using AutoMapper;
 using Exadel.ReportHub.Host.Infrastructure.Filters;
 using Exadel.ReportHub.Host.Registrations;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 namespace Exadel.ReportHub.Host;
@@ -9,6 +11,9 @@ public class Startup(IConfiguration configuration)
 {
     public void ConfigureServices(IServiceCollection services)
     {
+        const string scopeName = "report_hub_api";
+        const string scopeDescription = "Full access to Report Hub API";
+
         services.AddControllers(options =>
         {
             options.Filters.Add<ExceptionFilter>();
@@ -17,8 +22,6 @@ public class Startup(IConfiguration configuration)
         services.AddSwaggerGen(c =>
         {
             const string apiVersion = "v1";
-            const string scopeName = "report_hub_api";
-            const string scopeDescription = "Full access to Report Hub API";
 
             var tokenUrl = new Uri($"{configuration["Authority"]}/connect/token");
 
@@ -46,7 +49,32 @@ public class Startup(IConfiguration configuration)
                     }
                 }
             });
+            c.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "oauth2"
+                        }
+                    },
+                    new[] { scopeName }
+                }
+            });
         });
+
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+            .AddJwtBearer(options =>
+            {
+                options.Authority = configuration["Authority"];
+                options.Audience = scopeName;
+            });
 
         services.AddAuthorization();
 
