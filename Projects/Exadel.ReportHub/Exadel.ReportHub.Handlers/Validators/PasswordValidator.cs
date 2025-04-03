@@ -17,6 +17,7 @@ public class PasswordValidator : AbstractValidator<string>
 
         RuleFor(x => x)
             .NotEmpty()
+            .WithMessage(Constants.Validation.User.PasswordEmptyMessage)
             .MinimumLength(Constants.Validation.User.PasswordMinimumLength)
             .WithMessage(Constants.Validation.User.PasswordMinLengthMessage)
             .Matches("[A-Z]")
