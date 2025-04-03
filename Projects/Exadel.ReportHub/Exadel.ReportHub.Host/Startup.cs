@@ -1,10 +1,13 @@
+using System.Diagnostics.CodeAnalysis;
 using AutoMapper;
+using Exadel.ReportHub.Common.Providers;
 using Exadel.ReportHub.Host.Infrastructure.Filters;
 using Exadel.ReportHub.Host.Registrations;
 using Microsoft.OpenApi.Models;
 
 namespace Exadel.ReportHub.Host;
 
+[ExcludeFromCodeCoverage]
 public class Startup(IConfiguration configuration)
 {
     public void ConfigureServices(IServiceCollection services)
