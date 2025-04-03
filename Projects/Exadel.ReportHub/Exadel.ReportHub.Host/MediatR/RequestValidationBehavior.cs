@@ -29,7 +29,7 @@ public class RequestValidationBehavior<TRequest, TResponse> : IPipelineBehavior<
 
         if (failures.Any())
         {
-            throw new HttpStatusCodeException((int)HttpStatusCode.BadRequest, failures);
+            throw new HttpStatusCodeException(StatusCodes.Status400BadRequest, failures);
         }
 
         return await next();
