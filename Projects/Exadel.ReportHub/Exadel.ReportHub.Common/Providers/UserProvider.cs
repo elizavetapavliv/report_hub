@@ -14,7 +14,7 @@ public class UserProvider(IHttpContextAccessor httpContextAccessor) : IUserProvi
 
         if (string.IsNullOrEmpty(userClaim))
         {
-            throw new HttpStatusCodeException(new List<string> { "User ID not found"}, HttpStatusCode.Unauthorized);
+            throw new HttpStatusCodeException(StatusCodes.Status401Unauthorized, new List<string> {"User ID not found"});
         }
 
         return Guid.Parse(userClaim);
