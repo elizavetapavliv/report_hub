@@ -20,7 +20,7 @@ public class Startup(IConfiguration configuration)
             const string scopeName = "report_hub_api";
             const string scopeDescription = "Full access to Report Hub API";
 
-            var tokenUrl = new Uri(configuration["Authority"]);
+            var tokenUrl = new Uri($"{configuration["Authority"]}/connect/token");
 
             c.SwaggerDoc(apiVersion, new OpenApiInfo { Title = "ReportHubAPI", Version = apiVersion });
             c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme

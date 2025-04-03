@@ -11,8 +11,8 @@ jobs:
 
     env:
        Mongo_Scripts_Path: Projects/Exadel.ReportHub/Exadel.ReportHub.Host/Deployment/Mongo
-       Db_Connection_Uri: mongodb+srv://…@cluster0.69vyv.mongodb.net
-       Db_Name: ReportHub
+       Db_Connection_Uri: ${{ vars.DB_CONNECTION_URI }}
+       Db_Name: ${{ vars.DB_NAME }}
        Db_User_Name: ${{ secrets.DB_USER_NAME }}
        Db_User_Password: ${{ secrets.DB_USER_PASSWORD }}
        Render_Deploy_Hook: ${{ secrets.RENDER_DEPLOY_HOOK }}
