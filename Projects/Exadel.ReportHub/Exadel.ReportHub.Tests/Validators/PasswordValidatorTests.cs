@@ -8,18 +8,18 @@ namespace Exadel.ReportHub.Tests;
 [TestFixture]
 public class PasswordValidatorTests
 {
-    private IValidator<string> _validator;
+    private IValidator<string> _passwordValidator;
 
     [SetUp]
     public void Setup()
     {
-        _validator = new PasswordValidator();
+        _passwordValidator = new PasswordValidator();
     }
 
     [Test]
     public async Task ValidateAsync_PasswordIsEmpty_ErrorReturned()
     {
-        var result = await _validator.TestValidateAsync(string.Empty);
+        var result = await _passwordValidator.TestValidateAsync(new ValidationContext<string>(string.Empty));
         result.ShouldHaveValidationErrorFor(password => password)
             .WithErrorMessage("Password must not be empty.");
         Assert.That(result.Errors.Count, Is.EqualTo(1));
@@ -33,7 +33,7 @@ public class PasswordValidatorTests
     [TestCase("Test12345", Constants.Validation.User.PasswordSpecialCharacterMessage)]
     public async Task ValidateAsync_PasswordIsInvalid_ErrorReturned(string password, string expectedMessage)
     {
-        var result = await _validator.TestValidateAsync(password);
+        var result = await _passwordValidator.TestValidateAsync(new ValidationContext<string>(password));
         result.ShouldHaveValidationErrorFor(password => password)
             .WithErrorMessage(expectedMessage);
         Assert.That(result.Errors.Count, Is.EqualTo(1));
@@ -43,8 +43,8 @@ public class PasswordValidatorTests
     public async Task ValidateAsync_PasswordIsValid_NoErrorReturned()
     {
         var password = "Test1234!";
-        var result = await _validator.TestValidateAsync(password);
+        var result = await _passwordValidator.TestValidateAsync(new ValidationContext<string>(password));
         result.ShouldNotHaveAnyValidationErrors();
-        Assert.That(result.Errors.Count, Is.EqualTo(0));
+        Assert.That(result.Errors, Is.Empty);
     }
 }

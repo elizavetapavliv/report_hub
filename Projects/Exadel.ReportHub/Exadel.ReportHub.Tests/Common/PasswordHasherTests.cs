@@ -5,27 +5,25 @@ namespace Exadel.ReportHub.Tests.Common;
 [TestFixture]
 public class PasswordHasherTests
 {
+    private const string Password = "TestPassword123!";
+    private const string PasswordHash = "U97MW3kDru47iKqVXDCy8+bamGNa8jCoI28amjFozwzQMItKxzilV43JhvYwRoxMJtKNc/8jHD3iuDuj7xFVnA==";
+    private const string PasswordSalt = "aGVsbG9Xb3JsZA==";
+
     [Test]
     public void CreatePasswordHash_ShouldGenerateUniqueHashAndSaltForEachCall()
     {
-        var password = "TestPassword123!";
-        var expectedHash = "I1cb7xDEm6ZofJLsd9PXqCGOdrA/xO1SI+tm1T6yjCEKzO/iNLMdAOvcRLdMcZGWTTM0MVt7tFysJHS7t0kaXA==";
-        var expectedSalt = "aGVsbG9Xb3JsZA==";
-        var (hashedPassword, salt) = PasswordHasher.CreatePasswordHash(password);
+        var (hashedPassword, salt) = PasswordHasher.CreatePasswordHash(Password);
         Assert.That(hashedPassword, Is.Not.Null);
-        Assert.That(hashedPassword, Is.Not.EqualTo(expectedHash));
+        Assert.That(hashedPassword, Is.Not.EqualTo(PasswordHash));
         Assert.That(salt, Is.Not.Null);
-        Assert.That(salt, Is.Not.EqualTo(expectedSalt));
+        Assert.That(salt, Is.Not.EqualTo(PasswordSalt));
     }
 
     [Test]
     public void GetPasswordHash_ShouldReturnHashedValue()
     {
-        var password = "TestPassword123!";
-        var expectedSalt = "aGVsbG9Xb3JsZA==";
-        var expectedHashedPassword = "U97MW3kDru47iKqVXDCy8+bamGNa8jCoI28amjFozwzQMItKxzilV43JhvYwRoxMJtKNc/8jHD3iuDuj7xFVnA==";
-        var hashedValue = PasswordHasher.GetPasswordHash(password, expectedSalt);
+        var hashedValue = PasswordHasher.GetPasswordHash(Password, PasswordSalt);
         Assert.That(hashedValue, Is.Not.Null);
-        Assert.That(hashedValue, Is.EqualTo(expectedHashedPassword));
+        Assert.That(hashedValue, Is.EqualTo(PasswordHash));
     }
 }

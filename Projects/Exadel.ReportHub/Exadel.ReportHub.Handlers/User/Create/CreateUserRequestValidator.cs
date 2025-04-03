@@ -7,12 +7,12 @@ namespace Exadel.ReportHub.Handlers.User.Create;
 public class CreateUserRequestValidator : AbstractValidator<CreateUserRequest>
 {
     private readonly IUserRepository _userRepository;
-    private readonly IValidator<string> _validator;
+    private readonly IValidator<string> _passwordValidator;
 
-    public CreateUserRequestValidator(IUserRepository userRepository, IValidator<string> validator)
+    public CreateUserRequestValidator(IUserRepository userRepository, IValidator<string> passwordValidator)
     {
         _userRepository = userRepository;
-        _validator = validator;
+        _passwordValidator = passwordValidator;
         ConfigureRules();
     }
 
@@ -34,7 +34,7 @@ public class CreateUserRequestValidator : AbstractValidator<CreateUserRequest>
                     .NotEmpty();
 
                 child.RuleFor(x => x.Password)
-                    .SetValidator(_validator);
+                    .SetValidator(_passwordValidator);
             });
     }
 
