@@ -7,7 +7,7 @@ using Moq;
 namespace Exadel.ReportHub.Tests.User.GetActive;
 
 [TestFixture]
-public class GetActiveUsersActivityHandlerTests : BaseTestFixture
+public class GetActiveUsersHandlerTests : BaseTestFixture
 {
     private Mock<IUserRepository> _userRepositoryMock;
     private GetActiveUsersHandler _handler;
