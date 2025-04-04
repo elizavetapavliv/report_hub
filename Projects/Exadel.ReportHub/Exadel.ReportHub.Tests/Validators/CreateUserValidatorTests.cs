@@ -4,7 +4,6 @@ using Exadel.ReportHub.Handlers.Validators;
 using Exadel.ReportHub.RA.Abstract;
 using Exadel.ReportHub.SDK.DTOs.User;
 using FluentValidation;
-using FluentValidation.Results;
 using FluentValidation.TestHelper;
 using Moq;
 
@@ -13,7 +12,6 @@ namespace Exadel.ReportHub.Tests.Validators;
 [TestFixture]
 public class CreateUserValidatorTests
 {
-    private Mock<IValidator<string>> _passwordValidatorMock;
     private CreateUserRequestValidator _validator;
     private Mock<IUserRepository> _userRepositoryMock;
 
@@ -21,8 +19,11 @@ public class CreateUserValidatorTests
     public void Setup()
     {
         _userRepositoryMock = new Mock<IUserRepository>();
-        _passwordValidatorMock = new Mock<IValidator<string>>();
-        _validator = new CreateUserRequestValidator(_userRepositoryMock.Object, _passwordValidatorMock.Object);
+        var passwordValidator = new InlineValidator<string>();
+        passwordValidator.RuleFor(x => x)
+            .Matches("[^a-zA-Z0-9]")
+            .WithMessage(Constants.Validation.User.PasswordSpecialCharacterMessage);
+        _validator = new CreateUserRequestValidator(_userRepositoryMock.Object, passwordValidator);
     }
 
     [Test]
@@ -101,10 +102,6 @@ public class CreateUserValidatorTests
     [Test]
     public async Task ValidateAsync_PasswordIsInvalid_ErrorReturned()
     {
-        _passwordValidatorMock
-                .Setup(v => v.ValidateAsync(It.IsAny<ValidationContext<string>>(), CancellationToken.None))
-                .ReturnsAsync(new ValidationResult());
-
         var createUserRequest = new CreateUserRequest(new CreateUserDTO { FullName = "Test", Email = "testemail@gmail.com", Password = "Password1" });
         var result = await _validator.TestValidateAsync(createUserRequest);
         result.ShouldHaveAnyValidationError()
