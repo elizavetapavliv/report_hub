@@ -18,7 +18,6 @@ public class PasswordValidator : AbstractValidator<string>
 
         RuleFor(x => x)
             .NotEmpty()
-            .WithName(nameof(CreateUserDTO.Password))
             .MinimumLength(Constants.Validation.User.PasswordMinimumLength)
             .Matches("[A-Z]")
             .WithMessage(Constants.Validation.User.PasswordUppercaseMessage)
@@ -27,6 +26,7 @@ public class PasswordValidator : AbstractValidator<string>
             .Matches("[0-9]")
             .WithMessage(Constants.Validation.User.PasswordDigitMessage)
             .Matches("[^a-zA-Z0-9]")
-            .WithMessage(Constants.Validation.User.PasswordSpecialCharacterMessage);
+            .WithMessage(Constants.Validation.User.PasswordSpecialCharacterMessage)
+            .WithName(nameof(CreateUserDTO.Password));
     }
 }
