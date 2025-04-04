@@ -28,19 +28,19 @@ public class UpdateUserRoleHandlerTests
         // Arrange
         var userId = Guid.NewGuid();
         _userRepositoryMock
-            .Setup(x => x.ExistsAsync(userId, It.IsAny<CancellationToken>()))
+            .Setup(x => x.ExistsAsync(userId, CancellationToken.None))
             .ReturnsAsync(true);
 
         // Act
         var request = new UpdateUserRoleRequest(userId, role);
-        var result = await _handler.Handle(request, It.IsAny<CancellationToken>());
+        var result = await _handler.Handle(request, CancellationToken.None);
 
         // Assert
         Assert.That(result.IsError, Is.False);
         Assert.That(result.Value, Is.EqualTo(Result.Updated));
 
         _userRepositoryMock.Verify(
-            x => x.UpdateRoleAsync(userId, role, It.IsAny<CancellationToken>()),
+            x => x.UpdateRoleAsync(userId, role, CancellationToken.None),
             Times.Once);
     }
 
@@ -50,12 +50,12 @@ public class UpdateUserRoleHandlerTests
         // Arrange
         var userId = Guid.NewGuid();
         _userRepositoryMock
-            .Setup(x => x.ExistsAsync(userId, It.IsAny<CancellationToken>()))
+            .Setup(x => x.ExistsAsync(userId, CancellationToken.None))
             .ReturnsAsync(false);
 
         // Act
         var request = new UpdateUserRoleRequest(userId, It.IsAny<UserRole>());
-        var result = await _handler.Handle(request, It.IsAny<CancellationToken>());
+        var result = await _handler.Handle(request, CancellationToken.None);
 
         // Assert
         Assert.That(result.Errors, Has.Count.EqualTo(1), "Should contains the only error");
