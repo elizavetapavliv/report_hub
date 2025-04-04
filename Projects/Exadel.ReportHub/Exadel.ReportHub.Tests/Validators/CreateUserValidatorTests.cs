@@ -1,0 +1,114 @@
+﻿using Exadel.ReportHub.Handlers;
+using Exadel.ReportHub.Handlers.User.Create;
+using Exadel.ReportHub.Handlers.Validators;
+using Exadel.ReportHub.RA.Abstract;
+using Exadel.ReportHub.SDK.DTOs.User;
+using FluentValidation;
+using FluentValidation.Results;
+using FluentValidation.TestHelper;
+using Moq;
+
+namespace Exadel.ReportHub.Tests.Validators;
+
+[TestFixture]
+public class CreateUserValidatorTests
+{
+    private Mock<IValidator<string>> _passwordValidatorMock;
+    private CreateUserRequestValidator _validator;
+    private Mock<IUserRepository> _userRepositoryMock;
+
+    [SetUp]
+    public void Setup()
+    {
+        _userRepositoryMock = new Mock<IUserRepository>();
+        _passwordValidatorMock = new Mock<IValidator<string>>();
+        _validator = new CreateUserRequestValidator(_userRepositoryMock.Object, _passwordValidatorMock.Object);
+    }
+
+    [Test]
+    public async Task ValidateAsync_FullNameIsEmpty_ErrorReturned()
+    {
+        var createUserRequest = new CreateUserRequest(new CreateUserDTO { FullName = string.Empty, Email = "test@gmail.com", Password = "Testpassword123!" });
+        var result = await _validator.TestValidateAsync(createUserRequest);
+        result.ShouldHaveValidationErrorFor(x => x.CreateUserDto.FullName)
+            .WithErrorMessage("'Full Name' must not be empty.");
+        Assert.That(result.Errors.Count, Is.EqualTo(1));
+    }
+
+    [Test]
+    public async Task ValidateAsync_FullNameIsNull_ErrorReturned()
+    {
+        var createUserRequest = new CreateUserRequest(new CreateUserDTO { FullName = null, Email = "test@gmail.com", Password = "Testpassword123!" });
+        var result = await _validator.TestValidateAsync(createUserRequest);
+        result.ShouldHaveValidationErrorFor(x => x.CreateUserDto.FullName)
+            .WithErrorMessage("'Full Name' must not be empty.");
+        Assert.That(result.Errors.Count, Is.EqualTo(1));
+    }
+
+    [Test]
+    public async Task ValidateAsync_FullNameIsNotEmpty_NoErrorReturned()
+    {
+        var createUserRequest = new CreateUserRequest(new CreateUserDTO { FullName = "Test", Email = "test@gmail.com", Password = "Testpassword123!" });
+        var result = await _validator.TestValidateAsync(createUserRequest);
+        result.ShouldNotHaveAnyValidationErrors();
+        Assert.That(result.Errors, Is.Empty);
+    }
+
+    [Test]
+    public async Task ValidateAsync_EmailIsEmpty_ErrorReturned()
+    {
+        var createUserRequest = new CreateUserRequest(new CreateUserDTO { FullName = "Test User", Email = string.Empty, Password = "Testpassword123!" });
+        var result = await _validator.TestValidateAsync(createUserRequest);
+        result.ShouldHaveValidationErrorFor(x => x.CreateUserDto.Email)
+            .WithErrorMessage("'Email' must not be empty.");
+        Assert.That(result.Errors.Count, Is.EqualTo(1));
+    }
+
+    [Test]
+    public async Task ValidateAsync_EmailIsNull_ErrorReturned()
+    {
+        var createUserRequest = new CreateUserRequest(new CreateUserDTO { FullName = "Test User", Email = null, Password = "Testpassword123!" });
+        var result = await _validator.TestValidateAsync(createUserRequest);
+        result.ShouldHaveValidationErrorFor(x => x.CreateUserDto.Email)
+            .WithErrorMessage("'Email' must not be empty.");
+        Assert.That(result.Errors.Count, Is.EqualTo(1));
+    }
+
+    [Test]
+    public async Task ValidateAsync_EmailIsInvalid_ErrorReturned()
+    {
+        var createUserRequest = new CreateUserRequest(new CreateUserDTO { FullName = "Test User", Email = "invalid-email", Password = "Testpassword123!" });
+        var result = await _validator.TestValidateAsync(createUserRequest);
+        result.ShouldHaveValidationErrorFor(x => x.CreateUserDto.Email)
+            .WithErrorMessage(Constants.Validation.User.EmailInvalidMessage);
+        Assert.That(result.Errors.Count, Is.EqualTo(1));
+    }
+
+    [Test]
+    public async Task ValidateAsync_EmailIsTaken_ErrorReturned()
+    {
+        _userRepositoryMock.Setup(repo => repo.EmailExistsAsync("demo.user3@gmail.com", CancellationToken.None))
+            .ReturnsAsync(true);
+
+        var createUserRequest = new CreateUserRequest(new CreateUserDTO { FullName = "Test User", Email = "demo.user3@gmail.com", Password = "Testpassword123!" });
+
+        var result = await _validator.TestValidateAsync(createUserRequest);
+        result.ShouldHaveValidationErrorFor(x => x.CreateUserDto.Email)
+            .WithErrorMessage(Constants.Validation.User.EmailTakenMessage);
+        Assert.That(result.Errors.Count, Is.EqualTo(1));
+    }
+
+    [Test]
+    public async Task ValidateAsync_PasswordIsInvalid_ErrorReturned()
+    {
+        _passwordValidatorMock
+                .Setup(v => v.ValidateAsync(It.IsAny<ValidationContext<string>>(), CancellationToken.None))
+                .ReturnsAsync(new ValidationResult());
+
+        var createUserRequest = new CreateUserRequest(new CreateUserDTO { FullName = "Test", Email = "testemail@gmail.com", Password = "Password1" });
+        var result = await _validator.TestValidateAsync(createUserRequest);
+        result.ShouldHaveAnyValidationError()
+            .WithErrorMessage(Constants.Validation.User.PasswordSpecialCharacterMessage);
+        Assert.That(result.Errors.Count, Is.EqualTo(1));
+    }
+}
