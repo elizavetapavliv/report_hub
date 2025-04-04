@@ -1,5 +1,4 @@
-﻿using System.Security;
-using ErrorOr;
+﻿using ErrorOr;
 using Exadel.ReportHub.Common;
 using Exadel.ReportHub.Common.Providers;
 using Exadel.ReportHub.RA.Abstract;
@@ -15,7 +14,6 @@ public class UpdateUserPasswordHandler(IUserRepository userRepository, IUserProv
     {
         (string passwordHash, string passwordSalt) = PasswordHasher.CreatePasswordHash(request.Password);
         var userId = userProvider.GetUserId();
-
         await userRepository.UpdatePasswordAsync(userId, passwordHash, passwordSalt, cancellationToken);
         return Result.Updated;
     }
