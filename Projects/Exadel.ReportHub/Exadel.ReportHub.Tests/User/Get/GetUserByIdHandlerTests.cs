@@ -1,4 +1,5 @@
 ﻿using AutoFixture;
+using ErrorOr;
 using Exadel.ReportHub.Handlers.User.Get;
 using Exadel.ReportHub.RA.Abstract;
 using Exadel.ReportHub.SDK.DTOs.User;
@@ -57,6 +58,7 @@ public class GetUserByIdHandlerTests : BaseTestFixture
 
         // Assert
         Assert.That(result.IsError, Is.True, "Should contains user not found Error");
+        Assert.That(result.FirstError.Type, Is.EqualTo(ErrorType.NotFound));
 
         _userRepositoryMock.Verify(
             repo => repo.GetByIdAsync(user.Id, CancellationToken.None),

@@ -4,7 +4,7 @@ namespace Exadel.ReportHub.Data.Models;
 
 public class User : IDocument
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid Id { get; set; }
 
     public string Email { get; set; }
 

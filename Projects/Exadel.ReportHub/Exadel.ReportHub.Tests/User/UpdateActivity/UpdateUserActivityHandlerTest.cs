@@ -8,7 +8,7 @@ using Moq;
 namespace Exadel.ReportHub.Tests.User.UpdateActivity;
 
 [TestFixture]
-public class UpdateUserActivityHandlerTest : BaseTestFixture
+public class UpdateUserActivityHandlerTest
 {
     private Mock<IUserRepository> _userRepositoryMock;
     private UpdateUserActivityHandler _handler;
@@ -20,17 +20,18 @@ public class UpdateUserActivityHandlerTest : BaseTestFixture
         _handler = new UpdateUserActivityHandler(_userRepositoryMock.Object);
     }
 
-    [Test]
-    public async Task UpdateUserActivity_WhenUserExists_ReturnsUpdated()
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task UpdateUserActivity_WhenUserExists_ReturnsUpdated(bool isActive)
     {
         // Arrange
-        var user = Fixture.Create<Data.Models.User>();
+        var userId = Guid.NewGuid();
         _userRepositoryMock
-            .Setup(x => x.ExistsAsync(user.Id, CancellationToken.None))
+            .Setup(x => x.ExistsAsync(userId, CancellationToken.None))
             .ReturnsAsync(true);
 
         // Act
-        var request = new UpdateUserActivityRequest(user.Id, true);
+        var request = new UpdateUserActivityRequest(userId, isActive);
         var result = await _handler.Handle(request, CancellationToken.None);
 
         // Assert
@@ -38,7 +39,7 @@ public class UpdateUserActivityHandlerTest : BaseTestFixture
         Assert.That(result.Value, Is.EqualTo(Result.Updated));
 
         _userRepositoryMock.Verify(
-            x => x.UpdateActivityAsync(user.Id, true, CancellationToken.None),
+            x => x.UpdateActivityAsync(userId, isActive, CancellationToken.None),
             Times.Once);
     }
 
@@ -46,20 +47,21 @@ public class UpdateUserActivityHandlerTest : BaseTestFixture
     public async Task UpdateUserActivity_WhenUserNotExists_ReturnsNotFound()
     {
         // Arrange
-        var user = Fixture.Create<Data.Models.User>();
+        var userId = Guid.NewGuid();
         _userRepositoryMock
-            .Setup(x => x.ExistsAsync(user.Id, CancellationToken.None))
+            .Setup(x => x.ExistsAsync(userId, CancellationToken.None))
             .ReturnsAsync(false);
 
         // Act
-        var request = new UpdateUserActivityRequest(user.Id, true);
+        var request = new UpdateUserActivityRequest(userId, true);
         var result = await _handler.Handle(request, CancellationToken.None);
 
         // Assert
         Assert.That(result.IsError, Is.True, "Should contains user not found Error");
+        Assert.That(result.FirstError.Type, Is.EqualTo(ErrorType.NotFound));
 
         _userRepositoryMock.Verify(
-            x => x.UpdateActivityAsync(user.Id, true, CancellationToken.None),
+            x => x.UpdateActivityAsync(userId, true, CancellationToken.None),
             Times.Never);
     }
 }

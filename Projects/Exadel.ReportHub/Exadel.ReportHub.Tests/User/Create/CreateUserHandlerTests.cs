@@ -42,7 +42,9 @@ public class CreateUserHandlerTests : BaseTestFixture
             mock => mock.AddAsync(
                 It.Is<Data.Models.User>(
                     u => u.Email == createUserDto.Email &&
-                    u.FullName == createUserDto.FullName),
+                    u.FullName == createUserDto.FullName &&
+                    u.PasswordHash != string.Empty &&
+                    u.PasswordSalt != string.Empty),
                 CancellationToken.None),
             Times.Once);
     }

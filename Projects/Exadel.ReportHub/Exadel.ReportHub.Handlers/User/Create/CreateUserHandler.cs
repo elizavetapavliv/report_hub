@@ -16,6 +16,7 @@ public class CreateUserHandler(IUserRepository userRepository, IMapper mapper) :
         var (passwordHash, passwordSalt) = PasswordHasher.CreatePasswordHash(request.CreateUserDto.Password);
 
         var user = mapper.Map<Data.Models.User>(request.CreateUserDto);
+        user.Id = Guid.NewGuid();
         user.PasswordSalt = passwordSalt;
         user.PasswordHash = passwordHash;
 

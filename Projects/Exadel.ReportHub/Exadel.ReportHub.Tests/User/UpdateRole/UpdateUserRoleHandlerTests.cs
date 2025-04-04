@@ -1,5 +1,6 @@
 ﻿using AutoFixture;
 using ErrorOr;
+using Exadel.ReportHub.Data.Enums;
 using Exadel.ReportHub.Handlers.User.UpdateRole;
 using Exadel.ReportHub.RA.Abstract;
 using Exadel.ReportHub.Tests.Abstracts;
@@ -8,7 +9,7 @@ using Moq;
 namespace Exadel.ReportHub.Tests.User.UpdateRole;
 
 [TestFixture]
-public class UpdateUserRoleHandlerTests : BaseTestFixture
+public class UpdateUserRoleHandlerTests
 {
     private Mock<IUserRepository> _userRepositoryMock;
     private UpdateUserRoleHandler _handler;
@@ -20,17 +21,18 @@ public class UpdateUserRoleHandlerTests : BaseTestFixture
         _handler = new UpdateUserRoleHandler(_userRepositoryMock.Object);
     }
 
-    [Test]
-    public async Task UpdateUserRole_WhenUserExists_ReturnsUpdated()
+    [TestCase(UserRole.Regular)]
+    [TestCase(UserRole.Admin)]
+    public async Task UpdateUserRole_WhenUserExists_ReturnsUpdated(UserRole role)
     {
         // Arrange
-        var user = Fixture.Create<Data.Models.User>();
+        var userId = Guid.NewGuid();
         _userRepositoryMock
-            .Setup(x => x.ExistsAsync(user.Id, CancellationToken.None))
+            .Setup(x => x.ExistsAsync(userId, CancellationToken.None))
             .ReturnsAsync(true);
 
         // Act
-        var request = new UpdateUserRoleRequest(user.Id, user.Role);
+        var request = new UpdateUserRoleRequest(userId, role);
         var result = await _handler.Handle(request, CancellationToken.None);
 
         // Assert
@@ -38,7 +40,7 @@ public class UpdateUserRoleHandlerTests : BaseTestFixture
         Assert.That(result.Value, Is.EqualTo(Result.Updated));
 
         _userRepositoryMock.Verify(
-            x => x.UpdateRoleAsync(user.Id, user.Role, CancellationToken.None),
+            x => x.UpdateRoleAsync(userId, role, CancellationToken.None),
             Times.Once);
     }
 
@@ -46,20 +48,21 @@ public class UpdateUserRoleHandlerTests : BaseTestFixture
     public async Task UpdateUserRole_WhenUserNotExists_ReturnsNotFound()
     {
         // Arrange
-        var user = Fixture.Create<Data.Models.User>();
+        var userId = Guid.NewGuid();
         _userRepositoryMock
-            .Setup(x => x.ExistsAsync(user.Id, CancellationToken.None))
+            .Setup(x => x.ExistsAsync(userId, CancellationToken.None))
             .ReturnsAsync(false);
 
         // Act
-        var request = new UpdateUserRoleRequest(user.Id, user.Role);
+        var request = new UpdateUserRoleRequest(userId, UserRole.Admin);
         var result = await _handler.Handle(request, CancellationToken.None);
 
         // Assert
         Assert.That(result.IsError, Is.True, "Should contains user not found Error");
+        Assert.That(result.FirstError.Type, Is.EqualTo(ErrorType.NotFound));
 
         _userRepositoryMock.Verify(
-            x => x.UpdateRoleAsync(user.Id, user.Role, CancellationToken.None),
+            x => x.UpdateRoleAsync(userId, UserRole.Admin, CancellationToken.None),
             Times.Never);
     }
 }

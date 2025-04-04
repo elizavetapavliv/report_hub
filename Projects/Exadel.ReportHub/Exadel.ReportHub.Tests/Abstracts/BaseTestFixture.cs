@@ -1,24 +1,24 @@
 ﻿using AutoFixture;
 using AutoMapper;
+using Exadel.ReportHub.Host;
 using Exadel.ReportHub.Host.Mapping.Profiles;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Exadel.ReportHub.Tests.Abstracts
+namespace Exadel.ReportHub.Tests.Abstracts;
+
+public abstract class BaseTestFixture
 {
-    public abstract class BaseTestFixture
+    protected static IMapper Mapper { get; }
+
+    protected static Fixture Fixture { get; }
+
+    static BaseTestFixture()
     {
-        protected static IMapper Mapper { get; }
+        var services = new ServiceCollection();
+        services.AddAutoMapper(typeof(Startup));
+        var serviceProvider = services.BuildServiceProvider();
+        Mapper = serviceProvider.GetRequiredService<IMapper>();
 
-        protected Fixture Fixture { get; }
-
-        static BaseTestFixture()
-        {
-            var configuration = new MapperConfiguration(cfg => cfg.AddProfile<UserProfile>());
-            Mapper = configuration.CreateMapper();
-        }
-
-        protected BaseTestFixture()
-        {
-            Fixture = new Fixture();
-        }
+        Fixture = new Fixture();
     }
 }
