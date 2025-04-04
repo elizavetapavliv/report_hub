@@ -30,7 +30,7 @@ public class CreateUserRequestValidator : AbstractValidator<CreateUserRequest>
                 child.RuleFor(x => x.FullName)
                     .NotEmpty();
 
-                child.RuleFor(x => x.Password.ToString())
+                child.RuleFor(x => x.Password)
                     .NotEmpty()
                     .MinimumLength(Constants.Validation.User.PasswordMinimumLength)
                     .WithMessage(Constants.Validation.User.PasswordMinLengthMessage)
