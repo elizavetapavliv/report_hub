@@ -28,7 +28,7 @@ public class CreateUserHandlerTests : BaseTestFixture
 
         // Act
         var createUserRequest = new CreateUserRequest(createUserDto);
-        var result = await _handler.Handle(createUserRequest, CancellationToken.None);
+        var result = await _handler.Handle(createUserRequest, It.IsAny<CancellationToken>());
 
         // Assert
         Assert.That(result.Value, Is.Not.Null);
@@ -45,7 +45,7 @@ public class CreateUserHandlerTests : BaseTestFixture
                     u.FullName == createUserDto.FullName &&
                     u.PasswordHash != string.Empty &&
                     u.PasswordSalt != string.Empty),
-                CancellationToken.None),
+                It.IsAny<CancellationToken>()),
             Times.Once);
     }
 }

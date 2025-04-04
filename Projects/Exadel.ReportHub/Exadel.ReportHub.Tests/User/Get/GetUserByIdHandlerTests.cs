@@ -27,12 +27,12 @@ public class GetUserByIdHandlerTests : BaseTestFixture
         // Arrange
         var user = Fixture.Create<Data.Models.User>();
         _userRepositoryMock
-            .Setup(repo => repo.GetByIdAsync(user.Id, CancellationToken.None))
+            .Setup(repo => repo.GetByIdAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
         // Act
         var request = new GetUserByIdRequest(user.Id);
-        var result = await _handler.Handle(request, CancellationToken.None);
+        var result = await _handler.Handle(request, It.IsAny<CancellationToken>());
 
         // Assert
         Assert.That(result.IsError, Is.False);
@@ -42,7 +42,7 @@ public class GetUserByIdHandlerTests : BaseTestFixture
         Assert.That(result.Value.FullName, Is.EqualTo(user.FullName));
 
         _userRepositoryMock.Verify(
-            repo => repo.GetByIdAsync(user.Id, CancellationToken.None),
+            repo => repo.GetByIdAsync(user.Id, It.IsAny<CancellationToken>()),
             Times.Once);
     }
 
@@ -54,14 +54,14 @@ public class GetUserByIdHandlerTests : BaseTestFixture
 
         // Act
         var request = new GetUserByIdRequest(user.Id);
-        var result = await _handler.Handle(request, CancellationToken.None);
+        var result = await _handler.Handle(request, It.IsAny<CancellationToken>());
 
         // Assert
-        Assert.That(result.IsError, Is.True, "Should contains user not found Error");
+        Assert.That(result.Errors, Has.Count.EqualTo(1), "Should contains the only error");
         Assert.That(result.FirstError.Type, Is.EqualTo(ErrorType.NotFound));
 
         _userRepositoryMock.Verify(
-            repo => repo.GetByIdAsync(user.Id, CancellationToken.None),
+            repo => repo.GetByIdAsync(user.Id, It.IsAny<CancellationToken>()),
             Times.Once);
     }
 }

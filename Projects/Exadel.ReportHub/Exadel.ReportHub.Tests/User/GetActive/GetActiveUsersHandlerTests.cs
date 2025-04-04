@@ -25,12 +25,12 @@ public class GetActiveUsersHandlerTests : BaseTestFixture
         // Arrange
         var users = Fixture.Build<Data.Models.User>().With(x => x.IsActive, true).CreateMany(30).ToList();
         _userRepositoryMock
-            .Setup(repo => repo.GetAllActiveAsync(CancellationToken.None))
+            .Setup(repo => repo.GetAllActiveAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(users);
 
         // Act
         var request = new GetActiveUsersRequest();
-        var result = await _handler.Handle(request, CancellationToken.None);
+        var result = await _handler.Handle(request, It.IsAny<CancellationToken>());
 
         // Assert
         Assert.That(result.IsError, Is.False);
@@ -38,7 +38,7 @@ public class GetActiveUsersHandlerTests : BaseTestFixture
         Assert.That(result.Value.ToList(), Has.Count.EqualTo(users.Count));
 
         _userRepositoryMock.Verify(
-            mock => mock.GetAllActiveAsync(CancellationToken.None),
+            mock => mock.GetAllActiveAsync(It.IsAny<CancellationToken>()),
             Times.Once);
     }
 }
