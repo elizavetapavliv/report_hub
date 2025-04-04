@@ -1,5 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 using System.Security;
+using Exadel.ReportHub.SDK.DTOs.User;
 using FluentValidation;
 
 namespace Exadel.ReportHub.Handlers.Validators;
@@ -17,9 +18,8 @@ public class PasswordValidator : AbstractValidator<string>
 
         RuleFor(x => x)
             .NotEmpty()
-            .WithName("Password")
+            .WithName(nameof(CreateUserDTO.Password))
             .MinimumLength(Constants.Validation.User.PasswordMinimumLength)
-            .WithMessage(Constants.Validation.User.PasswordMinLengthMessage)
             .Matches("[A-Z]")
             .WithMessage(Constants.Validation.User.PasswordUppercaseMessage)
             .Matches("[a-z]")

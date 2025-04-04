@@ -1,5 +1,4 @@
-﻿using System.Security;
-using Exadel.ReportHub.RA.Abstract;
+﻿using Exadel.ReportHub.RA.Abstract;
 using FluentValidation;
 
 namespace Exadel.ReportHub.Handlers.User.Create;
