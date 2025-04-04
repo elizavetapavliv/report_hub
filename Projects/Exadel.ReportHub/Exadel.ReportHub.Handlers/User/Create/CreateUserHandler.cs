@@ -1,8 +1,6 @@
-﻿using System.Runtime.InteropServices;
-using AutoMapper;
+﻿using AutoMapper;
 using ErrorOr;
 using Exadel.ReportHub.Common;
-using Exadel.ReportHub.Data.Models;
 using Exadel.ReportHub.RA.Abstract;
 using Exadel.ReportHub.SDK.DTOs.User;
 using MediatR;

@@ -1,7 +1,7 @@
 ﻿using Exadel.ReportHub.Data.Enums;
 using Exadel.ReportHub.Handlers.User.Create;
 using Exadel.ReportHub.Handlers.User.Get;
-using Exadel.ReportHub.Handlers.User.GetAllActive;
+using Exadel.ReportHub.Handlers.User.GetActive;
 using Exadel.ReportHub.Handlers.User.UpdateActivity;
 using Exadel.ReportHub.Handlers.User.UpdateRole;
 using Exadel.ReportHub.SDK.DTOs.User;
