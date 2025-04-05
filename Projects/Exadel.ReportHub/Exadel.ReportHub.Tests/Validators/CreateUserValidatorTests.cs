@@ -27,19 +27,11 @@ public class CreateUserValidatorTests
     }
 
     [Test]
-    public async Task ValidateAsync_FullNameIsEmpty_ErrorReturned()
+    [TestCase("")]
+    [TestCase(null)]
+    public async Task ValidateAsync_FullNameIsEmpty_ErrorReturned(string fullnameError)
     {
-        var createUserRequest = new CreateUserRequest(new CreateUserDTO { FullName = string.Empty, Email = "test@gmail.com", Password = "Testpassword123!" });
-        var result = await _validator.TestValidateAsync(createUserRequest);
-        result.ShouldHaveValidationErrorFor(x => x.CreateUserDto.FullName)
-            .WithErrorMessage("'Full Name' must not be empty.");
-        Assert.That(result.Errors.Count, Is.EqualTo(1));
-    }
-
-    [Test]
-    public async Task ValidateAsync_FullNameIsNull_ErrorReturned()
-    {
-        var createUserRequest = new CreateUserRequest(new CreateUserDTO { FullName = null, Email = "test@gmail.com", Password = "Testpassword123!" });
+        var createUserRequest = new CreateUserRequest(new CreateUserDTO { FullName = fullnameError, Email = "test@gmail.com", Password = "Testpassword123!" });
         var result = await _validator.TestValidateAsync(createUserRequest);
         result.ShouldHaveValidationErrorFor(x => x.CreateUserDto.FullName)
             .WithErrorMessage("'Full Name' must not be empty.");
@@ -56,19 +48,11 @@ public class CreateUserValidatorTests
     }
 
     [Test]
-    public async Task ValidateAsync_EmailIsEmpty_ErrorReturned()
+    [TestCase("")]
+    [TestCase(null)]
+    public async Task ValidateAsync_EmailIsNullOrEmpty_ErrorReturned(string emailError)
     {
-        var createUserRequest = new CreateUserRequest(new CreateUserDTO { FullName = "Test User", Email = string.Empty, Password = "Testpassword123!" });
-        var result = await _validator.TestValidateAsync(createUserRequest);
-        result.ShouldHaveValidationErrorFor(x => x.CreateUserDto.Email)
-            .WithErrorMessage("'Email' must not be empty.");
-        Assert.That(result.Errors.Count, Is.EqualTo(1));
-    }
-
-    [Test]
-    public async Task ValidateAsync_EmailIsNull_ErrorReturned()
-    {
-        var createUserRequest = new CreateUserRequest(new CreateUserDTO { FullName = "Test User", Email = null, Password = "Testpassword123!" });
+        var createUserRequest = new CreateUserRequest(new CreateUserDTO { FullName = "Test User", Email = emailError, Password = "Testpassword123!" });
         var result = await _validator.TestValidateAsync(createUserRequest);
         result.ShouldHaveValidationErrorFor(x => x.CreateUserDto.Email)
             .WithErrorMessage("'Email' must not be empty.");
