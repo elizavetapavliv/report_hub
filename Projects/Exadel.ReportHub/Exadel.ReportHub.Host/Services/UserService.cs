@@ -40,6 +40,7 @@ public class UserService(ISender sender) : BaseService
         return FromResult(result);
     }
 
+    [Authorize(Roles = nameof(UserRole.Admin))]
     [HttpPatch("{id:guid}/activity")]
     public async Task<IActionResult> UpdateUserActivity([FromRoute] Guid id, [FromBody] bool isActive)
     {

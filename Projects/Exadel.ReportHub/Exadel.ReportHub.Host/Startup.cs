@@ -3,8 +3,8 @@ using AutoMapper;
 using Exadel.ReportHub.Common.Providers;
 using Exadel.ReportHub.Host.Infrastructure.Filters;
 using Exadel.ReportHub.Host.Registrations;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Exadel.ReportHub.RA;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 
 namespace Exadel.ReportHub.Host;
@@ -20,10 +20,10 @@ public class Startup(IConfiguration configuration)
         {
             options.Filters.Add<ExceptionFilter>();
         })
-        .AddJsonOptions(options =>
-        {
-            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-        });
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
 
         services.AddSwaggerGen(c =>
         {
