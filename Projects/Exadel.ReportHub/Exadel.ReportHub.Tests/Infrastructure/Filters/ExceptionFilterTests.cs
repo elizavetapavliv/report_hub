@@ -11,7 +11,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace Exadel.ReportHub.Tests.Filters;
+namespace Exadel.ReportHub.Tests.Infrastructure.Filters;
 
 public class ExceptionFilterTests
 {
@@ -49,6 +49,7 @@ public class ExceptionFilterTests
 
         var errorResponse = result.Value as ErrorResponse;
         Assert.That(errorResponse, Is.Not.Null);
+        Assert.That(errorResponse.Errors.Count, Is.EqualTo(1));
         CollectionAssert.Contains(errorResponse.Errors, ErrorMessage);
     }
 
@@ -67,6 +68,7 @@ public class ExceptionFilterTests
         _exceptionFilter.OnException(context);
         Assert.That(context.ExceptionHandled, Is.True);
         var result = context.Result as StatusCodeResult;
+        Assert.That(result, Is.Not.Null);
         Assert.That(result.StatusCode, Is.EqualTo(StatusCodes.Status500InternalServerError));
     }
 
@@ -89,6 +91,7 @@ public class ExceptionFilterTests
         Assert.That(result, Is.Not.Null);
         var errorResponse = result.Value as ErrorResponse;
         Assert.That(errorResponse, Is.Not.Null);
+        Assert.That(errorResponse.Errors.Count, Is.EqualTo(1));
         CollectionAssert.Contains(errorResponse.Errors, ErrorMessage);
     }
 }
