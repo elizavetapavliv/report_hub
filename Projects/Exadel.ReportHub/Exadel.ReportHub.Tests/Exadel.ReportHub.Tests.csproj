@@ -35,4 +35,8 @@
     <Using Include="NUnit.Framework" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Exadel.ReportHub.Host\Exadel.ReportHub.Host.csproj" />
+  </ItemGroup>
+
 </Project>
