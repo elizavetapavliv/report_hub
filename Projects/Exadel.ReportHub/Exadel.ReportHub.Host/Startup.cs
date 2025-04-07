@@ -80,7 +80,6 @@ public class Startup(IConfiguration configuration)
             {
                 options.Authority = configuration["Authority"];
                 options.Audience = Constants.Authorization.ResourceName;
-                options.RequireHttpsMetadata = false;
             });
 
         services.AddAuthorization();
