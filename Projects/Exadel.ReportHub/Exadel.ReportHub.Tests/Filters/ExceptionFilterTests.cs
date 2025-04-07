@@ -10,7 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace Exadel.ReportHub.Tests;
+namespace Exadel.ReportHub.Tests.Filters;
 
 public class ExceptionFilterTests
 {
