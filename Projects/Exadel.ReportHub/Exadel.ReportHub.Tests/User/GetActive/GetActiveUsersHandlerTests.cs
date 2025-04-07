@@ -35,7 +35,7 @@ public class GetActiveUsersHandlerTests : BaseTestFixture
         // Assert
         Assert.That(result.IsError, Is.False);
         Assert.That(result.Value, Is.Not.Null);
-        Assert.That(result.Value.ToList(), Has.Count.EqualTo(users.Count));
+        Assert.That(result.Value, Has.Count.EqualTo(users.Count));
 
         _userRepositoryMock.Verify(
             mock => mock.GetAllActiveAsync(CancellationToken.None),
