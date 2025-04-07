@@ -1,4 +1,5 @@
-﻿using Exadel.ReportHub.Common.Exceptions;
+﻿using Duende.IdentityServer.Models;
+using Exadel.ReportHub.Common.Exceptions;
 using Exadel.ReportHub.Host.Infrastructure.Filters;
 using Exadel.ReportHub.Host.Infrastructure.Models;
 using Microsoft.AspNetCore.Http;
@@ -14,6 +15,8 @@ namespace Exadel.ReportHub.Tests.Filters;
 
 public class ExceptionFilterTests
 {
+    private const string ErrorMessage = "an error occured";
+
     private Mock<ILogger<ExceptionFilter>> _loggerMock;
     private Mock<IHostEnvironment> _hostEnvironmentMock;
     private ExceptionFilter _exceptionFilter;
@@ -29,7 +32,7 @@ public class ExceptionFilterTests
     [Test]
     public void OnException_HttpStatusCodeException_GivesExpectedResult()
     {
-        var exception = new HttpStatusCodeException(StatusCodes.Status400BadRequest, new List<string> { "an error occured" });
+        var exception = new HttpStatusCodeException(StatusCodes.Status400BadRequest, new List<string> { ErrorMessage });
         var actionContext = new ActionContext(
             new DefaultHttpContext(),
             new RouteData(),
@@ -46,13 +49,13 @@ public class ExceptionFilterTests
 
         var errorResponse = result.Value as ErrorResponse;
         Assert.That(errorResponse, Is.Not.Null);
-        CollectionAssert.Contains(errorResponse.Errors, "an error occured");
+        CollectionAssert.Contains(errorResponse.Errors, ErrorMessage);
     }
 
     [Test]
     public void OnException_NoHttpStatusCodeException_GivesExpectedResult()
     {
-        var exception = new Exception("an error occured");
+        var exception = new Exception(ErrorMessage);
         var actionContext = new ActionContext(
             new DefaultHttpContext(),
             new RouteData(),
@@ -71,7 +74,7 @@ public class ExceptionFilterTests
     public void OnException_NoHttpStatusCodeException_DevelopmentEnv_GivesExpectedResult()
     {
         _hostEnvironmentMock.Setup(x => x.EnvironmentName).Returns("Development");
-        var exception = new Exception("an error occured");
+        var exception = new Exception(ErrorMessage);
         var actionContext = new ActionContext(
             new DefaultHttpContext(),
             new RouteData(),
@@ -86,6 +89,6 @@ public class ExceptionFilterTests
         Assert.That(result, Is.Not.Null);
         var errorResponse = result.Value as ErrorResponse;
         Assert.That(errorResponse, Is.Not.Null);
-        CollectionAssert.Contains(errorResponse.Errors, "an error occured");
+        CollectionAssert.Contains(errorResponse.Errors, ErrorMessage);
     }
 }
