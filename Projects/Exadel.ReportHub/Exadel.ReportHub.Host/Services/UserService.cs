@@ -24,6 +24,7 @@ public class UserService(ISender sender) : BaseService
         return FromResult(result, StatusCodes.Status201Created);
     }
 
+    [Authorize(Roles = nameof(UserRole.Regular))]
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetUserById([FromRoute] Guid id)
     {
@@ -32,6 +33,7 @@ public class UserService(ISender sender) : BaseService
         return FromResult(result);
     }
 
+    [Authorize(Roles = nameof(UserRole.Regular))]
     [HttpGet("active")]
     public async Task<IActionResult> GetActiveUsers()
     {
@@ -58,7 +60,7 @@ public class UserService(ISender sender) : BaseService
         return FromResult(result);
     }
 
-    [Authorize]
+    [Authorize(Roles = nameof(UserRole.Regular))]
     [HttpPatch("password")]
     public async Task<IActionResult> UpdateUserPassword([FromBody] string password)
     {
