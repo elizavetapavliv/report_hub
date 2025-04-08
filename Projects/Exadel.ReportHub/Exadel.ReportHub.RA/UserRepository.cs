@@ -62,13 +62,7 @@ public class UserRepository : BaseRepository, IUserRepository
     public async Task<User> GetByEmailAsync(string email, CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.Eq(x => x.Email, email);
-        return await GetCollection<User>().Find(filter).SingleOrDefaultAsync();
-    }
-
-    public async Task UpdateRoleAsync(Guid id, UserRole userRole, CancellationToken cancellationToken)
-    {
-        var update = Builders<User>.Update.Set(x => x.Role, userRole);
-        await UpdateAsync(id, update, cancellationToken);
+        return await GetCollection<User>().Find(filter).SingleOrDefaultAsync(cancellationToken);
     }
 
     public async Task UpdatePasswordAsync(Guid id, string passwordHash, string passwordSalt, CancellationToken cancellationToken)

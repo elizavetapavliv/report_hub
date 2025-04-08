@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Exadel.ReportHub.Handlers.Test;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Exadel.ReportHub.Host.Services;
@@ -44,5 +45,12 @@ public class TestService(ISender sender) : BaseService
         var result = await sender.Send(new DeleteRequest(id, getError));
 
         return FromResult(result);
+    }
+
+    [Authorize(Policy = "ClientAdmin")]
+    [HttpGet("{clientId:guid}")]
+    public IActionResult ClientAdminTest([FromRoute] Guid clientId)
+    {
+        return Ok();
     }
 }

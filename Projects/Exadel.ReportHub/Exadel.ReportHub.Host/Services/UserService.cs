@@ -44,7 +44,7 @@ public class UserService(ISender sender) : BaseService
         return FromResult(result);
     }
 
-    [Authorize(Roles = nameof(UserRole.Admin))]
+    [Authorize(Roles = nameof(UserRole.SuperAdmin))]
     [HttpPatch("{id:guid}/activity")]
     public async Task<IActionResult> UpdateUserActivity([FromRoute] Guid id, [FromBody] bool isActive)
     {
@@ -53,11 +53,11 @@ public class UserService(ISender sender) : BaseService
         return FromResult(result);
     }
 
-    [Authorize(Roles = nameof(UserRole.Admin))]
+    [Authorize(Roles = nameof(UserRole.SuperAdmin))]
     [HttpPatch("{id:guid}/role")]
-    public async Task<IActionResult> UpdateUserRole([FromRoute] Guid id, [FromBody] UserRole userRole)
+    public async Task<IActionResult> UpdateUserRole([FromRoute] Guid id, [FromBody] Guid clientId, [FromBody] UserRole userRole)
     {
-        var result = await sender.Send(new UpdateUserRoleRequest(id, userRole));
+        var result = await sender.Send(new UpdateUserRoleRequest(id, clientId, userRole));
 
         return FromResult(result);
     }

@@ -1,0 +1,15 @@
+﻿using Exadel.ReportHub.Data.Enums;
+using Exadel.ReportHub.Data.Models;
+
+namespace Exadel.ReportHub.RA.Abstract;
+
+public interface IUserAssignmentRepository
+{
+    Task AddAsync(UserAssignment userAssignment, CancellationToken cancellationToken);
+
+    Task<UserRole> GetRoleAsync(Guid userId, Guid clientId, CancellationToken cancellationToken);
+
+    Task<bool> ExistsAsync(Guid userId, Guid clientId, CancellationToken cancellationToken);
+
+    Task UpdateRoleAsync(Guid userId, Guid clientId, UserRole userRole, CancellationToken cancellationToken);
+}
