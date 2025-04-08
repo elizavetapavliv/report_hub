@@ -1,12 +1,9 @@
-﻿using Exadel.ReportHub.Data.Enums;
-using Exadel.ReportHub.Data.Models;
+﻿using Exadel.ReportHub.SDK.Enums;
 
-namespace Exadel.ReportHub.Data.Models;
+namespace Exadel.ReportHub.SDK.DTOs.Invoice;
 
-public class Invoice : IDocument
+public class CreateInvoiceDTO
 {
-    public Guid Id { get; set; }
-
     public Guid ClientId { get; set; }
 
     public Guid CustomerId { get; set; }
@@ -25,5 +22,5 @@ public class Invoice : IDocument
 
     public string BankAccountNumber { get; set; }
 
-    public IEnumerable<Item> Items { get; set; }
+    public ICollection<Guid> ItemIds { get; set; }
 }
