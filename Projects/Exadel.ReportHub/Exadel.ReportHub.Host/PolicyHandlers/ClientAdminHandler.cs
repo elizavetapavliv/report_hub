@@ -1,4 +1,4 @@
-﻿using Duende.IdentityModel;
+﻿using System.Security.Claims;
 using Exadel.ReportHub.Data.Enums;
 using Exadel.ReportHub.RA.Abstract;
 using Microsoft.AspNetCore.Authorization;
@@ -28,16 +28,25 @@ public class ClientAdminHandler : AuthorizationHandler<ClientAdminRequirement>
             return;
         }
 
-        var routeData = _httpContextAccessor.HttpContext.GetRouteData();
-
-        if (!routeData.Values.TryGetValue("clientId", out var clientIdObj))
+        var userIdClaim = context.User.FindFirst(ClaimTypes.NameIdentifier);
+        if (userIdClaim == null)
         {
-            context.Fail(new AuthorizationFailureReason(this, "Client Id was not found."));
             return;
         }
 
-        var userId = Guid.Parse(context.User.FindFirst(JwtClaimTypes.Subject).Value);
+        var routeData = _httpContextAccessor.HttpContext.GetRouteData();
+        if (!routeData.Values.TryGetValue("clientId", out var clientIdObj))
+        {
+            return;
+        }
+
+        var userId = Guid.Parse(userIdClaim.Value);
         var clientId = Guid.Parse(clientIdObj.ToString());
+        if (!await _userAssignmentRepository.ExistsAsync(userId, clientId, CancellationToken.None))
+        {
+            return;
+        }
+
         var role = await _userAssignmentRepository.GetRoleAsync(userId, clientId, CancellationToken.None);
 
         if (role == UserRole.ClientAdmin)

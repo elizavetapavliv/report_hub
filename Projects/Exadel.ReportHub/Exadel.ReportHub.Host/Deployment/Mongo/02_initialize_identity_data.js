@@ -1,5 +1,5 @@
 ﻿const scriptName = "02_initialize_identity_data";
-const version = NumberInt(2);
+const version = NumberInt(3);
 const reportHubServiceClientSecret = process.env.ReportHubService_ClientSecret
 
 if (db.MigrationHistory.findOne({ ScriptName: scriptName, Version: version })) {
@@ -73,13 +73,13 @@ db.ApiResource.insertOne(
         Enabled: true
     });
 
-db.createCollection("Client", {
+db.createCollection("IdentityClient", {
     collation: {
         locale: "en"
     }
 });
 
-db.Client.insertMany([
+db.IdentityClient.insertMany([
     {
         _id: UUID(),
         ClientId: "report_hub_service",

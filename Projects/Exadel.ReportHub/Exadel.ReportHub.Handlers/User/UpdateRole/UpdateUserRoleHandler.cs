@@ -16,7 +16,7 @@ public class UpdateUserRoleHandler(IUserAssignmentRepository userAssignmentRepos
             return Error.NotFound();
         }
 
-        await userAssignmentRepository.UpdateRoleAsync(request.Id,request.clientId, request.Role, cancellationToken);
+        await userAssignmentRepository.UpdateRoleAsync(request.Id, request.clientId, request.Role, cancellationToken);
         return Result.Updated;
     }
 }

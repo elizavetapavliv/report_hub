@@ -54,8 +54,8 @@ public class UserService(ISender sender) : BaseService
     }
 
     [Authorize(Roles = nameof(UserRole.SuperAdmin))]
-    [HttpPatch("{id:guid}/role")]
-    public async Task<IActionResult> UpdateUserRole([FromRoute] Guid id, [FromBody] Guid clientId, [FromBody] UserRole userRole)
+    [HttpPatch("{id:guid}/{clientId:guid}/role")]
+    public async Task<IActionResult> UpdateUserRole([FromRoute] Guid id, [FromRoute] Guid clientId, [FromBody] UserRole userRole)
     {
         var result = await sender.Send(new UpdateUserRoleRequest(id, clientId, userRole));
 
