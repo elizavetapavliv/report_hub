@@ -8,4 +8,9 @@ public static class Constants
         public const string ScopeDescription = "Full access to Report Hub API";
         public const string ResourceName = "report_hub_api";
     }
+
+    public static class Policy
+    {
+        public const string ClientAdmin = "ClientAdmin";
+    }
 }

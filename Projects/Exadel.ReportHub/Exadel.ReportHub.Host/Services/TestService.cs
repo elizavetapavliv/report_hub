@@ -47,7 +47,7 @@ public class TestService(ISender sender) : BaseService
         return FromResult(result);
     }
 
-    [Authorize(Policy = "ClientAdmin")]
+    [Authorize(Policy = Constants.Policy.ClientAdmin)]
     [HttpGet("{clientId:guid}")]
     public IActionResult ClientAdminTest([FromRoute] Guid clientId)
     {

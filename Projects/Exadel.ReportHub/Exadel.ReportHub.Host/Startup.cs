@@ -85,7 +85,7 @@ public class Startup(IConfiguration configuration)
 
         services.AddAuthorization(options =>
         {
-            options.AddPolicy("ClientAdmin", policy => policy.Requirements.Add(new ClientAdminRequirement()));
+            options.AddPolicy(Constants.Policy.ClientAdmin, policy => policy.Requirements.Add(new ClientAdminRequirement()));
         });
 
         services.AddIdentity();
