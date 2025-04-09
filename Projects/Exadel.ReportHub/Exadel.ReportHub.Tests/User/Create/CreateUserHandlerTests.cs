@@ -1,5 +1,5 @@
 ﻿using AutoFixture;
-using Exadel.ReportHub.Data;
+using Exadel.ReportHub.Handlers;
 using Exadel.ReportHub.Handlers.User.Create;
 using Exadel.ReportHub.RA.Abstract;
 using Exadel.ReportHub.SDK.DTOs.User;
@@ -55,7 +55,7 @@ public class CreateUserHandlerTests : BaseTestFixture
             mock => mock.AddAsync(
                 It.Is<Data.Models.UserAssignment>(
                     ua => ua.UserId == result.Value.Id &&
-                    ua.ClientId == Constants.GlobalClientId &&
+                    ua.ClientId == Constants.Client.GlobalId &&
                     ua.Role == Data.Enums.UserRole.Regular),
                 CancellationToken.None),
             Times.Once);
