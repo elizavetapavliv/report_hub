@@ -6,5 +6,5 @@ public class Client : IDocument
 
     public string Name { get; set; }
 
-    public IList<Customer> Customers { get; set; }
+    public IList<Guid> CustomerIds { get; set; }
 }
