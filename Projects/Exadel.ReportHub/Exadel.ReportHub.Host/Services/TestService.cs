@@ -47,10 +47,22 @@ public class TestService(ISender sender) : BaseService
         return FromResult(result);
     }
 
-    [Authorize(Policy = Constants.Policy.ClientAdmin)]
-    [HttpGet("{clientId:guid}")]
-    public IActionResult ClientAdminTest([FromRoute] Guid clientId)
+    [Authorize(Policy = Constants.Authorization.Policy.ClientAdmin)]
+    [HttpGet("clientIdQuery")]
+    public IActionResult ClientAdminQueryTest([FromQuery] Guid clientId)
     {
         return Ok();
+    }
+
+    [Authorize(Policy = Constants.Authorization.Policy.ClientAdmin)]
+    [HttpPost("clientIdBody")]
+    public IActionResult ClientAdminBodyTest([FromBody] ClientIdTest test)
+    {
+        return Ok();
+    }
+
+    public class ClientIdTest
+    {
+        public Guid ClientId { get; set; }
     }
 }

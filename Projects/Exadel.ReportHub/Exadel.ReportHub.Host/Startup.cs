@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 using AutoMapper;
 using Exadel.ReportHub.Common.Providers;
+using Exadel.ReportHub.Data.Enums;
 using Exadel.ReportHub.Host.Infrastructure.Filters;
 using Exadel.ReportHub.Host.PolicyHandlers;
 using Exadel.ReportHub.Host.Registrations;
@@ -76,6 +77,8 @@ public class Startup(IConfiguration configuration)
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultForbidScheme = JwtBearerDefaults.AuthenticationScheme;
         })
             .AddJwtBearer(options =>
             {
@@ -85,7 +88,12 @@ public class Startup(IConfiguration configuration)
 
         services.AddAuthorization(options =>
         {
-            options.AddPolicy(Constants.Policy.ClientAdmin, policy => policy.Requirements.Add(new ClientAdminRequirement()));
+            options.AddPolicy(Constants.Authorization.Policy.AllUsers, policy =>
+                policy.Requirements.Add(new ClientAssignmentRequirement(new List<UserRole> { UserRole.Regular })));
+            options.AddPolicy(Constants.Authorization.Policy.ClientAdmin, policy =>
+                policy.Requirements.Add(new ClientAssignmentRequirement(new List<UserRole> { UserRole.ClientAdmin })));
+            options.AddPolicy(Constants.Authorization.Policy.SuperAdmin, policy =>
+                policy.Requirements.Add(new ClientAssignmentRequirement(new List<UserRole>())));
         });
 
         services.AddIdentity();
@@ -94,7 +102,7 @@ public class Startup(IConfiguration configuration)
         services.AddAutoMapper(typeof(Startup));
         services.AddHttpContextAccessor();
         services.AddScoped<IUserProvider, UserProvider>();
-        services.AddSingleton<IAuthorizationHandler, ClientAdminHandler>();
+        services.AddSingleton<IAuthorizationHandler, ClientAssignmentHandler>();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)

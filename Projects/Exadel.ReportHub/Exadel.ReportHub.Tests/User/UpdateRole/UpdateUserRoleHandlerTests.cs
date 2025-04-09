@@ -20,6 +20,7 @@ public class UpdateUserRoleHandlerTests
     }
 
     [TestCase(UserRole.Regular)]
+    [TestCase(UserRole.ClientAdmin)]
     [TestCase(UserRole.SuperAdmin)]
     public async Task UpdateUserRole_WhenUserExists_ReturnsUpdated(UserRole role)
     {
@@ -43,8 +44,10 @@ public class UpdateUserRoleHandlerTests
             Times.Once);
     }
 
-    [Test]
-    public async Task UpdateUserRole_WhenUserNotExists_ReturnsNotFound()
+    [TestCase(UserRole.Regular)]
+    [TestCase(UserRole.ClientAdmin)]
+    [TestCase(UserRole.SuperAdmin)]
+    public async Task UpdateUserRole_WhenUserNotExists_ReturnsNotFound(UserRole role)
     {
         // Arrange
         var userId = Guid.NewGuid();
@@ -54,7 +57,7 @@ public class UpdateUserRoleHandlerTests
             .ReturnsAsync(false);
 
         // Act
-        var request = new UpdateUserRoleRequest(userId, clientId, It.IsAny<UserRole>());
+        var request = new UpdateUserRoleRequest(userId, clientId, role);
         var result = await _handler.Handle(request, CancellationToken.None);
 
         // Assert

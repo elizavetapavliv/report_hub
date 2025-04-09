@@ -16,4 +16,11 @@ public static class Constants
             public const string PasswordSpecialCharacterMessage = "Password must contain at least one special character.";
         }
     }
+
+    public static class Client
+    {
+        private const string GlobalIdString = "E47501A8-547B-4DC4-BA97-E65CCFC39477";
+
+        public static Guid GlobalId => Guid.Parse(GlobalIdString);
+    }
 }

@@ -33,6 +33,13 @@ public class UserAssignmentRepository : BaseRepository, IUserAssignmentRepositor
         return userAssignment.Role;
     }
 
+    public async Task<IEnumerable<UserRole>> GetUserRolesAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        var filter = _filterBuilder.Eq(x => x.UserId, userId);
+        var userRoles = await GetCollection<UserAssignment>().Find(filter).ToListAsync();
+        return userRoles.Select(x => x.Role).Distinct();
+    }
+
     public async Task UpdateRoleAsync(Guid userId, Guid clientId, UserRole userRole, CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.And(_filterBuilder.Eq(x => x.UserId, userId), _filterBuilder.Eq(x => x.ClientId, clientId));

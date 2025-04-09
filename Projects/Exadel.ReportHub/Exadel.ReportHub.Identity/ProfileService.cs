@@ -2,8 +2,6 @@
 using Duende.IdentityServer.Extensions;
 using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Services;
-using Exadel.ReportHub.Data;
-using Exadel.ReportHub.Data.Enums;
 using Exadel.ReportHub.RA.Abstract;
 using System.Security.Claims;
 
@@ -15,18 +13,17 @@ public class ProfileService(IUserRepository userRepository, IUserAssignmentRepos
     {
         var userId = Guid.Parse(context.Subject.GetSubjectId());
         var user = await userRepository.GetByIdAsync(userId, CancellationToken.None);
-        var userGlobalRole = await userAssignmentRepository.GetRoleAsync(userId, Constants.GlobalClientId, CancellationToken.None);
+        var userRoles = await userAssignmentRepository.GetUserRolesAsync(userId, CancellationToken.None);
 
         var claims = new List<Claim>
         {
-            new Claim(JwtClaimTypes.Role, userGlobalRole.ToString()),
             new Claim(JwtClaimTypes.Name, user.FullName),
             new Claim(JwtClaimTypes.Email, user.Email)
         };
 
-        if (userGlobalRole == UserRole.SuperAdmin)
-        {
-            claims.Add(new Claim(JwtClaimTypes.Role, UserRole.Regular.ToString()));
+        foreach (var role in userRoles)
+        { 
+            claims.Add(new Claim(JwtClaimTypes.Role, role.ToString()));
         }
 
         context.IssuedClaims.AddRange(claims);

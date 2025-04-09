@@ -8,7 +8,7 @@ public class UserAssignment : IDocument
 
     public Guid UserId { get; set; }
 
-    public Guid ClientId { get; set; } = Constants.GlobalClientId;
+    public Guid ClientId { get; set; }
 
     public UserRole Role { get; set; }
 }

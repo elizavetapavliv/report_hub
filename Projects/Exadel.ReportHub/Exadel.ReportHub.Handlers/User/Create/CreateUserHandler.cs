@@ -21,7 +21,7 @@ public class CreateUserHandler(IUserRepository userRepository, IUserAssignmentRe
         user.PasswordSalt = passwordSalt;
         user.PasswordHash = passwordHash;
 
-        var userAssignment = new UserAssignment { Id = Guid.NewGuid(), UserId = user.Id };
+        var userAssignment = new UserAssignment { Id = Guid.NewGuid(), UserId = user.Id, ClientId = Constants.Client.GlobalId };
 
         await userRepository.AddAsync(user, cancellationToken);
         await userAssignmentRepository.AddAsync(userAssignment, cancellationToken);

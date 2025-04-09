@@ -53,11 +53,6 @@ public abstract class BaseRepository(MongoDbContext context)
 
     public IMongoCollection<TDocument> GetCollection<TDocument>(string collectionName = null)
     {
-        if (string.IsNullOrEmpty(collectionName))
-        {
-            collectionName = typeof(TDocument).Name;
-        }
-
         return context.GetCollection<TDocument>(collectionName);
     }
 }

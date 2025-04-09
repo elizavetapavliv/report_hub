@@ -14,8 +14,8 @@ public class MongoDbContext
         _database = client.GetDatabase("ReportHub");
     }
 
-    public IMongoCollection<T> GetCollection<T>(string collectionName)
+    public IMongoCollection<T> GetCollection<T>(string collectionName = null)
     {
-        return _database.GetCollection<T>(collectionName);
+        return _database.GetCollection<T>(collectionName ?? typeof(T).Name);
     }
 }
