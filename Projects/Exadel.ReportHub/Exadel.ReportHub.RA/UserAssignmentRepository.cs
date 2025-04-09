@@ -26,18 +26,19 @@ public class UserAssignmentRepository : BaseRepository, IUserAssignmentRepositor
         return count > 0;
     }
 
-    public async Task<UserRole> GetRoleAsync(Guid userId, Guid clientId, CancellationToken cancellationToken)
+    public async Task<UserRole?> GetRoleAsync(Guid userId, Guid clientId, CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.And(_filterBuilder.Eq(x => x.UserId, userId), _filterBuilder.Eq(x => x.ClientId, clientId));
         var userAssignment = await GetCollection<UserAssignment>().Find(filter).SingleOrDefaultAsync(cancellationToken);
-        return userAssignment.Role;
+        return userAssignment != null ? userAssignment.Role : null;
     }
 
     public async Task<IEnumerable<UserRole>> GetUserRolesAsync(Guid userId, CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.Eq(x => x.UserId, userId);
-        var userRoles = await GetCollection<UserAssignment>().Find(filter).ToListAsync();
-        return userRoles.Select(x => x.Role).Distinct();
+        var field = new ExpressionFieldDefinition<UserAssignment, UserRole>(x => x.Role);
+        var userRoles = await GetCollection<UserAssignment>().DistinctAsync(field, filter);
+        return await userRoles.ToListAsync();
     }
 
     public async Task UpdateRoleAsync(Guid userId, Guid clientId, UserRole userRole, CancellationToken cancellationToken)

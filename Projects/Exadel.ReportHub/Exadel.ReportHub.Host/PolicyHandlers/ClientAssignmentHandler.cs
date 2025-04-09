@@ -10,11 +10,11 @@ namespace Exadel.ReportHub.Host.PolicyHandlers;
 
 public class ClientAssignmentRequirement : IAuthorizationRequirement
 {
-    public IList<UserRole> Roles { get; }
+    public List<UserRole> Roles { get; }
 
-    public ClientAssignmentRequirement(IList<UserRole> roles)
+    public ClientAssignmentRequirement(params UserRole[] roles)
     {
-        Roles = roles;
+        Roles = roles.ToList();
         if (!Roles.Contains(UserRole.SuperAdmin))
         {
             Roles.Add(UserRole.SuperAdmin);
@@ -35,45 +35,35 @@ public class ClientAssignmentHandler : AuthorizationHandler<ClientAssignmentRequ
 
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, ClientAssignmentRequirement requirement)
     {
-        if (!context.User.IsAuthenticated())
+        Claim userIdClaim;
+        if (!context.User.IsAuthenticated() ||
+            (userIdClaim = context.User.FindFirst(ClaimTypes.NameIdentifier)) == null)
         {
             return;
         }
 
-        var containedRoles = requirement.Roles.Where(r => context.User.IsInRole(r.ToString()));
-        if (containedRoles.IsNullOrEmpty())
-        {
-            return;
-        }
-
-        var userIdClaim = context.User.FindFirst(ClaimTypes.NameIdentifier);
-        if (userIdClaim == null)
+        var matchingRoles = requirement.Roles.Where(r => context.User.IsInRole(r.ToString()));
+        if (matchingRoles.IsNullOrEmpty())
         {
             return;
         }
 
         var userId = Guid.Parse(userIdClaim.Value);
-        if (containedRoles.Contains(UserRole.SuperAdmin) || containedRoles.Contains(UserRole.Regular))
-        {
-            if (!await _userAssignmentRepository.ExistsAsync(userId, Handlers.Constants.Client.GlobalId, CancellationToken.None))
-            {
-                return;
-            }
-
-            context.Succeed(requirement);
-            return;
-        }
-
         var clientId = await GetClientIdFromRequestAsync(_httpContextAccessor.HttpContext.Request);
-
-        if (clientId == Guid.Empty || !await _userAssignmentRepository.ExistsAsync(userId, clientId, CancellationToken.None))
+        if (clientId == Guid.Empty)
         {
             return;
         }
 
         var role = await _userAssignmentRepository.GetRoleAsync(userId, clientId, CancellationToken.None);
+        if (role != null && matchingRoles.Contains(role.Value))
+        {
+            context.Succeed(requirement);
+            return;
+        }
 
-        if (containedRoles.Contains(role))
+        role = await _userAssignmentRepository.GetRoleAsync(userId, Handlers.Constants.Client.GlobalId, CancellationToken.None);
+        if (role != null && matchingRoles.Contains(role.Value))
         {
             context.Succeed(requirement);
         }

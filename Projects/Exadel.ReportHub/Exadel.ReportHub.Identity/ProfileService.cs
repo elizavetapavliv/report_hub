@@ -12,16 +12,17 @@ public class ProfileService(IUserRepository userRepository, IUserAssignmentRepos
     public async Task GetProfileDataAsync(ProfileDataRequestContext context)
     {
         var userId = Guid.Parse(context.Subject.GetSubjectId());
-        var user = await userRepository.GetByIdAsync(userId, CancellationToken.None);
-        var userRoles = await userAssignmentRepository.GetUserRolesAsync(userId, CancellationToken.None);
+        var userTask = userRepository.GetByIdAsync(userId, CancellationToken.None);
+        var userRolesTask = userAssignmentRepository.GetUserRolesAsync(userId, CancellationToken.None);
 
+        await Task.WhenAll(userTask, userRolesTask);
         var claims = new List<Claim>
         {
-            new Claim(JwtClaimTypes.Name, user.FullName),
-            new Claim(JwtClaimTypes.Email, user.Email)
+            new Claim(JwtClaimTypes.Name, userTask.Result.FullName),
+            new Claim(JwtClaimTypes.Email, userTask.Result.Email)
         };
 
-        foreach (var role in userRoles)
+        foreach (var role in userRolesTask.Result)
         { 
             claims.Add(new Claim(JwtClaimTypes.Role, role.ToString()));
         }

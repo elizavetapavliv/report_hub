@@ -7,7 +7,7 @@ public interface IUserAssignmentRepository
 {
     Task AddAsync(UserAssignment userAssignment, CancellationToken cancellationToken);
 
-    Task<UserRole> GetRoleAsync(Guid userId, Guid clientId, CancellationToken cancellationToken);
+    Task<UserRole?> GetRoleAsync(Guid userId, Guid clientId, CancellationToken cancellationToken);
 
     Task<IEnumerable<UserRole>> GetUserRolesAsync(Guid userId, CancellationToken cancellationToken);
 

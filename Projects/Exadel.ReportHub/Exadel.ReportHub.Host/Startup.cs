@@ -80,7 +80,7 @@ public class Startup(IConfiguration configuration)
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultForbidScheme = JwtBearerDefaults.AuthenticationScheme;
         })
-            .AddJwtBearer(options =>
+            .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
             {
                 options.Authority = configuration["Authority"];
                 options.Audience = Constants.Authorization.ResourceName;
@@ -89,11 +89,11 @@ public class Startup(IConfiguration configuration)
         services.AddAuthorization(options =>
         {
             options.AddPolicy(Constants.Authorization.Policy.AllUsers, policy =>
-                policy.Requirements.Add(new ClientAssignmentRequirement(new List<UserRole> { UserRole.Regular })));
+                policy.Requirements.Add(new ClientAssignmentRequirement(UserRole.Regular)));
             options.AddPolicy(Constants.Authorization.Policy.ClientAdmin, policy =>
-                policy.Requirements.Add(new ClientAssignmentRequirement(new List<UserRole> { UserRole.ClientAdmin })));
+                policy.Requirements.Add(new ClientAssignmentRequirement(UserRole.ClientAdmin)));
             options.AddPolicy(Constants.Authorization.Policy.SuperAdmin, policy =>
-                policy.Requirements.Add(new ClientAssignmentRequirement(new List<UserRole>())));
+                policy.Requirements.Add(new ClientAssignmentRequirement()));
         });
 
         services.AddIdentity();
