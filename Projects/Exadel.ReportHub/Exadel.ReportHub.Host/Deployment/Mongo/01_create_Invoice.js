@@ -28,6 +28,30 @@ const customerIds = [
     UUID("ba18cc29-c7ff-48c4-9b7b-456bcef231d0")
 ]
 
+const itemNames = [
+    "Car",
+    "Development",
+    "Consulting Service",
+    "Wholesale purchase",
+    "Financial service"
+];
+
+const descriptions = [
+    "A high-quality vehicle equipped with modern technology for comfort and safety.",
+    "Custom software development services tailored to meet specific business needs and foster innovation.",
+    "Professional consulting services aimed at strategic growth and effective process optimization.",
+    "Bulk purchasing options offering competitive pricing and reliable supply chain management.",
+    "Comprehensive financial services including investment advisory, capital management, and risk assessment."
+];
+
+const bankAccountNumbers = [
+    "PL359459402653871205990733",
+    "DE197389122734561028993857",
+    "BY849012345678901234567890",
+    "GE021987654321098765432109",
+    "PL546781234098765432107654"
+]
+
 const paymentStatuses = [
     "Unpaid",
     "Pending",
@@ -61,21 +85,6 @@ function generateDueDate(issueDate) {
 }
 
 function generateRandomItem(clientId, currency) {
-    const itemNames = [
-        "Car",
-        "Development",
-        "Consulting Service",
-        "Wholesale purchase",
-        "Financial service"
-    ];
-    const descriptions = [
-        "A high-quality vehicle equipped with modern technology for comfort and safety.",
-        "Custom software development services tailored to meet specific business needs and foster innovation.",
-        "Professional consulting services aimed at strategic growth and effective process optimization.",
-        "Bulk purchasing options offering competitive pricing and reliable supply chain management.",
-        "Comprehensive financial services including investment advisory, capital management, and risk assessment."
-    ];
-
     const index = getRandomInt(itemNames.length);
     return {
         _id: UUID(), 
@@ -106,6 +115,7 @@ for (let i = 0; i < invoiceCount; i++) {
     const issueDate = generateIssueDate();
     const dueDate = generateDueDate(issueDate);
     const currency = currencies[getRandomInt(currencies.length)];
+    const bankAccountNumber = bankAccountNumbers[getRandomInt(bankAccountNumbers.length)]
 
     const items = generateItems(newClientId, currency);
 
@@ -123,13 +133,20 @@ for (let i = 0; i < invoiceCount; i++) {
         DueDate: dueDate,
         Amount: totalAmount.toFixed(2),
         Currency: currency,
-        PaymentStatus: paymentStatuses[getRandomInt(currencies.length)],
-        BankAccountNumber: "5555555555555555555555",
+        PaymentStatus: paymentStatuses[getRandomInt(paymentStatuses.length)],
+        BankAccountNumber: bankAccountNumber,
         Items: items
     });
 }
 
-db.Invoice.insertMany(invoices);
+const opt = invoices.map(invoice => ({
+    replaceOne: {
+        filter: { _id: invoice._id },
+        replacement: invoice,
+        upsert: true
+    }
+}));
+db.Invoice.bulkWrite(opt);
 
 db.MigrationHistory.insertOne({
     ScriptName: scriptName,
