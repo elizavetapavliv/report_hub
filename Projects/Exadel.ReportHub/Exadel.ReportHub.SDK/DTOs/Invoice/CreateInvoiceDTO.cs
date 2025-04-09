@@ -22,5 +22,5 @@ public class CreateInvoiceDTO
 
     public string BankAccountNumber { get; set; }
 
-    public ICollection<Guid> ItemIds { get; set; }
+    public IList<Guid> ItemIds { get; set; }
 }
