@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Exadel.ReportHub.Data.Models;
 
-public class Item : IDocument
+public class Item
 {
     public Guid Id { get; set; }
 
