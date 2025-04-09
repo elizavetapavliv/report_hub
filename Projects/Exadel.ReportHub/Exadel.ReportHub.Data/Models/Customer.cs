@@ -10,8 +10,6 @@ public class Customer : IDocument
 {
     public Guid Id { get; set; }
 
-    public Guid ClientId { get; set; }
-
     public string Country { get; set; }
 
     public string Email { get; set; }
