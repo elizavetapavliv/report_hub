@@ -26,18 +26,14 @@ public class UserAssignmentRepository : BaseRepository, IUserAssignmentRepositor
         return count > 0;
     }
 
-    public async Task<IEnumerable<Guid>> GetClientIdsByRolesAsync(Guid userId, IEnumerable<UserRole> roles, CancellationToken cancellationToken)
+    public async Task<bool> ExistAnyAsync(Guid userId, IEnumerable<Guid> clientIds, IEnumerable<UserRole> roles, CancellationToken cancellationToken)
     {
-        var filter = _filterBuilder.And(_filterBuilder.Eq(x => x.UserId, userId), _filterBuilder.In(x => x.Role, roles));
-        var clientIds = await GetCollection<UserAssignment>().Find(filter).Project(x => x.ClientId).ToListAsync();
-        return clientIds;
-    }
-
-    public async Task<UserRole?> GetRoleAsync(Guid userId, Guid clientId, CancellationToken cancellationToken)
-    {
-        var filter = _filterBuilder.And(_filterBuilder.Eq(x => x.UserId, userId), _filterBuilder.Eq(x => x.ClientId, clientId));
-        var userAssignment = await GetCollection<UserAssignment>().Find(filter).SingleOrDefaultAsync(cancellationToken);
-        return userAssignment != null ? userAssignment.Role : null;
+        var filter = _filterBuilder.And(
+            _filterBuilder.Eq(x => x.UserId, userId),
+            _filterBuilder.In(x => x.ClientId, clientIds),
+            _filterBuilder.In(x => x.Role, roles));
+        var count = await GetCollection<UserAssignment>().Find(filter).CountDocumentsAsync(cancellationToken);
+        return count > 0;
     }
 
     public async Task<IEnumerable<UserRole>> GetUserRolesAsync(Guid userId, CancellationToken cancellationToken)

@@ -61,8 +61,20 @@ public class TestService(ISender sender) : BaseService
         return Ok();
     }
 
+    [Authorize(Policy = Constants.Authorization.Policy.ClientAdmin)]
+    [HttpPost("NonClientIdBody")]
+    public IActionResult NonClientAdminBodyTest([FromBody] NonClientIdTest test)
+    {
+        return Ok();
+    }
+
     public class ClientIdTest
     {
         public Guid? ClientId { get; set; }
+    }
+
+    public class NonClientIdTest
+    {
+        public string Name { get; set; }
     }
 }

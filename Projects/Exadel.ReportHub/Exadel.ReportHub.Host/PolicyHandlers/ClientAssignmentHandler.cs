@@ -14,7 +14,7 @@ public class ClientAssignmentRequirement : IAuthorizationRequirement
 
     public ClientAssignmentRequirement(params UserRole[] roles)
     {
-        Roles = roles;
+        Roles = roles.ToList();
         if (!Roles.Contains(UserRole.SuperAdmin))
         {
             Roles.Add(UserRole.SuperAdmin);
@@ -22,17 +22,11 @@ public class ClientAssignmentRequirement : IAuthorizationRequirement
     }
 }
 
-public class ClientAssignmentHandler : AuthorizationHandler<ClientAssignmentRequirement>
+public class ClientAssignmentHandler(
+        IHttpContextAccessor httpContextAccessor,
+        IUserAssignmentRepository userAssignmentRepository,
+        ILogger<ClientAssignmentHandler> logger) : AuthorizationHandler<ClientAssignmentRequirement>
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IUserAssignmentRepository _userAssignmentRepository;
-
-    public ClientAssignmentHandler(IHttpContextAccessor httpContextAccessor, IUserAssignmentRepository userAssignmentRepository)
-    {
-        _httpContextAccessor = httpContextAccessor;
-        _userAssignmentRepository = userAssignmentRepository;
-    }
-
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, ClientAssignmentRequirement requirement)
     {
         Claim userIdClaim;
@@ -49,23 +43,21 @@ public class ClientAssignmentHandler : AuthorizationHandler<ClientAssignmentRequ
         }
 
         var userId = Guid.Parse(userIdClaim.Value);
-        var requiredClientIds = new List<Guid> { Handlers.Constants.Client.GlobalId };
-        var requestClientId = await GetClientIdFromRequestAsync(_httpContextAccessor.HttpContext.Request);
+        var clientIds = new List<Guid> { Handlers.Constants.Client.GlobalId };
+        var requestClientId = await GetClientIdFromRequestAsync(httpContextAccessor.HttpContext.Request, logger);
 
         if (requestClientId != null)
         {
-            requiredClientIds.Add(requestClientId.Value);
+            clientIds.Add(requestClientId.Value);
         }
 
-        var assignedClientIds = await _userAssignmentRepository.GetClientIdsByRolesAsync(userId, matchingRoles, CancellationToken.None);
-
-        if (requiredClientIds.Intersect(assignedClientIds).Any())
+        if (await userAssignmentRepository.ExistAnyAsync(userId, clientIds, matchingRoles, CancellationToken.None))
         {
-                context.Succeed(requirement);
+            context.Succeed(requirement);
         }
     }
 
-    private async Task<Guid?> GetClientIdFromRequestAsync(HttpRequest request)
+    private async Task<Guid?> GetClientIdFromRequestAsync(HttpRequest request, ILogger logger)
     {
         if (request.RouteValues.TryGetValue("controller", out var serviceName) &&
             serviceName.ToString().Equals(typeof(ClientService).Name, StringComparison.Ordinal) &&
@@ -84,21 +76,27 @@ public class ClientAssignmentHandler : AuthorizationHandler<ClientAssignmentRequ
         if (request.ContentType?.Contains("application/json", StringComparison.Ordinal) == true)
         {
             request.EnableBuffering();
-
-            var container = await JsonSerializer.DeserializeAsync<ClientIdContainer>(
-                request.BodyReader.AsStream(),
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true },
-                request.HttpContext.RequestAborted);
-            request.Body.Position = 0;
-
-            if (container != null)
+            try
             {
-                return container.ClientId;
+                var container = await JsonSerializer.DeserializeAsync<ClientIdContainer>(
+                    request.BodyReader.AsStream(),
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true },
+                    request.HttpContext.RequestAborted);
+
+                return container?.ClientId;
+            }
+            catch (JsonException ex)
+            {
+                logger.LogInformation(ex, ex.Message);
+            }
+            finally
+            {
+                request.Body.Position = 0;
             }
         }
 
         return null;
     }
 
-    private sealed record ClientIdContainer(Guid ClientId);
+    private sealed record ClientIdContainer(Guid? ClientId);
 }
