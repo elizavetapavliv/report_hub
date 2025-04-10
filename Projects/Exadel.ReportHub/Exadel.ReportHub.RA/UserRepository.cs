@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Exadel.ReportHub.Data.Enums;
 using Exadel.ReportHub.Data.Models;
 using Exadel.ReportHub.RA.Abstract;
 using MongoDB.Driver;
@@ -44,9 +43,7 @@ public class UserRepository : BaseRepository, IUserRepository
 
     public async Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken)
     {
-        var filter = _filterBuilder.Eq(x => x.Id, id);
-        var count = await GetCollection<User>().Find(filter).CountDocumentsAsync(cancellationToken);
-        return count > 0;
+        return await ExistsAsync<User>(id, cancellationToken);
     }
 
     public async Task AddAsync(User user, CancellationToken cancellationToken)
