@@ -33,7 +33,7 @@ public static class Constants
 
     public static class Client
     {
-        private const string GlobalIdString = "E47501A8-547B-4DC4-BA97-E65CCFC39477";
+        private const string GlobalIdString = "e47501a8-547b-4dc4-ba97-e65ccfc39477";
 
         public static Guid GlobalId => Guid.Parse(GlobalIdString);
     }
