@@ -58,11 +58,11 @@ const userIds = [
 const globalClientId = UUID("e47501a8-547b-4dc4-ba97-e65ccfc39477");
 
 const clientIds = [
-    UUID("f89e1e75-d61c-4c51-b0be-c285500988cf"),
-    UUID("e1509ec2-2b05-406f-befa-149f051586a9"),
-    UUID("6d024627-568b-4d57-b477-2274c9d807b9"),
-    UUID("ba045076-4837-47ab-80d5-546192851bab"),
-    UUID("ba18cc29-c7ff-48c4-9b7b-456bcef231d0")
+    UUID("ea94747b-3d45-46d6-8775-bf27eb5da02b"),
+    UUID("866eb606-d074-4237-bcf2-aa7798002f7f"),
+    UUID("5cb0b8ed-45f4-4432-9ff7-3a9f896362f9"),
+    UUID("15de1dcc-98c2-4463-85ed-b36a6a31445a"),
+    UUID("e1e39dd5-1ec0-4f9a-b765-d6dc25f0d9a7")
 ]
 
 const globalRoles = [
