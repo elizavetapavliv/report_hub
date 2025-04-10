@@ -46,7 +46,7 @@ public class ClientAssignmentHandler(
         var clientIds = new List<Guid> { Handlers.Constants.Client.GlobalId };
         var requestClientId = await GetClientIdFromRequestAsync(httpContextAccessor.HttpContext.Request, logger);
 
-        if (requestClientId != null)
+        if (requestClientId.HasValue)
         {
             clientIds.Add(requestClientId.Value);
         }
