@@ -79,7 +79,7 @@ db.createCollection("IdentityClient", {
     }
 });
 
-db.Client.insertMany([
+db.IdentityClient.insertMany([
     {
         _id: UUID(),
         ClientId: "report_hub_service",
