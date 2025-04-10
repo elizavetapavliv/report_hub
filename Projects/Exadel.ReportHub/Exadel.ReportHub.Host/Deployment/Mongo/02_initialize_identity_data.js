@@ -73,7 +73,7 @@ db.ApiResource.insertOne(
         Enabled: true
     });
 
-db.createCollection("Client", {
+db.createCollection("IdentityClient", {
     collation: {
         locale: "en"
     }
