@@ -10,11 +10,11 @@ namespace Exadel.ReportHub.Host.PolicyHandlers;
 
 public class ClientAssignmentRequirement : IAuthorizationRequirement
 {
-    public List<UserRole> Roles { get; }
+    public IList<UserRole> Roles { get; }
 
     public ClientAssignmentRequirement(params UserRole[] roles)
     {
-        Roles = roles.ToList();
+        Roles = roles;
         if (!Roles.Contains(UserRole.SuperAdmin))
         {
             Roles.Add(UserRole.SuperAdmin);
@@ -42,49 +42,43 @@ public class ClientAssignmentHandler : AuthorizationHandler<ClientAssignmentRequ
             return;
         }
 
-        var matchingRoles = requirement.Roles.Where(r => context.User.IsInRole(r.ToString()));
-        if (matchingRoles.IsNullOrEmpty())
+        var matchingRoles = requirement.Roles.Where(r => context.User.IsInRole(r.ToString())).ToList();
+        if (matchingRoles.Count == 0)
         {
             return;
         }
 
         var userId = Guid.Parse(userIdClaim.Value);
-        var clientId = await GetClientIdFromRequestAsync(_httpContextAccessor.HttpContext.Request);
-        if (clientId == Guid.Empty)
+        var requiredClientIds = new List<Guid> { Handlers.Constants.Client.GlobalId };
+        var requestClientId = await GetClientIdFromRequestAsync(_httpContextAccessor.HttpContext.Request);
+
+        if (requestClientId != null)
         {
-            return;
+            requiredClientIds.Add(requestClientId.Value);
         }
 
-        var role = await _userAssignmentRepository.GetRoleAsync(userId, clientId, CancellationToken.None);
-        if (role != null && matchingRoles.Contains(role.Value))
-        {
-            context.Succeed(requirement);
-            return;
-        }
+        var assignedClientIds = await _userAssignmentRepository.GetClientIdsByRolesAsync(userId, matchingRoles, CancellationToken.None);
 
-        role = await _userAssignmentRepository.GetRoleAsync(userId, Handlers.Constants.Client.GlobalId, CancellationToken.None);
-        if (role != null && matchingRoles.Contains(role.Value))
+        if (requiredClientIds.Intersect(assignedClientIds).Any())
         {
-            context.Succeed(requirement);
+                context.Succeed(requirement);
         }
     }
 
-    private async Task<Guid> GetClientIdFromRequestAsync(HttpRequest request)
+    private async Task<Guid?> GetClientIdFromRequestAsync(HttpRequest request)
     {
-        var clientId = Guid.Empty;
-
         if (request.RouteValues.TryGetValue("controller", out var serviceName) &&
             serviceName.ToString().Equals(typeof(ClientService).Name, StringComparison.Ordinal) &&
-            request.RouteValues.TryGetValue("id", out var routeClientId) &&
-            Guid.TryParse(routeClientId.ToString(), out clientId))
+            request.RouteValues.TryGetValue("id", out var routeClientIdObj) &&
+            Guid.TryParse(routeClientIdObj.ToString(), out var routeClientId))
         {
-            return clientId;
+            return routeClientId;
         }
 
-        if (request.Query.TryGetValue("clientId", out var queryClientId) &&
-            Guid.TryParse(queryClientId.ToString(), out clientId))
+        if (request.Query.TryGetValue("clientId", out var queryClientIdObj) &&
+            Guid.TryParse(queryClientIdObj.ToString(), out var queryClientId))
         {
-            return clientId;
+            return queryClientId;
         }
 
         if (request.ContentType?.Contains("application/json", StringComparison.Ordinal) == true)
@@ -103,7 +97,7 @@ public class ClientAssignmentHandler : AuthorizationHandler<ClientAssignmentRequ
             }
         }
 
-        return clientId;
+        return null;
     }
 
     private sealed record ClientIdContainer(Guid ClientId);

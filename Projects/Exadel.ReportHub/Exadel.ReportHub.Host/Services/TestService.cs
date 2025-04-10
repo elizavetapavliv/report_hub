@@ -63,6 +63,6 @@ public class TestService(ISender sender) : BaseService
 
     public class ClientIdTest
     {
-        public Guid ClientId { get; set; }
+        public Guid? ClientId { get; set; }
     }
 }

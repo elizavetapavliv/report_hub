@@ -55,7 +55,7 @@ const userIds = [
     UUID("fabefb5b-fe77-4513-800c-7ee647b4ac09")
 ]
 
-const globalClientId = UUID("E47501A8-547B-4DC4-BA97-E65CCFC39477");
+const globalClientId = UUID("e47501a8-547b-4dc4-ba97-e65ccfc39477");
 
 const clientIds = [
     UUID("f89e1e75-d61c-4c51-b0be-c285500988cf"),
@@ -85,7 +85,7 @@ for (let i = 0; i < userAssignmentCount / 2; i++) {
     userAssignments.push({
         _id: userAssignmentIds[i],
         UserId: userIds[i],
-        ClienId: globalClientId,
+        ClientId: globalClientId,
         Role: globalRoles[getRandomInt(globalRoles.length)]
     });
 }
@@ -94,7 +94,7 @@ for (let i = userAssignmentCount / 2; i < userAssignmentCount; i++) {
     userAssignments.push({
         _id: userAssignmentIds[i],
         UserId: userIds[i - userAssignmentCount / 2],
-        ClienId: clientIds[(i - userAssignmentCount / 2) / 2],
+        ClientId: clientIds[(i - userAssignmentCount / 2) / 2],
         Role: clientRoles[getRandomInt(clientRoles.length)]
     });
 }
