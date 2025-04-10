@@ -22,7 +22,7 @@ public static class Constants
             public const int InvoiceMaximumNumberLength = 15;
             public const string InvoiceNumberErrorMessage = "Invoice number must start with 'INV' followed by digits.";
             public const string IssueDateErrorMessage = "Issue date cannot be in the future.";
-            public const string DueDateErrorMessage = "Due date must be greater than or equal to issue date.";
+            public const string DueDateErrorMessage = "Due date must be greater than issue date.";
             public const int BankAccountNumberMinLength = 8;
             public const int BankAccountNumberMaxLength = 17;
             public const string BankAccountNumberErrorMessage = "Bank account number must only contain digits and dashes.";

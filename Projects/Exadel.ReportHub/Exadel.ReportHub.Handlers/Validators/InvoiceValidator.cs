@@ -23,12 +23,12 @@ public class InvoiceValidator : AbstractValidator<CreateInvoiceDTO>
 
         RuleFor(x => x.ClientId)
             .NotEmpty()
-            .MustAsync(ClientMustExistAsync)
+            .MustAsync(_clientRepository.ExistsAsync)
             .WithMessage(Constants.Validation.Invoice.ClientDoesntExistsErrorMessage);
 
         RuleFor(x => x.CustomerId)
             .NotEmpty()
-            .MustAsync(CustomerMustExistAsync)
+            .MustAsync(_customerRepository.ExistsAsync)
             .WithMessage(Constants.Validation.Invoice.CustomerDoesntExistsErrorMessage);
 
         RuleFor(x => x.InvoiceNumber)
@@ -68,17 +68,5 @@ public class InvoiceValidator : AbstractValidator<CreateInvoiceDTO>
 
         RuleFor(x => x.ItemIds)
             .NotEmpty();
-    }
-
-    private async Task<bool> ClientMustExistAsync(Guid Id, CancellationToken cancellationToken)
-    {
-        var clientExists = await _clientRepository.ExistsAsync(Id, cancellationToken);
-        return clientExists;
-    }
-
-    private async Task<bool> CustomerMustExistAsync(Guid Id, CancellationToken cancellationToken)
-    {
-        var customerExists = await _customerRepository.ExistsAsync(Id, cancellationToken);
-        return customerExists;
     }
 }
