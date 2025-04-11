@@ -1,6 +1,6 @@
 ﻿using Exadel.ReportHub.SDK.DTOs.Invoice;
 
-namespace Exadel.ReportHub.Csv.Abstracts;
+namespace Exadel.ReportHub.Csv.Abstract;
 
 public interface ICsvProcessor
 {

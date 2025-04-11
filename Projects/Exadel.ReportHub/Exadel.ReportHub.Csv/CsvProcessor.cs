@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 using CsvHelper;
-using Exadel.ReportHub.Csv.Abstracts;
+using Exadel.ReportHub.Csv.Abstract;
 using Exadel.ReportHub.SDK.DTOs.Invoice;
 
 namespace Exadel.ReportHub.Csv;

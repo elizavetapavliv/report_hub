@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 using AutoMapper;
 using Exadel.ReportHub.Common.Providers;
 using Exadel.ReportHub.Csv;
-using Exadel.ReportHub.Csv.Abstracts;
+using Exadel.ReportHub.Csv.Abstract;
 using Exadel.ReportHub.Host.Infrastructure.Filters;
 using Exadel.ReportHub.Host.Registrations;
 using Exadel.ReportHub.RA;
@@ -88,7 +88,7 @@ public class Startup(IConfiguration configuration)
         services.AddAutoMapper(typeof(Startup));
         services.AddHttpContextAccessor();
         services.AddScoped<IUserProvider, UserProvider>();
-        services.AddScoped<ICsvProcessor, CsvProcessor>();
+        services.AddSingleton<ICsvProcessor, CsvProcessor>();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)

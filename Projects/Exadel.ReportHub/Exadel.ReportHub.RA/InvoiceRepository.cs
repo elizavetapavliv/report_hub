@@ -10,8 +10,8 @@ public class InvoiceRepository : BaseRepository, IInvoiceRepository
     {
     }
 
-    public async Task ImportAsync(IEnumerable<Invoice> invoices, CancellationToken cancellationToken)
+    public async Task AddManyAsync(IEnumerable<Invoice> invoices, CancellationToken cancellationToken)
     {
-        await GetCollection<Invoice>().InsertManyAsync(invoices, cancellationToken: cancellationToken);
+        await base.AddManyAsync(invoices, cancellationToken);
     }
 }
