@@ -87,7 +87,7 @@ public class ClientAssignmentHandler(
             }
             catch (JsonException ex)
             {
-                logger.LogInformation(ex, ex.Message);
+                logger.LogError(ex, "No json-object found in body.");
             }
             finally
             {
