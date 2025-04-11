@@ -1,0 +1,21 @@
+﻿using System.Diagnostics.CodeAnalysis;
+using Exadel.ReportHub.Handlers.Invoice.Import;
+using Exadel.ReportHub.SDK.Models;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Exadel.ReportHub.Host.Services;
+
+[ExcludeFromCodeCoverage]
+[ApiController]
+[Route("api/invoices")]
+public class InvoiceService(ISender sender) : BaseService
+{
+    [HttpPost("import")]
+    public async Task<IActionResult> ImportInvoicesAsync([FromForm] FileModel model)
+    {
+        var result = await sender.Send(new ImportInvoicesRequest(model));
+
+        return FromResult(result);
+    }
+}

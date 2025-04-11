@@ -24,7 +24,7 @@ public static class Constants
             public const string IssueDateErrorMessage = "Issue date cannot be in the future.";
             public const string DueDateErrorMessage = "Due date must be greater than issue date.";
             public const int BankAccountNumberMinLength = 8;
-            public const int BankAccountNumberMaxLength = 17;
+            public const int BankAccountNumberMaxLength = 28;
             public const string BankAccountNumberErrorMessage = "Bank account number must only contain digits and dashes.";
             public const string CustomerDoesntExistsErrorMessage = "Customer does not exist.";
             public const string ClientDoesntExistsErrorMessage = "Client does not exist.";

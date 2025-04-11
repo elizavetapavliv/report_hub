@@ -348,7 +348,7 @@ public class InvoiceValidatorTests : BaseTestFixture
     }
 
     [Test]
-    [TestCase("2232323-322323-322323")]
+    [TestCase("2232323-322323-322323-234234233424-23423423")]
     [TestCase("2332-23")]
     public async Task ValidateAsync_BankAccountNumberNotCorrectLength_ErrorReturned(string bankAccountNumber)
     {

@@ -1,6 +1,5 @@
 ﻿using Exadel.ReportHub.RA.Abstract;
 using Exadel.ReportHub.SDK.DTOs.Invoice;
-using Exadel.ReportHub.SDK.Enums;
 using FluentValidation;
 
 namespace Exadel.ReportHub.Handlers.Validators;
@@ -65,8 +64,5 @@ public class InvoiceValidator : AbstractValidator<CreateInvoiceDTO>
             .Length(Constants.Validation.Invoice.BankAccountNumberMinLength, Constants.Validation.Invoice.BankAccountNumberMaxLength)
             .Matches(@"^[0-9\-]+$")
             .WithMessage(Constants.Validation.Invoice.BankAccountNumberErrorMessage);
-
-        RuleFor(x => x.ItemIds)
-            .NotEmpty();
     }
 }
