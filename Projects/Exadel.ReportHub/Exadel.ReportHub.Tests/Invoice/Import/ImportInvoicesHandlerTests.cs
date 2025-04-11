@@ -5,7 +5,6 @@ using Exadel.ReportHub.Csv.Abstracts;
 using Exadel.ReportHub.Handlers.Invoice.Import;
 using Exadel.ReportHub.RA.Abstract;
 using Exadel.ReportHub.SDK.DTOs.Invoice;
-using Exadel.ReportHub.SDK.DTOs.User;
 using Exadel.ReportHub.Tests.Abstracts;
 using Moq;
 
