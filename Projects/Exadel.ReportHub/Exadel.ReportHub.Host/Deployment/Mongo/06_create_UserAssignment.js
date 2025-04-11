@@ -14,10 +14,15 @@ db.createCollection("UserAssignment", {
 
 db.UserAssignment.createIndex(
     { UserId: 1, ClientId: 1 },
-    {
+    {   
         unique: true,
         background: true
     });
+db.UserAssignment.createIndexes([
+    { UserId: 1, Role: 1 },
+    { UserId: 1, ClientId: 1, Role: 1 }
+],
+    { background: true });
 
 const userAssignmentIds = [
     UUID("72f70b7b-5bc8-4b11-85a9-2c9002d3e6fa"),
@@ -94,7 +99,7 @@ for (let i = userAssignmentCount / 2; i < userAssignmentCount; i++) {
     userAssignments.push({
         _id: userAssignmentIds[i],
         UserId: userIds[i - userAssignmentCount / 2],
-        ClientId: clientIds[(i - userAssignmentCount / 2) / 2],
+        ClientId: clientIds[NumberInt((i - userAssignmentCount / 2) / 2)],
         Role: clientRoles[getRandomInt(clientRoles.length)]
     });
 }
@@ -107,7 +112,7 @@ const opt = userAssignments.map(userAssignment => ({
     }
 }));
 
-db.userAssignment.bulkWrite(opt);
+db.UserAssignment.bulkWrite(opt);
 
 
 db.MigrationHistory.insertOne({
