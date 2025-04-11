@@ -7,13 +7,11 @@ if (db.MigrationHistory.findOne({ ScriptName: scriptName, Version: version })) {
     quit();
 }
 
-if (!db.getCollectionNames().includes("IdentityResource")) {
-    db.createCollection("IdentityResource", {
-        collation: {
-            locale: "en"
-        }
-    });
-}
+db.createCollection("IdentityResource", {
+    collation: {
+        locale: "en"
+    }
+});
 db.IdentityResource.createIndex(
     { Name: 1 },
     {
@@ -21,13 +19,11 @@ db.IdentityResource.createIndex(
         background: true
     });
 
-if (!db.getCollectionNames().includes("ApiScope")) {
-    db.createCollection("ApiScope", {
-        collation: {
-            locale: "en"
-        }
-    });
-}
+db.createCollection("ApiScope", {
+    collation: {
+        locale: "en"
+    }
+});
 db.ApiScope.createIndex(
     { Name: 1 },
     {
@@ -35,13 +31,11 @@ db.ApiScope.createIndex(
         background: true
     });
 
-if (!db.getCollectionNames().includes("ApiResource")) {
-    db.createCollection("ApiResource", {
-        collation: {
-            locale: "en"
-        }
-    });
-}
+db.createCollection("ApiResource", {
+    collation: {
+        locale: "en"
+    }
+});
 db.ApiResource.createIndex(
     { Name: 1 },
     {
@@ -54,13 +48,11 @@ db.ApiResource.createIndex(
         background: true
     });
 
-if (!db.getCollectionNames().includes("IdentityClient")) {
-    db.createCollection("IdentityClient", {
-        collation: {
-            locale: "en"
-        }
-    });
-}
+db.createCollection("IdentityClient", {
+    collation: {
+        locale: "en"
+    }
+});
 db.IdentityClient.createIndex(
     { ClientId: 1 },
     {

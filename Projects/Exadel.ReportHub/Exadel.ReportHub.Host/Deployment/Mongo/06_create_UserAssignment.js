@@ -6,22 +6,19 @@ if (db.MigrationHistory.findOne({ ScriptName: scriptName, Version: version })) {
     quit();
 }
 
-if (!db.getCollectionNames().includes("UserAssignment")) {
-    db.createCollection("UserAssignment", {
-        collation: {
-            locale: "en"
-        }
-    });
-}
+db.createCollection("UserAssignment", {
+    collation: {
+        locale: "en"
+    }
+});
 db.UserAssignment.createIndex(
-    { UserId: 1, ClientId: 1 },
-    {   
+    { UserId: 1, ClientId: 1, Role: 1 },
+    {
         unique: true,
         background: true
     });
-db.UserAssignment.createIndexes([
+db.UserAssignment.createIndex([
     { UserId: 1, Role: 1 },
-    { UserId: 1, ClientId: 1, Role: 1 }
 ],
     { background: true });
 

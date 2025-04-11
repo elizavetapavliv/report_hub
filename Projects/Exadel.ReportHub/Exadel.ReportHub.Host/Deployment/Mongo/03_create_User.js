@@ -6,13 +6,11 @@ if (db.MigrationHistory.findOne({ ScriptName: scriptName, Version: version })) {
     quit();
 }
 
-if (!db.getCollectionNames().includes("User")) {
-    db.createCollection("User", {
-        collation: {
-            locale: "en"
-        }
-    });
-}
+db.createCollection("User", {
+    collation: {
+        locale: "en"
+    }
+});
 db.User.createIndex(
     { Email: 1 },
     {
