@@ -1,5 +1,5 @@
 ﻿const scriptName = "02_initialize_identity_data";
-const version = NumberInt(3);
+const version = NumberInt(4);
 const reportHubServiceClientSecret = process.env.ReportHubService_ClientSecret
 
 if (db.MigrationHistory.findOne({ ScriptName: scriptName, Version: version })) {
@@ -7,29 +7,66 @@ if (db.MigrationHistory.findOne({ ScriptName: scriptName, Version: version })) {
     quit();
 }
 
-db.createCollection("IdentityResource", {
-    collation: {
-        locale: "en"
-    }
-});
+if (!db.getCollectionNames().includes("IdentityResource")) {
+    db.createCollection("IdentityResource", {
+        collation: {
+            locale: "en"
+        }
+    });
+}
+db.IdentityResource.createIndex(
+    { Name: 1 },
+    {
+        unique: true,
+        background: true
+    });
 
-db.createCollection("ApiScope", {
-    collation: {
-        locale: "en"
-    }
-});
+if (!db.getCollectionNames().includes("ApiScope")) {
+    db.createCollection("ApiScope", {
+        collation: {
+            locale: "en"
+        }
+    });
+}
+db.ApiScope.createIndex(
+    { Name: 1 },
+    {
+        unique: true,
+        background: true
+    });
 
-db.createCollection("ApiResource", {
-    collation: {
-        locale: "en"
-    }
-});
+if (!db.getCollectionNames().includes("ApiResource")) {
+    db.createCollection("ApiResource", {
+        collation: {
+            locale: "en"
+        }
+    });
+}
+db.ApiResource.createIndex(
+    { Name: 1 },
+    {
+        unique: true,
+        background: true
+    });
+db.ApiResource.createIndex(
+    { Scopes: 1 },
+    {
+        background: true
+    });
 
-db.createCollection("IdentityClient", {
-    collation: {
-        locale: "en"
-    }
-});
+if (!db.getCollectionNames().includes("IdentityClient")) {
+    db.createCollection("IdentityClient", {
+        collation: {
+            locale: "en"
+        }
+    });
+}
+db.IdentityClient.createIndex(
+    { ClientId: 1 },
+    {
+        unique: true,
+        background: true
+    });
 
 const identityResources = [
     {

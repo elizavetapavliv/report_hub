@@ -6,11 +6,14 @@ if (db.MigrationHistory.findOne({ ScriptName: scriptName, Version: version })) {
     quit();
 }
 
-db.createCollection("Client", {
-    collation: {
-        locale: "en"
-    }
-});
+
+if (!db.getCollectionNames().includes("Client")) {
+    db.createCollection("Client", {
+        collation: {
+            locale: "en"
+        }
+    });
+}
 
 const clientIds = [
     UUID("ea94747b-3d45-46d6-8775-bf27eb5da02b"),

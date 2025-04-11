@@ -6,12 +6,13 @@ if (db.MigrationHistory.findOne({ ScriptName: scriptName, Version: version })) {
     quit();
 }
 
-db.createCollection("UserAssignment", {
-    collation: {
-        locale: "en"
-    }
-});
-
+if (!db.getCollectionNames().includes("UserAssignment")) {
+    db.createCollection("UserAssignment", {
+        collation: {
+            locale: "en"
+        }
+    });
+}
 db.UserAssignment.createIndex(
     { UserId: 1, ClientId: 1 },
     {   
