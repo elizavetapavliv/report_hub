@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Exadel.ReportHub.Handlers.Invoice.Import;
-using Exadel.ReportHub.Host.Models;
+using Exadel.ReportHub.SDK.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,10 +12,9 @@ namespace Exadel.ReportHub.Host.Services;
 public class InvoiceService(ISender sender) : BaseService
 {
     [HttpPost("import")]
-    public async Task<IActionResult> ImportInvoices([FromForm] FileModel model)
+    public async Task<IActionResult> ImportInvoicesAsync([FromForm] FileModel model)
     {
-        using var stream = model.FormFile.OpenReadStream();
-        var result = await sender.Send(new ImportInvoicesRequest(stream, model.FormFile.FileName));
+        var result = await sender.Send(new ImportInvoicesRequest(model));
 
         return FromResult(result);
     }
