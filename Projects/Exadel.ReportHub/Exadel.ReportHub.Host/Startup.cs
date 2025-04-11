@@ -96,7 +96,7 @@ public class Startup(IConfiguration configuration)
                 policy.Requirements.Add(new ClientAssignmentRequirement()));
         });
 
-        services.AddIdentityReg();
+        services.AddIdentity();
         services.AddMongo();
         services.AddMediatR();
         services.AddAutoMapper(typeof(Startup));
