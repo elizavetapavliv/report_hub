@@ -9,15 +9,13 @@ namespace Exadel.ReportHub.Tests;
 public class UpdateUserNameHandlerTests
 {
     private Mock<IUserRepository> _userRepositoryMock;
-    private Mock<IUserProvider> _userProviderMock;
     private UpdateUserNameHandler _handler;
 
     [SetUp]
     public void Setup()
     {
         _userRepositoryMock = new Mock<IUserRepository>();
-        _userProviderMock = new Mock<IUserProvider>();
-        _handler = new UpdateUserNameHandler(_userRepositoryMock.Object, _userProviderMock.Object);
+        _handler = new UpdateUserNameHandler(_userRepositoryMock.Object);
     }
 
     [Test]
@@ -26,13 +24,12 @@ public class UpdateUserNameHandlerTests
         // Arrange
         var userId = Guid.NewGuid();
         var newName = "New Name";
-        var request = new UpdateUserNameRequest(newName);
-        _userProviderMock
-            .Setup(x => x.GetUserId())
-            .Returns(userId);
+        var request = new UpdateUserNameRequest(userId, newName);
         _userRepositoryMock
-            .Setup(x => x.UpdateNameAsync(userId, newName, CancellationToken.None))
-            .Returns(Task.CompletedTask);
+            .Setup(x => x.UpdateNameAsync(userId, newName, CancellationToken.None));
+        _userRepositoryMock
+            .Setup(x => x.ExistsAsync(userId, CancellationToken.None))
+            .ReturnsAsync(true);
 
         // Act
         var result = await _handler.Handle(request, CancellationToken.None);
@@ -40,8 +37,30 @@ public class UpdateUserNameHandlerTests
         // Assert
         Assert.That(result.IsError, Is.False);
         Assert.That(result.Value, Is.EqualTo(Result.Updated));
-
-        _userProviderMock.Verify(x => x.GetUserId(), Times.Once);
+        _userRepositoryMock.Verify(x => x.ExistsAsync(userId, CancellationToken.None), Times.Once);
         _userRepositoryMock.Verify(x => x.UpdateNameAsync(userId, newName, CancellationToken.None), Times.Once);
+    }
+
+    [Test]
+    public async Task UpdateUserName_UserDoesntExist_ReturnsNotFound()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var newName = "New Name";
+        var request = new UpdateUserNameRequest(userId, newName);
+        _userRepositoryMock
+            .Setup(x => x.ExistsAsync(userId, CancellationToken.None))
+            .ReturnsAsync(false);
+        _userRepositoryMock
+            .Setup(x => x.UpdateNameAsync(userId, newName, CancellationToken.None));
+
+        // Act
+        var result = await _handler.Handle(request, CancellationToken.None);
+
+        // Assert
+        Assert.That(result.IsError, Is.True);
+        Assert.That(result.FirstError, Is.EqualTo(Error.NotFound()));
+        _userRepositoryMock.Verify(x => x.ExistsAsync(userId, CancellationToken.None), Times.Once);
+        _userRepositoryMock.Verify(x => x.UpdateNameAsync(userId, newName, CancellationToken.None), Times.Never);
     }
 }

@@ -1,5 +1,7 @@
 ﻿using Exadel.ReportHub.Handlers;
 using Exadel.ReportHub.Handlers.User.Create;
+using Exadel.ReportHub.Handlers.User.UpdateName;
+using Exadel.ReportHub.Handlers.Validators;
 using Exadel.ReportHub.RA.Abstract;
 using Exadel.ReportHub.SDK.DTOs.User;
 using FluentValidation;
@@ -44,6 +46,18 @@ public class CreateUserValidatorTests
         var result = await _validator.TestValidateAsync(createUserRequest);
         result.ShouldNotHaveAnyValidationErrors();
         Assert.That(result.Errors, Is.Empty);
+    }
+
+    [Test]
+    public async Task ValidateAsync_FullNameExceedsMaxLength_ErrorReturned()
+    {
+        var maxLength = 101;
+        var fullname = new string('x', maxLength);
+        var createUserRequest = new CreateUserRequest(new CreateUserDTO { FullName = fullname, Email = "test@gmail.com", Password = "Testpassword123!" });
+        var result = await _validator.TestValidateAsync(createUserRequest);
+        result.ShouldHaveValidationErrorFor(x => x.CreateUserDto.FullName)
+            .WithErrorMessage($"The length of 'Full Name' must be 100 characters or fewer. You entered {maxLength} characters.");
+        Assert.That(result.Errors, Has.Count.EqualTo(1));
     }
 
     [Test]

@@ -15,7 +15,7 @@ public interface IUserAssignmentRepository
 
     Task UpdateRoleAsync(Guid userId, Guid clientId, UserRole userRole, CancellationToken cancellationToken);
 
-    Task<IEnumerable<Guid>> GetClientIdsByUserIdAsync(Guid userId, CancellationToken cancellationToken);
+    Task<IEnumerable<Guid>> GetClientIdsAsync(Guid userId, CancellationToken cancellationToken);
 
-    Task DeleteUserAssignmentAsync(Guid userId, IEnumerable<Guid> clientIds, CancellationToken cancellationToken);
+    Task DeleteAsync(Guid userId, IEnumerable<Guid> clientIds, CancellationToken cancellationToken);
 }
