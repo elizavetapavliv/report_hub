@@ -17,7 +17,9 @@ public class UserAssignmentRepository : BaseRepository, IUserAssignmentRepositor
     public async Task UpsertAsync(UserAssignment userAssignment, CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.And(_filterBuilder.Eq(x => x.UserId, userAssignment.UserId), _filterBuilder.Eq(x => x.ClientId, userAssignment.ClientId));
-        var update = Builders<UserAssignment>.Update.Set(x => x.Role, userAssignment.Role);
+        var update = Builders<UserAssignment>.Update
+            .Set(x => x.Role, userAssignment.Role)
+            .SetOnInsert(x => x.Id, Guid.NewGuid());
 
         await GetCollection<UserAssignment>().UpdateOneAsync(filter, update, new UpdateOptions { IsUpsert = true }, cancellationToken);
     }

@@ -25,12 +25,12 @@ public class UpsertUserAssignmentRequestValidator : AbstractValidator<UpsertUser
                 child.RuleFor(x => x.UserId)
                     .NotEmpty()
                     .MustAsync(_userRepository.ExistsAsync)
-                    .WithMessage(Constants.Validation.UserAssignment.UserNotExistMessage);
+                    .WithMessage(Constants.Validation.UserAssignment.UserDoesNotExistMessage);
 
                 child.RuleFor(x => x.ClientId)
                     .NotEmpty()
                     .MustAsync(_clientRepository.ExistsAsync)
-                    .WithMessage(Constants.Validation.UserAssignment.ClientNotExistMessage);
+                    .WithMessage(Constants.Validation.UserAssignment.ClientDoesNotExistMessage);
 
                 child.RuleFor(x => x.Role)
                     .IsInEnum();

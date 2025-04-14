@@ -28,10 +28,11 @@ public class UpsertUserAssignmentHandlerTests : BaseTestFixture
     public async Task UpsertUserAssignment_ValidRequest_ReturnsUpdated(UserRole role)
     {
         // Arrange
-        var setUserAssignmentDto = Fixture.Build<UpsertUserAssignmentDTO>().With(x => x.Role, role).Create();
+        var upsertUserAssignmentDto = Fixture.Build<UpsertUserAssignmentDTO>().With(x => x.Role, role).Create();
+        var userAssignment = Mapper.Map<Data.Models.UserAssignment>(upsertUserAssignmentDto);
 
         // Act
-        var request = new UpsertUserAssignmentRequest(setUserAssignmentDto);
+        var request = new UpsertUserAssignmentRequest(upsertUserAssignmentDto);
         var result = await _handler.Handle(request, CancellationToken.None);
 
         // Assert
@@ -39,7 +40,10 @@ public class UpsertUserAssignmentHandlerTests : BaseTestFixture
         Assert.That(result.Value, Is.EqualTo(Result.Updated));
 
         _userAssignmentRepositoryMock.Verify(
-            x => x.UpsertAsync(It.IsAny<Data.Models.UserAssignment>(), CancellationToken.None),
+            x => x.UpsertAsync(It.Is<Data.Models.UserAssignment>(
+                ua => ua.UserId == userAssignment.UserId &&
+                ua.ClientId == userAssignment.ClientId &&
+                ua.Role == userAssignment.Role), CancellationToken.None),
             Times.Once);
     }
 }

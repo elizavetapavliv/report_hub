@@ -8,7 +8,7 @@ using Exadel.ReportHub.Tests.Abstracts;
 using FluentValidation.TestHelper;
 using Moq;
 
-namespace Exadel.ReportHub.Tests.Validators;
+namespace Exadel.ReportHub.Tests.UserAssignment.Upsert;
 
 [TestFixture]
 public class UpsertUserAssignmentValidatorTests : BaseTestFixture
@@ -104,7 +104,7 @@ public class UpsertUserAssignmentValidatorTests : BaseTestFixture
 
         // Assert
         result.ShouldHaveValidationErrorFor(x => x.SetUserAssignmentDTO.UserId)
-            .WithErrorMessage(Constants.Validation.UserAssignment.UserNotExistMessage);
+            .WithErrorMessage(Constants.Validation.UserAssignment.UserDoesNotExistMessage);
         Assert.That(result.Errors, Has.Exactly(1).Items);
 
         _userRepositoryMock.Verify(
@@ -164,7 +164,37 @@ public class UpsertUserAssignmentValidatorTests : BaseTestFixture
 
         // Assert
         result.ShouldHaveValidationErrorFor(x => x.SetUserAssignmentDTO.ClientId)
-            .WithErrorMessage(Constants.Validation.UserAssignment.ClientNotExistMessage);
+            .WithErrorMessage(Constants.Validation.UserAssignment.ClientDoesNotExistMessage);
+        Assert.That(result.Errors, Has.Exactly(1).Items);
+
+        _userRepositoryMock.Verify(
+            x => x.ExistsAsync(upsertUserAssignmentDto.UserId, CancellationToken.None),
+            Times.Once);
+        _clientRepositoryMock.Verify(
+            x => x.ExistsAsync(upsertUserAssignmentDto.ClientId, CancellationToken.None),
+            Times.Once);
+    }
+
+    [TestCase((UserRole)999)]
+    [TestCase((UserRole)(-1))]
+    public async Task ValidateAsync_InvalidUserRole_ErrorReturned(UserRole role)
+    {
+        // Arrange
+        var upsertUserAssignmentDto = Fixture.Build<UpsertUserAssignmentDTO>().With(x => x.Role, role).Create();
+        _userRepositoryMock
+            .Setup(x => x.ExistsAsync(upsertUserAssignmentDto.UserId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+        _clientRepositoryMock
+            .Setup(x => x.ExistsAsync(upsertUserAssignmentDto.ClientId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+
+        // Act
+        var upsertUserAssignmentRequest = new UpsertUserAssignmentRequest(upsertUserAssignmentDto);
+        var result = await _validator.TestValidateAsync(upsertUserAssignmentRequest);
+
+        // Assert
+        result.ShouldHaveValidationErrorFor(x => x.SetUserAssignmentDTO.Role)
+            .WithErrorMessage($"'Role' has a range of values which does not include '{role}'.");
         Assert.That(result.Errors, Has.Exactly(1).Items);
 
         _userRepositoryMock.Verify(
