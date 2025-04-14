@@ -16,6 +16,12 @@ public static class Constants
             public const string PasswordSpecialCharacterMessage = "Password must contain at least one special character.";
         }
 
+        public static class Client
+        {
+            public const string ShouldStartWithCapitalError = "The name must begin with a capital letter.";
+            public const string NameTakenMassage = "Name is already taken";
+        }
+
         public static class Invoice
         {
             public const int CurrencyCodeLength = 3;

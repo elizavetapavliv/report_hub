@@ -2,6 +2,7 @@
 using Exadel.ReportHub.Data.Models;
 using Exadel.ReportHub.RA.Abstract;
 using MongoDB.Driver;
+using static Duende.IdentityServer.Models.IdentityResources;
 
 namespace Exadel.ReportHub.RA;
 
@@ -15,8 +16,43 @@ public class ClientRepository : BaseRepository, IClientRepository
     {
     }
 
+    public async Task AddAsync(Client client, CancellationToken cancellationToken)
+    {
+        await base.AddAsync(client, cancellationToken);
+    }
+
+    public async Task<Client> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        return await GetByIdAsync<Client>(id, cancellationToken);
+    }
+
+    public async Task UpdateActivityAsync(Guid id, bool isActive, CancellationToken cancellationToken)
+    {
+        var update = Builders<Client>.Update.Set(x => x.IsActive, isActive);
+        await UpdateAsync(id, update, cancellationToken);
+    }
+
+    public async Task UpdateNameAsync(Guid id, string name, CancellationToken cancellationToken)
+    {
+        var update = Builders<Client>.Update.Set(x => x.Name, name);
+        await UpdateAsync(id, update, cancellationToken);
+    }
+
     public async Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken)
     {
         return await ExistsAsync<Client>(id, cancellationToken);
+    }
+
+    public async Task<bool> NameExistsAsync(string name, CancellationToken cancellationToken)
+    {
+        var filter = _filterBuilder.Eq(x => x.Name, name);
+        var count = await GetCollection<Client>().Find(filter).CountDocumentsAsync(cancellationToken);
+        return count > 0;
+    }
+
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var filter = _filterBuilder.Eq(x => x.Id, id);
+        await GetCollection<Client>().DeleteOneAsync(filter, cancellationToken);
     }
 }
