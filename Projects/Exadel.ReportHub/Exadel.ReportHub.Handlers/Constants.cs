@@ -18,8 +18,8 @@ public static class Constants
 
         public static class Client
         {
-            public const string ShouldStartWithCapitalError = "The name must begin with a capital letter.";
-            public const string NameTakenMassage = "Name is already taken";
+            public const string ShouldStartWithCapitalMessage = "The name must begin with a capital letter.";
+            public const string NameTakenMessage = "Name is already taken";
         }
 
         public static class Invoice

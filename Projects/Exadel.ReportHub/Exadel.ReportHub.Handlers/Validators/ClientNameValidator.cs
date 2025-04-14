@@ -19,9 +19,9 @@ public class ClientNameValidator : AbstractValidator<string>
 
         RuleFor(name => name)
             .Matches("^[A-Z]")
-            .WithMessage(Constants.Validation.Client.ShouldStartWithCapitalError)
+            .WithMessage(Constants.Validation.Client.ShouldStartWithCapitalMessage)
             .MustAsync(NameMustNotExistsAsync)
-            .WithMessage(Constants.Validation.Client.NameTakenMassage);
+            .WithMessage(Constants.Validation.Client.NameTakenMessage);
     }
 
     private async Task<bool> NameMustNotExistsAsync(string name, CancellationToken cancellationToken)
