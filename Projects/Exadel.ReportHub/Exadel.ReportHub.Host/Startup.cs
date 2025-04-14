@@ -105,6 +105,7 @@ public class Startup(IConfiguration configuration)
         services.AddHttpContextAccessor();
         services.AddScoped<IUserProvider, UserProvider>();
         services.AddSingleton<IAuthorizationHandler, ClientAssignmentHandler>();
+        services.AddSingleton<ICsvProcessor, CsvProcessor>();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)
