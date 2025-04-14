@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using AutoFixture;
+using ErrorOr;
 using Exadel.ReportHub.Csv.Abstract;
 using Exadel.ReportHub.Handlers.Invoice.Import;
 using Exadel.ReportHub.RA.Abstract;
@@ -48,8 +49,13 @@ public class ImportInvoicesHandlerTests : BaseTestFixture
 
         _invoiceValidatorMock
             .Setup(x => x.ValidateAsync(
-                It.Is<CreateInvoiceDTO>(
-                    dto => invoiceDtos.Any(inv => inv.InvoiceNumber == dto.InvoiceNumber)),
+                invoiceDtos[0],
+                CancellationToken.None))
+            .ReturnsAsync(new ValidationResult());
+
+        _invoiceValidatorMock
+            .Setup(x => x.ValidateAsync(
+                invoiceDtos[1],
                 CancellationToken.None))
             .ReturnsAsync(new ValidationResult());
 
@@ -97,5 +103,119 @@ public class ImportInvoicesHandlerTests : BaseTestFixture
                         x.BankAccountNumber == invoiceDtos[1].BankAccountNumber)),
                     CancellationToken.None),
                 Times.Once);
+    }
+
+    [Test]
+    public async Task ImportInvoices_WhenAllInvoicesInvalid_ReturnsValidationErrors()
+    {
+        // Arrange
+        var invoiceDtos = Fixture.Build<CreateInvoiceDTO>().CreateMany(2).ToList();
+        var invoices = Mapper.Map<IEnumerable<Data.Models.Invoice>>(invoiceDtos);
+
+        using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes("CSV content"));
+
+        var errorsInvoice = new List<ValidationFailure>
+        {
+            new ValidationFailure("BankAccountNumber", "Bank account number must only contain digits and dashes."),
+            new ValidationFailure("IssueDateErrorMessage", "Issue date cannot be in the future")
+        };
+
+        _invoiceValidatorMock
+            .Setup(x => x.ValidateAsync(
+                invoiceDtos[0],
+                CancellationToken.None))
+            .ReturnsAsync(new ValidationResult(errorsInvoice));
+
+        _invoiceValidatorMock
+            .Setup(x => x.ValidateAsync(
+                invoiceDtos[1],
+                CancellationToken.None))
+            .ReturnsAsync(new ValidationResult(errorsInvoice));
+
+        _csvProcessorMock
+            .Setup(x => x.ReadInvoices(It.Is<Stream>(str => str.Length == memoryStream.Length)))
+            .Returns(invoiceDtos);
+
+        _invoiceRepositoryMock
+            .Setup(repo => repo.AddManyAsync(invoices, CancellationToken.None))
+            .Returns(Task.CompletedTask);
+
+        var importDto = new ImportDTO
+        {
+            File = new FormFile(memoryStream, 0, memoryStream.Length, "formFile", "invoices.csv")
+        };
+
+        // Act
+        var request = new ImportInvoicesRequest(importDto);
+        var result = await _handler.Handle(request, CancellationToken.None);
+
+        // Assert
+        Assert.That(result.IsError, Is.True);
+        Assert.That(result.Errors, Has.Count.EqualTo(4));
+        Assert.That(result.Errors.All(e => e.Type == ErrorType.Validation), Is.True);
+        Assert.That(result.Errors.Select(e => e.Description), Has.All.Contains("Row"));
+
+        _invoiceRepositoryMock.Verify(
+                repo => repo.AddManyAsync(
+                    It.IsAny<IList<Data.Models.Invoice>>(),
+                    It.IsAny<CancellationToken>()),
+                Times.Never);
+    }
+
+    [Test]
+    public async Task ImportInvoices_WhenTheOnlyInvoiceInvalid_ReturnsValidationErrors()
+    {
+        // Arrange
+        var invoiceDtos = Fixture.Build<CreateInvoiceDTO>().CreateMany(2).ToList();
+        var invoices = Mapper.Map<IEnumerable<Data.Models.Invoice>>(invoiceDtos);
+
+        using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes("CSV content"));
+
+        var errorsInvoice = new List<ValidationFailure>
+        {
+            new ValidationFailure("BankAccountNumber", "Bank account number must only contain digits and dashes."),
+            new ValidationFailure("IssueDateErrorMessage", "Issue date cannot be in the future")
+        };
+
+        _invoiceValidatorMock
+            .Setup(x => x.ValidateAsync(
+                invoiceDtos[0],
+                CancellationToken.None))
+            .ReturnsAsync(new ValidationResult());
+
+        _invoiceValidatorMock
+            .Setup(x => x.ValidateAsync(
+                invoiceDtos[1],
+                CancellationToken.None))
+            .ReturnsAsync(new ValidationResult(errorsInvoice));
+
+        _csvProcessorMock
+            .Setup(x => x.ReadInvoices(It.Is<Stream>(str => str.Length == memoryStream.Length)))
+            .Returns(invoiceDtos);
+
+        _invoiceRepositoryMock
+            .Setup(repo => repo.AddManyAsync(invoices, CancellationToken.None))
+            .Returns(Task.CompletedTask);
+
+        var importDto = new ImportDTO
+        {
+            File = new FormFile(memoryStream, 0, memoryStream.Length, "formFile", "invoices.csv")
+        };
+
+        // Act
+        var request = new ImportInvoicesRequest(importDto);
+        var result = await _handler.Handle(request, CancellationToken.None);
+
+        // Assert
+        Assert.That(result.IsError, Is.True);
+        Assert.That(result.Errors, Has.Count.EqualTo(2));
+        Assert.That(result.Errors.All(e => e.Type == ErrorType.Validation), Is.True);
+        Assert.That(result.Errors.Select(e => e.Description), Has.All.Contains("Row"));
+
+        _invoiceRepositoryMock.Verify(
+                repo => repo.AddManyAsync(
+                    It.IsAny<IList<Data.Models.Invoice>>(),
+                    It.IsAny<CancellationToken>()),
+                Times.Never);
     }
 }

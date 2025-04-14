@@ -28,6 +28,7 @@ public class ImportInvoicesHandler(
 
         var validationErrors = validationResults
             .SelectMany((dto, index) => dto.Errors.Select(m => (RowIndex: index, Error: m.ErrorMessage)))
+            .OrderBy(x => x.RowIndex)
             .ToList();
 
         if(validationErrors.Count > 0)

@@ -49,7 +49,6 @@ public class InvoiceValidator : AbstractValidator<CreateInvoiceDTO>
 
         RuleFor(x => x.DueDate)
             .NotEmpty()
-            .Must(x => x.TimeOfDay == TimeSpan.Zero)
             .GreaterThan(x => x.IssueDate)
             .WithMessage(Constants.Validation.Invoice.DueDateErrorMessage)
             .ChildRules(time =>
