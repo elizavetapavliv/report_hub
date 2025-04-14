@@ -29,6 +29,12 @@ public static class Constants
             public const string CustomerDoesntExistsErrorMessage = "Customer does not exist.";
             public const string ClientDoesntExistsErrorMessage = "Client does not exist.";
         }
+
+        public static class UserAssignment
+        {
+            public const string UserNotExistMessage = "User is not exist.";
+            public const string ClientNotExistMessage = "Client is not exist.";
+        }
     }
 
     public static class Client
