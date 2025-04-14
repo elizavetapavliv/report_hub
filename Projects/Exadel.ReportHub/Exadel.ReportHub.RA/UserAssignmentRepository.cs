@@ -18,7 +18,7 @@ public class UserAssignmentRepository : BaseRepository, IUserAssignmentRepositor
     {
         var filter = _filterBuilder.And(_filterBuilder.Eq(x => x.UserId, userAssignment.UserId), _filterBuilder.Eq(x => x.ClientId, userAssignment.ClientId));
 
-        var existing = await GetCollection<UserAssignment>().Find(filter).FirstOrDefaultAsync(cancellationToken);
+        var existing = await GetCollection<UserAssignment>().Find(filter).SingleOrDefaultAsync(cancellationToken);
         if (existing != null)
         {
             userAssignment.Id = existing.Id;
