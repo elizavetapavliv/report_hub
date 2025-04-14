@@ -32,8 +32,8 @@ public static class Constants
 
         public static class UserAssignment
         {
-            public const string UserNotExistMessage = "User is not exist.";
-            public const string ClientNotExistMessage = "Client is not exist.";
+            public const string UserNotExistMessage = "User does not exist.";
+            public const string ClientNotExistMessage = "Client does not exist.";
         }
     }
 

@@ -1,14 +1,14 @@
 ﻿using Exadel.ReportHub.RA.Abstract;
 using FluentValidation;
 
-namespace Exadel.ReportHub.Handlers.UserAssignment.SetRole;
+namespace Exadel.ReportHub.Handlers.UserAssignment.Upsert;
 
-public class SetRoleRequestValidator : AbstractValidator<SetRoleRequest>
+public class UpsertUserAssignmentRequestValidator : AbstractValidator<UpsertUserAssignmentRequest>
 {
     private readonly IUserRepository _userRepository;
     private readonly IClientRepository _clientRepository;
 
-    public SetRoleRequestValidator(IUserRepository userRepository, IClientRepository clientRepository)
+    public UpsertUserAssignmentRequestValidator(IUserRepository userRepository, IClientRepository clientRepository)
     {
         _userRepository = userRepository;
         _clientRepository = clientRepository;
@@ -23,25 +23,17 @@ public class SetRoleRequestValidator : AbstractValidator<SetRoleRequest>
                 child.RuleLevelCascadeMode = CascadeMode.Stop;
 
                 child.RuleFor(x => x.UserId)
-                    .MustAsync(UserMustExistAsync)
+                    .NotEmpty()
+                    .MustAsync(_userRepository.ExistsAsync)
                     .WithMessage(Constants.Validation.UserAssignment.UserNotExistMessage);
 
                 child.RuleFor(x => x.ClientId)
-                    .MustAsync(ClientMustExistAsync)
+                    .NotEmpty()
+                    .MustAsync(_clientRepository.ExistsAsync)
                     .WithMessage(Constants.Validation.UserAssignment.ClientNotExistMessage);
 
                 child.RuleFor(x => x.Role)
                     .IsInEnum();
             });
-    }
-
-    private async Task<bool> UserMustExistAsync(Guid userId, CancellationToken cancellationToken)
-    {
-        return await _userRepository.ExistsAsync(userId, cancellationToken);
-    }
-
-    private async Task<bool> ClientMustExistAsync(Guid clientId, CancellationToken cancellationToken)
-    {
-        return clientId.Equals(Constants.Client.GlobalId) || await _clientRepository.ExistsAsync(clientId, cancellationToken);
     }
 }

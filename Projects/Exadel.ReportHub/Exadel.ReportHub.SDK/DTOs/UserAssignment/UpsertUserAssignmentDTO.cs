@@ -2,7 +2,7 @@
 
 namespace Exadel.ReportHub.SDK.DTOs.UserAssignment;
 
-public class SetUserAssignmentDTO
+public class UpsertUserAssignmentDTO
 {
     public Guid UserId { get; set; }
 

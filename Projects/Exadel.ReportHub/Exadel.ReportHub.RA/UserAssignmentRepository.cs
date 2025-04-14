@@ -14,17 +14,12 @@ public class UserAssignmentRepository : BaseRepository, IUserAssignmentRepositor
     {
     }
 
-    public async Task SetRoleAsync(UserAssignment userAssignment, CancellationToken cancellationToken)
+    public async Task UpsertAsync(UserAssignment userAssignment, CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.And(_filterBuilder.Eq(x => x.UserId, userAssignment.UserId), _filterBuilder.Eq(x => x.ClientId, userAssignment.ClientId));
+        var update = Builders<UserAssignment>.Update.Set(x => x.Role, userAssignment.Role);
 
-        var existing = await GetCollection<UserAssignment>().Find(filter).SingleOrDefaultAsync(cancellationToken);
-        if (existing != null)
-        {
-            userAssignment.Id = existing.Id;
-        }
-
-        await GetCollection<UserAssignment>().ReplaceOneAsync(filter, userAssignment, new ReplaceOptions<UserAssignment> { IsUpsert = true }, cancellationToken);
+        await GetCollection<UserAssignment>().UpdateOneAsync(filter, update, new UpdateOptions { IsUpsert = true }, cancellationToken);
     }
 
     public async Task<bool> ExistsAsync(Guid userId, Guid clientId, CancellationToken cancellationToken)

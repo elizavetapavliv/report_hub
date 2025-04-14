@@ -23,7 +23,7 @@ public class CreateUserHandler(IUserRepository userRepository, IUserAssignmentRe
         var userAssignment = new Data.Models.UserAssignment { Id = Guid.NewGuid(), UserId = user.Id, ClientId = Constants.Client.GlobalId };
 
         await userRepository.AddAsync(user, cancellationToken);
-        await userAssignmentRepository.SetRoleAsync(userAssignment, cancellationToken);
+        await userAssignmentRepository.UpsertAsync(userAssignment, cancellationToken);
 
         var userDto = mapper.Map<UserDTO>(user);
         return userDto;

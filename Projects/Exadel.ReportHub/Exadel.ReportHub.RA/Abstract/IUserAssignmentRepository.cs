@@ -5,7 +5,7 @@ namespace Exadel.ReportHub.RA.Abstract;
 
 public interface IUserAssignmentRepository
 {
-    Task SetRoleAsync(UserAssignment userAssignment, CancellationToken cancellationToken);
+    Task UpsertAsync(UserAssignment userAssignment, CancellationToken cancellationToken);
 
     Task<IEnumerable<UserRole>> GetUserRolesAsync(Guid userId, CancellationToken cancellationToken);
 

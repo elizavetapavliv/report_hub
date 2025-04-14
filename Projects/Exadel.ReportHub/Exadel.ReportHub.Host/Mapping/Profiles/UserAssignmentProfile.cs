@@ -8,7 +8,7 @@ public class UserAssignmentProfile : Profile
 {
     public UserAssignmentProfile()
     {
-        CreateMap<SetUserAssignmentDTO, UserAssignment>()
+        CreateMap<UpsertUserAssignmentDTO, UserAssignment>()
             .ForMember(x => x.Id, opt => opt.Ignore());
     }
 }
