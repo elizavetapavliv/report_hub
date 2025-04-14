@@ -16,6 +16,7 @@ namespace Exadel.ReportHub.Host.Services;
 [Route("api/client")]
 public class ClientService(ISender sender) : BaseService
 {
+    [Authorize(Policy = Constants.Authorization.Policy.SuperAdmin)]
     [HttpPost]
     public async Task<IActionResult> AddClient([FromBody] CreateClientDTO createClientDto)
     {
@@ -24,6 +25,10 @@ public class ClientService(ISender sender) : BaseService
         return FromResult(result);
     }
 
+    [Authorize(Policy = Constants.Authorization.Policy.SuperAdmin)]
+    [Authorize(Policy = Constants.Authorization.Policy.Owner)]
+    [Authorize(Policy = Constants.Authorization.Policy.ClientAdmin)]
+    [Authorize(Policy = Constants.Authorization.Policy.Operator)]
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetClientById([FromRoute] Guid id)
     {
@@ -32,6 +37,8 @@ public class ClientService(ISender sender) : BaseService
         return FromResult(result);
     }
 
+    [Authorize(Policy = Constants.Authorization.Policy.SuperAdmin)]
+    [Authorize(Policy = Constants.Authorization.Policy.Owner)]
     [HttpPatch("{id:guid}/activity")]
     public async Task<IActionResult> UpdateClientActivity([FromRoute] Guid id, [FromBody] bool isActive)
     {
@@ -40,6 +47,8 @@ public class ClientService(ISender sender) : BaseService
         return FromResult(result);
     }
 
+    [Authorize(Policy = Constants.Authorization.Policy.SuperAdmin)]
+    [Authorize(Policy = Constants.Authorization.Policy.Owner)]
     [HttpPatch("{id:guid}/name")]
     public async Task<IActionResult> UpdateClientName([FromRoute] Guid id, [FromBody] string name)
     {
@@ -48,6 +57,7 @@ public class ClientService(ISender sender) : BaseService
         return FromResult(result);
     }
 
+    [Authorize(Policy = Constants.Authorization.Policy.SuperAdmin)]
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteClient([FromRoute] Guid id)
     {
