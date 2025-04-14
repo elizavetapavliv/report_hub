@@ -4,10 +4,13 @@ using AutoMapper;
 using Exadel.ReportHub.Common.Providers;
 using Exadel.ReportHub.Csv;
 using Exadel.ReportHub.Csv.Abstract;
+using Exadel.ReportHub.Data.Enums;
 using Exadel.ReportHub.Host.Infrastructure.Filters;
+using Exadel.ReportHub.Host.PolicyHandlers;
 using Exadel.ReportHub.Host.Registrations;
 using Exadel.ReportHub.RA;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.OpenApi.Models;
 
@@ -73,14 +76,27 @@ public class Startup(IConfiguration configuration)
             });
         });
 
-        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(options =>
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultForbidScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+            .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
             {
                 options.Authority = configuration["Authority"];
                 options.Audience = Constants.Authorization.ResourceName;
             });
 
-        services.AddAuthorization();
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy(Constants.Authorization.Policy.AllUsers, policy =>
+                policy.Requirements.Add(new ClientAssignmentRequirement(UserRole.Regular)));
+            options.AddPolicy(Constants.Authorization.Policy.ClientAdmin, policy =>
+                policy.Requirements.Add(new ClientAssignmentRequirement(UserRole.ClientAdmin)));
+            options.AddPolicy(Constants.Authorization.Policy.SuperAdmin, policy =>
+                policy.Requirements.Add(new ClientAssignmentRequirement()));
+        });
 
         services.AddIdentity();
         services.AddMongo();
@@ -88,7 +104,7 @@ public class Startup(IConfiguration configuration)
         services.AddAutoMapper(typeof(Startup));
         services.AddHttpContextAccessor();
         services.AddScoped<IUserProvider, UserProvider>();
-        services.AddSingleton<ICsvProcessor, CsvProcessor>();
+        services.AddSingleton<IAuthorizationHandler, ClientAssignmentHandler>();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)
