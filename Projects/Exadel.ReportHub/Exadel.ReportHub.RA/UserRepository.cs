@@ -22,9 +22,14 @@ public class UserRepository : BaseRepository, IUserRepository
         return count > 0;
     }
 
-    public async Task<IEnumerable<User>> GetAllActiveAsync(CancellationToken cancellationToken)
+    public async Task<IEnumerable<User>> GetAllActiveAsync(bool? isActive, CancellationToken cancellationToken)
     {
-        var filter = _filterBuilder.Eq(x => x.IsActive, true);
+        var filter = isActive switch
+        {
+            true => _filterBuilder.Eq(x => x.IsActive, true),
+            false => _filterBuilder.Eq(x => x.IsActive, false),
+            null => _filterBuilder.Empty
+        };
         return await GetAsync(filter, cancellationToken);
     }
 
@@ -68,5 +73,17 @@ public class UserRepository : BaseRepository, IUserRepository
             .Set(x => x.PasswordHash, passwordHash)
             .Set(x => x.PasswordSalt, passwordSalt);
         await UpdateAsync(id, update, cancellationToken);
+    }
+
+    public async Task UpdateNameAsync(Guid id, string fullName, CancellationToken cancellationToken)
+    {
+        var update = Builders<User>.Update.Set(x => x.FullName, fullName);
+        await UpdateAsync(id, update, cancellationToken);
+    }
+
+    public async Task DeleteUserAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var filter = _filterBuilder.Eq(x => x.Id, id);
+        await GetCollection<User>().DeleteOneAsync(filter, cancellationToken);
     }
 }

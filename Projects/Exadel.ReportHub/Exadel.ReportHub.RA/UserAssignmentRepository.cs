@@ -50,4 +50,18 @@ public class UserAssignmentRepository : BaseRepository, IUserAssignmentRepositor
         var update = Builders<UserAssignment>.Update.Set(x => x.Role, userRole);
         await GetCollection<UserAssignment>().UpdateOneAsync(filter, update, cancellationToken: cancellationToken);
     }
+
+    public async Task<IEnumerable<Guid>> GetClientIdsByUserIdAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        var filter = _filterBuilder.Eq(x => x.UserId, userId);
+        var field = new ExpressionFieldDefinition<UserAssignment, Guid>(x => x.ClientId);
+        var clientIds = await GetCollection<UserAssignment>().DistinctAsync(field, filter);
+        return await clientIds.ToListAsync(cancellationToken);
+    }
+
+    public Task DeleteUserAssignmentAsync(Guid userId, IEnumerable<Guid> clientIds, CancellationToken cancellationToken)
+    {
+        var filter = _filterBuilder.And(_filterBuilder.Eq(x => x.UserId, userId), _filterBuilder.In(x => x.ClientId, clientIds));
+        return GetCollection<UserAssignment>().DeleteManyAsync(filter, cancellationToken);
+    }
 }
