@@ -63,10 +63,9 @@ public abstract class BaseRepository(MongoDbContext context)
     {
         return context.GetCollection<TDocument>(collectionName);
     }
+
     public async Task AddManyAsync<TDocument>(IEnumerable<TDocument> entities, CancellationToken cancellationToken)
     {
         await GetCollection<TDocument>().InsertManyAsync(entities, cancellationToken: cancellationToken);
     }
-
-    public IMongoCollection<TDocument> GetCollection<TDocument>() => context.GetCollection<TDocument>();
 }
