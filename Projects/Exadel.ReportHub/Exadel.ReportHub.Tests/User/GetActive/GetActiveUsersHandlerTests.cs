@@ -34,7 +34,7 @@ public class GetActiveUsersHandlerTests : BaseTestFixture
 
         var users = Fixture.Build<Data.Models.User>().With(x => x.IsActive, isActive).CreateMany(30).ToList();
         _userRepositoryMock
-            .Setup(repo => repo.GetAllAsync(isActive, CancellationToken.None))
+            .Setup(repo => repo.GetAsync(isActive, CancellationToken.None))
             .ReturnsAsync(users);
 
         // Act
@@ -47,7 +47,7 @@ public class GetActiveUsersHandlerTests : BaseTestFixture
         Assert.That(result.Value.ToList(), Has.Count.EqualTo(users.Count));
 
         _userRepositoryMock.Verify(
-            mock => mock.GetAllAsync(isActive, CancellationToken.None),
+            mock => mock.GetAsync(isActive, CancellationToken.None),
             Times.Once);
     }
 }

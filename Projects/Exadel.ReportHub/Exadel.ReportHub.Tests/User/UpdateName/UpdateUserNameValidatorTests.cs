@@ -1,10 +1,11 @@
-﻿using Exadel.ReportHub.Handlers.User.Create;
+﻿using Exadel.ReportHub.Handlers;
+using Exadel.ReportHub.Handlers.User.Create;
 using Exadel.ReportHub.Handlers.User.UpdateName;
 using Exadel.ReportHub.SDK.DTOs.User;
 using FluentValidation;
 using FluentValidation.TestHelper;
 
-namespace Exadel.ReportHub.Tests;
+namespace Exadel.ReportHub.Tests.User.UpdateName;
 
 public class UpdateUserNameValidatorTests
 {
@@ -13,19 +14,23 @@ public class UpdateUserNameValidatorTests
     [SetUp]
     public void Setup()
     {
-        _validator = new UpdateUserNameRequestValidator();
+        var userNameValidator = new InlineValidator<string>();
+        userNameValidator.RuleFor(x => x)
+            .NotEmpty()
+            .MaximumLength(Constants.Validation.User.FullNameMaxLength)
+            .WithName(nameof(CreateUserDTO.FullName));
+
+        _validator = new UpdateUserNameRequestValidator(userNameValidator);
     }
 
     [Test]
-    [TestCase("")]
-    [TestCase(null)]
-    public async Task ValidateAsync_FullNameIsEmpty_ErrorReturned(string fullname)
+    public async Task ValidateAsync_FullNameIsEmpty_ErrorReturned()
     {
         var userId = Guid.NewGuid();
-        var createUserRequest = new UpdateUserNameRequest(userId, fullname);
+        var createUserRequest = new UpdateUserNameRequest(userId, string.Empty);
         var result = await _validator.TestValidateAsync(createUserRequest);
-        result.ShouldHaveValidationErrorFor(x => x.FullName)
-            .WithErrorMessage("'Full Name' must not be empty.");
+        result.ShouldHaveAnyValidationError()
+            .WithErrorMessage("'FullName' must not be empty.");
         Assert.That(result.Errors, Has.Count.EqualTo(1));
     }
 
@@ -37,8 +42,8 @@ public class UpdateUserNameValidatorTests
         var fullname = new string('x', maxLength);
         var createUserRequest = new UpdateUserNameRequest(userId, fullname);
         var result = await _validator.TestValidateAsync(createUserRequest);
-        result.ShouldHaveValidationErrorFor(x => x.FullName)
-            .WithErrorMessage($"The length of 'Full Name' must be 100 characters or fewer. You entered {maxLength} characters.");
+        result.ShouldHaveAnyValidationError()
+            .WithErrorMessage($"The length of 'FullName' must be 100 characters or fewer. You entered {maxLength} characters.");
         Assert.That(result.Errors, Has.Count.EqualTo(1));
     }
 }
