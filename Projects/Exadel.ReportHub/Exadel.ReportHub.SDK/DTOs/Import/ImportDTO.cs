@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace Exadel.ReportHub.SDK.Models;
+namespace Exadel.ReportHub.SDK.DTOs.Invoice;
 
-public class FileModel
+public class ImportDTO
 {
     public IFormFile FormFile { get; set; }
 

@@ -38,11 +38,13 @@ public class InvoiceValidator : AbstractValidator<CreateInvoiceDTO>
 
         RuleFor(x => x.IssueDate)
             .NotEmpty()
+            .Must(x => x.TimeOfDay == TimeSpan.Zero)
             .LessThan(DateTime.UtcNow)
             .WithMessage(Constants.Validation.Invoice.IssueDateErrorMessage);
 
         RuleFor(x => x.DueDate)
             .NotEmpty()
+            .Must(x => x.TimeOfDay == TimeSpan.Zero)
             .GreaterThan(x => x.IssueDate)
             .WithMessage(Constants.Validation.Invoice.DueDateErrorMessage);
 
@@ -60,9 +62,12 @@ public class InvoiceValidator : AbstractValidator<CreateInvoiceDTO>
             .IsInEnum();
 
         RuleFor(x => x.BankAccountNumber)
-            .NotEmpty()
-            .Length(Constants.Validation.Invoice.BankAccountNumberMinLength, Constants.Validation.Invoice.BankAccountNumberMaxLength)
-            .Matches(@"^[0-9\-]+$")
-            .WithMessage(Constants.Validation.Invoice.BankAccountNumberErrorMessage);
+           .NotEmpty()
+           .Length(Constants.Validation.Invoice.BankAccountNumberMinLength, Constants.Validation.Invoice.BankAccountNumberMaxLength)
+           .Matches(@"^[0-9\-]+$")
+           .WithMessage(Constants.Validation.Invoice.BankAccountNumberErrorMessage);
+
+        RuleFor(x => x.ItemIds)
+            .NotEmpty();
     }
 }

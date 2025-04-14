@@ -4,5 +4,5 @@ namespace Exadel.ReportHub.Csv.Abstract;
 
 public interface ICsvProcessor
 {
-    IEnumerable<CreateInvoiceDTO> ReadInvoices(Stream csvStream);
+    IList<CreateInvoiceDTO> ReadInvoices(Stream csvStream);
 }

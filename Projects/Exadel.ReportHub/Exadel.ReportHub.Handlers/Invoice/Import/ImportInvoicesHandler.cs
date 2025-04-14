@@ -1,51 +1,47 @@
 ﻿using AutoMapper;
 using ErrorOr;
 using Exadel.ReportHub.Csv.Abstract;
+using Exadel.ReportHub.Handlers.Validators;
 using Exadel.ReportHub.RA.Abstract;
+using Exadel.ReportHub.SDK.DTOs.Import;
 using Exadel.ReportHub.SDK.DTOs.Invoice;
-using Exadel.ReportHub.SDK.Models;
 using FluentValidation;
 using MediatR;
 
 namespace Exadel.ReportHub.Handlers.Invoice.Import;
 
-public record ImportInvoicesRequest(FileModel Model) : IRequest<ErrorOr<string>>;
+public record ImportInvoicesRequest(ImportDTO ImportDTO) : IRequest<ErrorOr<ImportResultDTO>>;
 
 public class ImportInvoicesHandler(
     ICsvProcessor csvProcessor,
     IInvoiceRepository invoiceRepository,
     IMapper mapper,
-    IValidator<CreateInvoiceDTO> invoiceValidator) : IRequestHandler<ImportInvoicesRequest, ErrorOr<string>>
+    IValidator<CreateInvoiceDTO> invoiceValidator) : IRequestHandler<ImportInvoicesRequest, ErrorOr<ImportResultDTO>>
 {
-    public async Task<ErrorOr<string>> Handle(ImportInvoicesRequest request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<ImportResultDTO>> Handle(ImportInvoicesRequest request, CancellationToken cancellationToken)
     {
-        using var stream = request.Model.FormFile.OpenReadStream();
+        using var stream = request.ImportDTO.FormFile.OpenReadStream();
 
         var invoiceDtos = csvProcessor.ReadInvoices(stream);
 
-        var validationErrors = new List<string>();
-        var validInvoiceDtos = new List<CreateInvoiceDTO>();
-        foreach (var invoice in invoiceDtos)
-        {
-            var result = await invoiceValidator.ValidateAsync(invoice, cancellationToken);
-            if (!result.IsValid)
-            {
-                validationErrors.AddRange(result.Errors.Select(e => e.ErrorMessage));
-                continue;
-            }
+        var tasks = invoiceDtos.Select(dto => invoiceValidator.ValidateAsync(dto, cancellationToken));
+        var validationResults = await Task.WhenAll(tasks);
 
-            validInvoiceDtos.Add(invoice);
-        }
+        var validationErrors = validationResults
+            .SelectMany(dto => dto.Errors)
+            .Select(m => m.ErrorMessage)
+            .ToList();
 
         if(validationErrors.Any())
         {
-            return Error.Validation("Invoice_Validation_Error", string.Join("; ", validationErrors));
+            return validationErrors
+                .Select(m => Error.Validation("Invoice_Validation_Error", m))
+                .ToList();
         }
 
-        var invoices = mapper.Map<IEnumerable<Data.Models.Invoice>>(validInvoiceDtos);
-
+        var invoices = mapper.Map<IList<Data.Models.Invoice>>(invoiceDtos);
         await invoiceRepository.AddManyAsync(invoices, cancellationToken);
 
-        return $"{invoices.Count()} invoices imported";
+        return new ImportResultDTO { ImportedCount = invoices.Count() };
     }
 }

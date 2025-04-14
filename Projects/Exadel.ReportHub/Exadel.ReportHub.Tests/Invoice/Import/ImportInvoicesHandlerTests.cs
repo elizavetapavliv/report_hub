@@ -2,8 +2,8 @@
 using Exadel.ReportHub.Csv.Abstract;
 using Exadel.ReportHub.Handlers.Invoice.Import;
 using Exadel.ReportHub.RA.Abstract;
+using Exadel.ReportHub.SDK.DTOs.Import;
 using Exadel.ReportHub.SDK.DTOs.Invoice;
-using Exadel.ReportHub.SDK.Models;
 using Exadel.ReportHub.Tests.Abstracts;
 using FluentValidation;
 using FluentValidation.Results;
@@ -25,7 +25,11 @@ public class ImportInvoicesHandlerTests : BaseTestFixture
         _invoiceRepositoryMock = new Mock<IInvoiceRepository>();
         _csvProcessorMock = new Mock<ICsvProcessor>();
         _invoiceValidatorMock = new Mock<IValidator<CreateInvoiceDTO>>();
-        _handler = new ImportInvoicesHandler(_csvProcessorMock.Object, _invoiceRepositoryMock.Object, Mapper, _invoiceValidatorMock.Object);
+        _handler = new ImportInvoicesHandler(
+            _csvProcessorMock.Object,
+            _invoiceRepositoryMock.Object,
+            Mapper,
+            _invoiceValidatorMock.Object);
     }
 
     [Test]
@@ -44,7 +48,7 @@ public class ImportInvoicesHandlerTests : BaseTestFixture
                     Amount = 2277.89m,
                     Currency = "USD",
                     PaymentStatus = SDK.Enums.PaymentStatus.Pending,
-                    BankAccountNumber = "849012345678901234567890"
+                    BankAccountNumber = "84901234567890"
                 },
                 new CreateInvoiceDTO
                 {
@@ -56,41 +60,66 @@ public class ImportInvoicesHandlerTests : BaseTestFixture
                     Amount = 2657.24m,
                     Currency = "EUR",
                     PaymentStatus = SDK.Enums.PaymentStatus.Unpaid,
-                    BankAccountNumber = "021987654321098765432109"
+                    BankAccountNumber = "0219876543210987"
                 }
             };
         var invoices = Mapper.Map<IEnumerable<Data.Models.Invoice>>(invoiceDtos);
 
+        using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes("CSV content"));
+
         _csvProcessorMock
-            .Setup(x => x.ReadInvoices(It.IsAny<Stream>()))
+            .Setup(x => x.ReadInvoices(It.Is<Stream>(str => str.Length == memoryStream.Length)))
             .Returns(invoiceDtos);
 
         _invoiceValidatorMock
-            .Setup(x => x.ValidateAsync(It.IsAny<CreateInvoiceDTO>(), CancellationToken.None))
+            .Setup(x => x.ValidateAsync(
+                It.Is<CreateInvoiceDTO>(
+                    dto => invoiceDtos.Any(inv => inv.InvoiceNumber == dto.InvoiceNumber)),
+                CancellationToken.None))
             .ReturnsAsync(new ValidationResult());
 
         _invoiceRepositoryMock
             .Setup(repo => repo.AddManyAsync(invoices, CancellationToken.None))
             .Returns(Task.CompletedTask);
 
-        using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes("Fake CSV content"));
-        var fileModel = new FileModel
+        var importDto = new ImportDTO
         {
             FormFile = new FormFile(memoryStream, 0, memoryStream.Length, "formFile", "invoices.csv")
         };
 
         // Act
-        var request = new ImportInvoicesRequest(fileModel);
+        var request = new ImportInvoicesRequest(importDto);
         var result = await _handler.Handle(request, CancellationToken.None);
 
         // Assert
         Assert.That(result.IsError, Is.False);
-        Assert.That(result.Value, Is.EqualTo("2 invoices imported"));
+        Assert.That(result.Value.ImportedCount, Is.EqualTo(2));
 
         _invoiceRepositoryMock.Verify(
                 repo => repo.AddManyAsync(
-                    It.Is<IEnumerable<Data.Models.Invoice>>(
-                        inv => inv.Count() == 2),
+                    It.Is<IList<Data.Models.Invoice>>(
+                        inv => inv.Count() == 2 &&
+                        inv.Any(x =>
+                        x.ClientId == invoiceDtos[0].ClientId &&
+                        x.CustomerId == invoiceDtos[0].CustomerId &&
+                        x.InvoiceNumber == invoiceDtos[0].InvoiceNumber &&
+                        x.IssueDate == invoiceDtos[0].IssueDate &&
+                        x.DueDate == invoiceDtos[0].DueDate &&
+                        x.Amount == invoiceDtos[0].Amount &&
+                        x.Currency == invoiceDtos[0].Currency &&
+                        (int)x.PaymentStatus == (int)invoiceDtos[0].PaymentStatus &&
+                        x.BankAccountNumber == invoiceDtos[0].BankAccountNumber) &&
+
+                        inv.Any(x =>
+                        x.ClientId == invoiceDtos[1].ClientId &&
+                        x.CustomerId == invoiceDtos[1].CustomerId &&
+                        x.InvoiceNumber == invoiceDtos[1].InvoiceNumber &&
+                        x.IssueDate == invoiceDtos[1].IssueDate &&
+                        x.DueDate == invoiceDtos[1].DueDate &&
+                        x.Amount == invoiceDtos[1].Amount &&
+                        x.Currency == invoiceDtos[1].Currency &&
+                        (int)x.PaymentStatus == (int)invoiceDtos[1].PaymentStatus &&
+                        x.BankAccountNumber == invoiceDtos[1].BankAccountNumber)),
                     CancellationToken.None),
                 Times.Once);
     }
