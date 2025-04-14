@@ -18,12 +18,12 @@ public class DeleteUserHandler(IUserRepository userRepository, IUserAssignmentRe
 
         var clientIds = await userAssignmentRepository.GetClientIdsAsync(request.UserId, cancellationToken);
 
-        await userRepository.DeleteAsync(request.UserId, cancellationToken);
-
-        if(clientIds != null)
+        if (clientIds.Any())
         {
             await userAssignmentRepository.DeleteAsync(request.UserId, clientIds, cancellationToken);
         }
+
+        await userRepository.DeleteAsync(request.UserId, cancellationToken);
 
         return Result.Deleted;
     }

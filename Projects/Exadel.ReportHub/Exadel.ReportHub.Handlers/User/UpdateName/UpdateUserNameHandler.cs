@@ -11,8 +11,8 @@ public class UpdateUserNameHandler(IUserRepository userRepository) : IRequestHan
 {
     public async Task<ErrorOr<Updated>> Handle(UpdateUserNameRequest request, CancellationToken cancellationToken)
     {
-        var ifExists = await userRepository.ExistsAsync(request.Id, cancellationToken);
-        if (!ifExists)
+        var isExists = await userRepository.ExistsAsync(request.Id, cancellationToken);
+        if (!isExists)
         {
             return Error.NotFound();
         }

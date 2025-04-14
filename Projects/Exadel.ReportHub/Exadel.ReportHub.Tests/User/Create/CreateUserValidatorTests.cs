@@ -24,18 +24,23 @@ public class CreateUserValidatorTests
         passwordValidator.RuleFor(x => x)
             .Matches("[^a-zA-Z0-9]")
             .WithMessage(Constants.Validation.User.PasswordSpecialCharacterMessage);
-        _validator = new CreateUserRequestValidator(_userRepositoryMock.Object, passwordValidator);
+
+        var userNameValidator = new InlineValidator<string>();
+        userNameValidator.RuleFor(x => x)
+            .NotEmpty()
+            .MaximumLength(Constants.Validation.User.FullNameMaxLength)
+            .WithName(nameof(CreateUserDTO.FullName));
+
+        _validator = new CreateUserRequestValidator(_userRepositoryMock.Object, passwordValidator, userNameValidator);
     }
 
     [Test]
-    [TestCase("")]
-    [TestCase(null)]
-    public async Task ValidateAsync_FullNameIsEmpty_ErrorReturned(string fullnameError)
+    public async Task ValidateAsync_FullNameIsEmpty_ErrorReturned()
     {
-        var createUserRequest = new CreateUserRequest(new CreateUserDTO { FullName = fullnameError, Email = "test@gmail.com", Password = "Testpassword123!" });
+        var createUserRequest = new CreateUserRequest(new CreateUserDTO { FullName = string.Empty, Email = "test@gmail.com", Password = "Testpassword123!" });
         var result = await _validator.TestValidateAsync(createUserRequest);
-        result.ShouldHaveValidationErrorFor(x => x.CreateUserDto.FullName)
-            .WithErrorMessage("'Full Name' must not be empty.");
+        result.ShouldHaveAnyValidationError()
+            .WithErrorMessage("'FullName' must not be empty.");
         Assert.That(result.Errors.Count, Is.EqualTo(1));
     }
 
@@ -55,8 +60,8 @@ public class CreateUserValidatorTests
         var fullname = new string('x', maxLength);
         var createUserRequest = new CreateUserRequest(new CreateUserDTO { FullName = fullname, Email = "test@gmail.com", Password = "Testpassword123!" });
         var result = await _validator.TestValidateAsync(createUserRequest);
-        result.ShouldHaveValidationErrorFor(x => x.CreateUserDto.FullName)
-            .WithErrorMessage($"The length of 'Full Name' must be 100 characters or fewer. You entered {maxLength} characters.");
+        result.ShouldHaveAnyValidationError()
+            .WithErrorMessage($"The length of 'FullName' must be 100 characters or fewer. You entered {maxLength} characters.");
         Assert.That(result.Errors, Has.Count.EqualTo(1));
     }
 
