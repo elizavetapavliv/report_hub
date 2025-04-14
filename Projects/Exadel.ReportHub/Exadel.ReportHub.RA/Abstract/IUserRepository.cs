@@ -6,7 +6,7 @@ public interface IUserRepository
 {
     Task AddAsync(User user, CancellationToken cancellationToken);
 
-    Task<IEnumerable<User>> GetAllAsync(bool? isActive, CancellationToken cancellationToken);
+    Task<IEnumerable<User>> GetAsync(bool? isActive, CancellationToken cancellationToken);
 
     Task<User> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
