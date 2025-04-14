@@ -6,7 +6,7 @@ public interface IUserRepository
 {
     Task AddAsync(User user, CancellationToken cancellationToken);
 
-    Task<IEnumerable<User>> GetAllActiveAsync(bool? isActive, CancellationToken cancellationToken);
+    Task<IEnumerable<User>> GetAllAsync(bool? isActive, CancellationToken cancellationToken);
 
     Task<User> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
@@ -24,5 +24,5 @@ public interface IUserRepository
 
     Task UpdateNameAsync(Guid id, string fullName, CancellationToken cancellationToken);
 
-    Task DeleteUserAsync(Guid id, CancellationToken cancellationToken);
+    Task DeleteAsync(Guid id, CancellationToken cancellationToken);
 }
