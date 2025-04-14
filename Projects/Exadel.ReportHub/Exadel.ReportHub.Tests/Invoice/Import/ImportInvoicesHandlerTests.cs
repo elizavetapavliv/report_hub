@@ -39,7 +39,6 @@ public class ImportInvoicesHandlerTests : BaseTestFixture
     {
         // Arrange
         var invoiceDtos = Fixture.Build<CreateInvoiceDTO>().CreateMany(2).ToList();
-        var invoices = Mapper.Map<IEnumerable<Data.Models.Invoice>>(invoiceDtos);
 
         using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes("CSV content"));
 
@@ -58,10 +57,6 @@ public class ImportInvoicesHandlerTests : BaseTestFixture
                 invoiceDtos[1],
                 CancellationToken.None))
             .ReturnsAsync(new ValidationResult());
-
-        _invoiceRepositoryMock
-            .Setup(repo => repo.AddManyAsync(invoices, CancellationToken.None))
-            .Returns(Task.CompletedTask);
 
         var importDto = new ImportDTO
         {
@@ -109,8 +104,15 @@ public class ImportInvoicesHandlerTests : BaseTestFixture
     public async Task ImportInvoices_WhenAllInvoicesInvalid_ReturnsValidationErrors()
     {
         // Arrange
+        var expectedErrors = new List<string>()
+        {
+            "Row 1: Bank account number must only contain digits and dashes.",
+            "Row 1: Issue date cannot be in the future",
+            "Row 2: Bank account number must only contain digits and dashes.",
+            "Row 2: Issue date cannot be in the future"
+        };
+
         var invoiceDtos = Fixture.Build<CreateInvoiceDTO>().CreateMany(2).ToList();
-        var invoices = Mapper.Map<IEnumerable<Data.Models.Invoice>>(invoiceDtos);
 
         using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes("CSV content"));
 
@@ -136,10 +138,6 @@ public class ImportInvoicesHandlerTests : BaseTestFixture
             .Setup(x => x.ReadInvoices(It.Is<Stream>(str => str.Length == memoryStream.Length)))
             .Returns(invoiceDtos);
 
-        _invoiceRepositoryMock
-            .Setup(repo => repo.AddManyAsync(invoices, CancellationToken.None))
-            .Returns(Task.CompletedTask);
-
         var importDto = new ImportDTO
         {
             File = new FormFile(memoryStream, 0, memoryStream.Length, "formFile", "invoices.csv")
@@ -151,9 +149,12 @@ public class ImportInvoicesHandlerTests : BaseTestFixture
 
         // Assert
         Assert.That(result.IsError, Is.True);
-        Assert.That(result.Errors, Has.Count.EqualTo(4));
+        Assert.That(result.Errors, Has.Count.EqualTo(expectedErrors.Count));
         Assert.That(result.Errors.All(e => e.Type == ErrorType.Validation), Is.True);
-        Assert.That(result.Errors.Select(e => e.Description), Has.All.Contains("Row"));
+        Assert.That(result.Errors[0].Description, Is.EqualTo(expectedErrors[0]));
+        Assert.That(result.Errors[1].Description, Is.EqualTo(expectedErrors[1]));
+        Assert.That(result.Errors[2].Description, Is.EqualTo(expectedErrors[2]));
+        Assert.That(result.Errors[3].Description, Is.EqualTo(expectedErrors[3]));
 
         _invoiceRepositoryMock.Verify(
                 repo => repo.AddManyAsync(
@@ -166,8 +167,13 @@ public class ImportInvoicesHandlerTests : BaseTestFixture
     public async Task ImportInvoices_WhenTheOnlyInvoiceInvalid_ReturnsValidationErrors()
     {
         // Arrange
+        var expectedErrors = new List<string>()
+        {
+            "Row 2: Bank account number must only contain digits and dashes.",
+            "Row 2: Issue date cannot be in the future"
+        };
+
         var invoiceDtos = Fixture.Build<CreateInvoiceDTO>().CreateMany(2).ToList();
-        var invoices = Mapper.Map<IEnumerable<Data.Models.Invoice>>(invoiceDtos);
 
         using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes("CSV content"));
 
@@ -193,10 +199,6 @@ public class ImportInvoicesHandlerTests : BaseTestFixture
             .Setup(x => x.ReadInvoices(It.Is<Stream>(str => str.Length == memoryStream.Length)))
             .Returns(invoiceDtos);
 
-        _invoiceRepositoryMock
-            .Setup(repo => repo.AddManyAsync(invoices, CancellationToken.None))
-            .Returns(Task.CompletedTask);
-
         var importDto = new ImportDTO
         {
             File = new FormFile(memoryStream, 0, memoryStream.Length, "formFile", "invoices.csv")
@@ -208,9 +210,10 @@ public class ImportInvoicesHandlerTests : BaseTestFixture
 
         // Assert
         Assert.That(result.IsError, Is.True);
-        Assert.That(result.Errors, Has.Count.EqualTo(2));
+        Assert.That(result.Errors, Has.Count.EqualTo(expectedErrors.Count));
         Assert.That(result.Errors.All(e => e.Type == ErrorType.Validation), Is.True);
-        Assert.That(result.Errors.Select(e => e.Description), Has.All.Contains("Row"));
+        Assert.That(result.Errors[0].Description, Is.EqualTo(expectedErrors[0]));
+        Assert.That(result.Errors[1].Description, Is.EqualTo(expectedErrors[1]));
 
         _invoiceRepositoryMock.Verify(
                 repo => repo.AddManyAsync(
