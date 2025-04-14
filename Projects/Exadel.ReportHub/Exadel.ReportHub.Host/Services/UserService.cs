@@ -38,10 +38,10 @@ public class UserService(ISender sender) : BaseService
     }
 
     [Authorize(Policy = Constants.Authorization.Policy.AllUsers)]
-    [HttpGet("active")]
-    public async Task<IActionResult> GetActiveUsers([FromQuery] bool? isActive)
+    [HttpGet]
+    public async Task<IActionResult> GetUsers([FromQuery] bool? isActive)
     {
-        var result = await sender.Send(new GetActiveUsersRequest(isActive));
+        var result = await sender.Send(new GetUsersRequest(isActive));
 
         return FromResult(result);
     }
@@ -72,11 +72,11 @@ public class UserService(ISender sender) : BaseService
         return FromResult(result);
     }
 
-    [Authorize(Policy = Constants.Authorization.Policy.AllUsers)]
-    [HttpPatch("fullname")]
-    public async Task<IActionResult> UpdateUserFullName([FromBody] string fullName)
+    [Authorize(Policy = Constants.Authorization.Policy.SuperAdmin)]
+    [HttpPatch("{id:guid}/fullname")]
+    public async Task<IActionResult> UpdateUserFullName([FromRoute] Guid id, [FromBody] string fullName)
     {
-        var result = await sender.Send(new UpdateUserNameRequest(fullName));
+        var result = await sender.Send(new UpdateUserNameRequest(id, fullName));
         return FromResult(result);
     }
 

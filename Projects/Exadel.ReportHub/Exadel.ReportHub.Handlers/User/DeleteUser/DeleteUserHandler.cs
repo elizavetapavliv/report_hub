@@ -16,13 +16,13 @@ public class DeleteUserHandler(IUserRepository userRepository, IUserAssignmentRe
             return Error.NotFound();
         }
 
-        var clientIds = await userAssignmentRepository.GetClientIdsByUserIdAsync(request.UserId, cancellationToken);
+        var clientIds = await userAssignmentRepository.GetClientIdsAsync(request.UserId, cancellationToken);
 
-        await userRepository.DeleteUserAsync(request.UserId, cancellationToken);
+        await userRepository.DeleteAsync(request.UserId, cancellationToken);
 
         if(clientIds != null)
         {
-            await userAssignmentRepository.DeleteUserAssignmentAsync(request.UserId, clientIds, cancellationToken);
+            await userAssignmentRepository.DeleteAsync(request.UserId, clientIds, cancellationToken);
         }
 
         return Result.Deleted;

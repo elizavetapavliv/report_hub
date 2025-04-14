@@ -14,6 +14,7 @@ public class UpdateUserNameRequestValidator : AbstractValidator<UpdateUserNameRe
         RuleLevelCascadeMode = CascadeMode.Stop;
 
         RuleFor(x => x.FullName)
-            .NotEmpty();
+            .NotEmpty()
+            .MaximumLength(Constants.Validation.User.FullNameMaxLength);
     }
 }

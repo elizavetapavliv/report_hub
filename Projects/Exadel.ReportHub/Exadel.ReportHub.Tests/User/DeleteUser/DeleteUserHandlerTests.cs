@@ -31,7 +31,7 @@ public class DeleteUserHandlerTests
             .ReturnsAsync(true);
 
         _userAssignmentRepositoryMock
-            .Setup(repo => repo.GetClientIdsByUserIdAsync(userId, CancellationToken.None))
+            .Setup(repo => repo.GetClientIdsAsync(userId, CancellationToken.None))
             .ReturnsAsync(clientIds);
 
         var request = new DeleteUserRequest(userId);
@@ -43,12 +43,12 @@ public class DeleteUserHandlerTests
         Assert.That(result.IsError, Is.False);
         Assert.That(result.Value, Is.EqualTo(Result.Deleted));
 
-        _userRepositoryMock.Verify(repo => repo.DeleteUserAsync(userId, CancellationToken.None), Times.Once);
-        _userAssignmentRepositoryMock.Verify(repo => repo.DeleteUserAssignmentAsync(userId, clientIds, CancellationToken.None), Times.Once);
+        _userRepositoryMock.Verify(repo => repo.DeleteAsync(userId, CancellationToken.None), Times.Once);
+        _userAssignmentRepositoryMock.Verify(repo => repo.DeleteAsync(userId, clientIds, CancellationToken.None), Times.Once);
     }
 
     [Test]
-    public async Task DeleteUser_UserDoesntExist_ReturnesNotFound()
+    public async Task DeleteUser_UserDoesntExist_ReturnsNotFound()
     {
         // Arrange
         var userId = Guid.NewGuid();
@@ -63,7 +63,7 @@ public class DeleteUserHandlerTests
         Assert.IsTrue(result.IsError);
         Assert.That(result.FirstError.Type, Is.EqualTo(ErrorType.NotFound));
         _userRepositoryMock.Verify(x => x.ExistsAsync(userId, CancellationToken.None), Times.Once);
-        _userRepositoryMock.Verify(x => x.DeleteUserAsync(userId, CancellationToken.None), Times.Never);
+        _userRepositoryMock.Verify(x => x.DeleteAsync(userId, CancellationToken.None), Times.Never);
     }
 
     [Test]
@@ -76,7 +76,7 @@ public class DeleteUserHandlerTests
             .ReturnsAsync(true);
 
         _userAssignmentRepositoryMock
-            .Setup(repo => repo.GetClientIdsByUserIdAsync(userId, CancellationToken.None))
+            .Setup(repo => repo.GetClientIdsAsync(userId, CancellationToken.None))
             .ReturnsAsync((IEnumerable<Guid>)null);
 
         var request = new DeleteUserRequest(userId);
@@ -88,7 +88,7 @@ public class DeleteUserHandlerTests
         Assert.That(result.IsError, Is.False);
         Assert.That(result.Value, Is.EqualTo(Result.Deleted));
 
-        _userRepositoryMock.Verify(repo => repo.DeleteUserAsync(userId, CancellationToken.None), Times.Once);
-        _userAssignmentRepositoryMock.Verify(repo => repo.DeleteUserAssignmentAsync(userId, It.IsAny<IEnumerable<Guid>>(), CancellationToken.None), Times.Never);
+        _userRepositoryMock.Verify(repo => repo.DeleteAsync(userId, CancellationToken.None), Times.Once);
+        _userAssignmentRepositoryMock.Verify(repo => repo.DeleteAsync(userId, It.IsAny<IEnumerable<Guid>>(), CancellationToken.None), Times.Never);
     }
 }

@@ -30,7 +30,8 @@ public class CreateUserRequestValidator : AbstractValidator<CreateUserRequest>
                     .WithMessage(Constants.Validation.User.EmailTakenMessage);
 
                 child.RuleFor(x => x.FullName)
-                    .NotEmpty();
+                    .NotEmpty()
+                    .MaximumLength(Constants.Validation.User.FullNameMaxLength);
 
                 child.RuleFor(x => x.Password)
                     .SetValidator(_passwordValidator);
