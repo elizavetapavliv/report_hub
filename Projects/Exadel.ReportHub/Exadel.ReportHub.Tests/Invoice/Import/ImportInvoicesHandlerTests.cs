@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using AutoFixture;
 using Exadel.ReportHub.Csv.Abstract;
 using Exadel.ReportHub.Handlers.Invoice.Import;
 using Exadel.ReportHub.RA.Abstract;
@@ -36,33 +37,7 @@ public class ImportInvoicesHandlerTests : BaseTestFixture
     public async Task ImportInvoices_ValidRequest_ReturnsCreated()
     {
         // Arrange
-        var invoiceDtos = new List<CreateInvoiceDTO>
-            {
-                new CreateInvoiceDTO
-                {
-                    ClientId = Guid.NewGuid(),
-                    CustomerId = Guid.NewGuid(),
-                    InvoiceNumber = "INV2022190000001",
-                    IssueDate = new DateTime(2023, 1, 10, 0, 0, 0, DateTimeKind.Utc),
-                    DueDate = new DateTime(2024, 1, 20, 0, 0, 0, DateTimeKind.Utc),
-                    Amount = 2277.89m,
-                    Currency = "USD",
-                    PaymentStatus = SDK.Enums.PaymentStatus.Pending,
-                    BankAccountNumber = "84901234567890"
-                },
-                new CreateInvoiceDTO
-                {
-                    ClientId = Guid.NewGuid(),
-                    CustomerId = Guid.NewGuid(),
-                    InvoiceNumber = "INV2025120000002",
-                    IssueDate = new DateTime(2022, 1, 15, 0, 0, 0, DateTimeKind.Utc),
-                    DueDate = new DateTime(2023, 2, 15, 0, 0, 0, DateTimeKind.Utc),
-                    Amount = 2657.24m,
-                    Currency = "EUR",
-                    PaymentStatus = SDK.Enums.PaymentStatus.Unpaid,
-                    BankAccountNumber = "0219876543210987"
-                }
-            };
+        var invoiceDtos = Fixture.Build<CreateInvoiceDTO>().CreateMany(2).ToList();
         var invoices = Mapper.Map<IEnumerable<Data.Models.Invoice>>(invoiceDtos);
 
         using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes("CSV content"));
@@ -84,7 +59,7 @@ public class ImportInvoicesHandlerTests : BaseTestFixture
 
         var importDto = new ImportDTO
         {
-            FormFile = new FormFile(memoryStream, 0, memoryStream.Length, "formFile", "invoices.csv")
+            File = new FormFile(memoryStream, 0, memoryStream.Length, "formFile", "invoices.csv")
         };
 
         // Act

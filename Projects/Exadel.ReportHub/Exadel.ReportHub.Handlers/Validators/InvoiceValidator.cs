@@ -38,15 +38,26 @@ public class InvoiceValidator : AbstractValidator<CreateInvoiceDTO>
 
         RuleFor(x => x.IssueDate)
             .NotEmpty()
-            .Must(x => x.TimeOfDay == TimeSpan.Zero)
             .LessThan(DateTime.UtcNow)
-            .WithMessage(Constants.Validation.Invoice.IssueDateErrorMessage);
+            .WithMessage(Constants.Validation.Invoice.IssueDateErrorMessage)
+            .ChildRules(time =>
+            {
+                RuleFor(x => x.IssueDate.TimeOfDay)
+                .Equal(TimeSpan.Zero)
+                .WithMessage(Constants.Validation.Invoice.TimeComponentErrorMassage);
+            });
 
         RuleFor(x => x.DueDate)
             .NotEmpty()
             .Must(x => x.TimeOfDay == TimeSpan.Zero)
             .GreaterThan(x => x.IssueDate)
-            .WithMessage(Constants.Validation.Invoice.DueDateErrorMessage);
+            .WithMessage(Constants.Validation.Invoice.DueDateErrorMessage)
+            .ChildRules(time =>
+            {
+                time.RuleFor(x => x.TimeOfDay)
+                .Equal(TimeSpan.Zero)
+                .WithMessage(Constants.Validation.Invoice.TimeComponentErrorMassage);
+            });
 
         RuleFor(x => x.Amount)
             .GreaterThan(0);

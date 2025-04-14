@@ -14,15 +14,18 @@ public class ImportInvoicesRequestValidator : AbstractValidator<ImportInvoicesRe
         RuleFor(x => x.ImportDTO)
                 .NotNull();
 
-        RuleFor(x => x.ImportDTO.FormFile)
+        RuleFor(x => x.ImportDTO.File)
                 .NotNull()
-                .Must(file => file.Length > 0)
-                .DependentRules(() =>
+                .ChildRules(file =>
                 {
-                    RuleFor(x => x.ImportDTO.FormFile.FileName)
+                    file.RuleFor(x => x.Length)
+                        .GreaterThan(0)
+                        .WithMessage(Constants.Validation.Import.UploadedFileLengthError);
+
+                    file.RuleFor(x => x.FileName)
                         .NotEmpty()
                         .Must(fileName => string.Equals(Path.GetExtension(fileName), ".csv", StringComparison.OrdinalIgnoreCase))
-                        .WithMessage("The file must be in CSV format (.csv extension).");
+                        .WithMessage(Constants.Validation.Import.FileExtentionError);
                 });
     }
 }

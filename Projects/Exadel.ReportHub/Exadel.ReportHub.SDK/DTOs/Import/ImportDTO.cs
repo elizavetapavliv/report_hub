@@ -4,7 +4,7 @@ namespace Exadel.ReportHub.SDK.DTOs.Invoice;
 
 public class ImportDTO
 {
-    public IFormFile FormFile { get; set; }
+    public IFormFile File { get; set; }
 
     public Guid ClientId { get; set; }
 }

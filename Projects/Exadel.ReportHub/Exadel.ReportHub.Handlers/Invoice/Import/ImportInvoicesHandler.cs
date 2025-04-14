@@ -20,22 +20,20 @@ public class ImportInvoicesHandler(
 {
     public async Task<ErrorOr<ImportResultDTO>> Handle(ImportInvoicesRequest request, CancellationToken cancellationToken)
     {
-        using var stream = request.ImportDTO.FormFile.OpenReadStream();
+        using var stream = request.ImportDTO.File.OpenReadStream();
 
         var invoiceDtos = csvProcessor.ReadInvoices(stream);
-
         var tasks = invoiceDtos.Select(dto => invoiceValidator.ValidateAsync(dto, cancellationToken));
         var validationResults = await Task.WhenAll(tasks);
 
         var validationErrors = validationResults
-            .SelectMany(dto => dto.Errors)
-            .Select(m => m.ErrorMessage)
+            .SelectMany((dto, index) => dto.Errors.Select(m => (RowIndex: index, Error: m.ErrorMessage)))
             .ToList();
 
-        if(validationErrors.Any())
+        if(validationErrors.Count > 0)
         {
             return validationErrors
-                .Select(m => Error.Validation("Invoice_Validation_Error", m))
+                .Select(m => Error.Validation(description: $"Row {m.RowIndex + 1}: {m.Error}"))
                 .ToList();
         }
 
