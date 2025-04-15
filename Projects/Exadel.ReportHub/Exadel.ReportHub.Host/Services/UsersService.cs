@@ -14,7 +14,7 @@ namespace Exadel.ReportHub.Host.Services;
 [ExcludeFromCodeCoverage]
 [ApiController]
 [Route("api/users")]
-public class UserService(ISender sender) : BaseService
+public class UsersService(ISender sender) : BaseService
 {
     [HttpPost]
     public async Task<IActionResult> AddUser([FromBody] CreateUserDTO createUserDto)

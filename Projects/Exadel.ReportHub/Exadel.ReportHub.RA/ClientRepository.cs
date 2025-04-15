@@ -26,6 +26,13 @@ public class ClientRepository : BaseRepository, IClientRepository
         return await GetByIdAsync<Client>(id, cancellationToken);
     }
 
+    public async Task<IEnumerable<Client>> GetAsync(CancellationToken cancellationToken)
+    {
+        var filter = _filterBuilder.Eq(x => x.IsDeleted, false);
+
+        return await GetAsync(filter, cancellationToken);
+    }
+
     public async Task SoftDeleteAsync(Guid id, CancellationToken cancellationToken)
     {
         var update = Builders<Client>.Update.Set(x => x.IsDeleted, true);

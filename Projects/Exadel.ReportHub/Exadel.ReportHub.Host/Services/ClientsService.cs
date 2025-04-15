@@ -2,6 +2,7 @@
 using Exadel.ReportHub.Handlers.Client.Create;
 using Exadel.ReportHub.Handlers.Client.Delete;
 using Exadel.ReportHub.Handlers.Client.Get;
+using Exadel.ReportHub.Handlers.Client.GetById;
 using Exadel.ReportHub.Handlers.Client.UpdateName;
 using Exadel.ReportHub.SDK.DTOs.Client;
 using MediatR;
@@ -12,8 +13,8 @@ namespace Exadel.ReportHub.Host.Services;
 
 [ExcludeFromCodeCoverage]
 [ApiController]
-[Route("api/client")]
-public class ClientService(ISender sender) : BaseService
+[Route("api/clients")]
+public class ClientsService(ISender sender) : BaseService
 {
     [HttpPost]
     public async Task<IActionResult> AddClient([FromBody] CreateClientDTO createClientDto)
@@ -31,6 +32,14 @@ public class ClientService(ISender sender) : BaseService
     public async Task<IActionResult> GetClientById([FromRoute] Guid id)
     {
         var result = await sender.Send(new GetClientByIdRequest(id));
+
+        return FromResult(result);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetClients()
+    {
+        var result = await sender.Send(new GetClientsRequest());
 
         return FromResult(result);
     }

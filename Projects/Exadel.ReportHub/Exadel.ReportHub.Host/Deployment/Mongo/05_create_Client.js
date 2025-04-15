@@ -82,7 +82,8 @@ for (let i = 0; i < clientCount; i++) {
     clients.push({
         _id: clientIds[i],
         Name: clientNames[i],
-        CustomerIds: randomCustomerIds(i)
+        CustomerIds: randomCustomerIds(i),
+        IsDeleted: false
     });
 }
 clients.push(globalClient);
