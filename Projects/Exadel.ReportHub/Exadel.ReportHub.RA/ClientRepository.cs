@@ -2,7 +2,6 @@
 using Exadel.ReportHub.Data.Models;
 using Exadel.ReportHub.RA.Abstract;
 using MongoDB.Driver;
-using static Duende.IdentityServer.Models.IdentityResources;
 
 namespace Exadel.ReportHub.RA;
 
