@@ -20,6 +20,7 @@ public static class Constants
         {
             public const string ShouldStartWithCapitalMessage = "The name must begin with a capital letter.";
             public const string NameTakenMessage = "Name is already taken";
+            public const int ClientMaximumNameLength = 20;
         }
 
         public static class Invoice

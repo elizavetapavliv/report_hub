@@ -1,8 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Exadel.ReportHub.Handlers.Client.Create;
-using Exadel.ReportHub.Handlers.Client.Delete;
 using Exadel.ReportHub.Handlers.Client.Get;
-using Exadel.ReportHub.Handlers.Client.UpdateActivity;
+using Exadel.ReportHub.Handlers.Client.Delete;
 using Exadel.ReportHub.Handlers.Client.UpdateName;
 using Exadel.ReportHub.SDK.DTOs.Client;
 using MediatR;
@@ -16,7 +15,6 @@ namespace Exadel.ReportHub.Host.Services;
 [Route("api/client")]
 public class ClientService(ISender sender) : BaseService
 {
-    [Authorize(Policy = Constants.Authorization.Policy.SuperAdmin)]
     [HttpPost]
     public async Task<IActionResult> AddClient([FromBody] CreateClientDTO createClientDto)
     {
@@ -33,16 +31,6 @@ public class ClientService(ISender sender) : BaseService
     public async Task<IActionResult> GetClientById([FromRoute] Guid id)
     {
         var result = await sender.Send(new GetClientByIdRequest(id));
-
-        return FromResult(result);
-    }
-
-    [Authorize(Policy = Constants.Authorization.Policy.SuperAdmin)]
-    [Authorize(Policy = Constants.Authorization.Policy.Owner)]
-    [HttpPatch("{id:guid}/activity")]
-    public async Task<IActionResult> UpdateClientActivity([FromRoute] Guid id, [FromBody] bool isActive)
-    {
-        var result = await sender.Send(new UpdateClientActivityRequest(id, isActive));
 
         return FromResult(result);
     }

@@ -12,6 +12,6 @@ public class ClientProfile : Profile
         CreateMap<CreateClientDTO, Client>()
             .ForMember(x => x.Id, opt => opt.Ignore())
             .ForMember(x => x.CustomerIds, opt => opt.Ignore())
-            .ForMember(x => x.IsActive, opt => opt.Ignore());
+            .ForMember(x => x.IsDeleted, opt => opt.Ignore());
     }
 }

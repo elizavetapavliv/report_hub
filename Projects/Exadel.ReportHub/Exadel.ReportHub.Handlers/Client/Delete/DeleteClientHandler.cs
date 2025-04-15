@@ -16,7 +16,7 @@ public class DeleteClientHandler(IClientRepository clientRepository) : IRequestH
             return Error.NotFound();
         }
 
-        await clientRepository.DeleteAsync(request.Id, cancellationToken);
+        await clientRepository.SoftDeleteAsync(request.Id, cancellationToken);
 
         return Result.Deleted;
     }

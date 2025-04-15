@@ -20,6 +20,7 @@ public class ClientNameValidator : AbstractValidator<string>
         RuleFor(name => name)
             .Matches("^[A-Z]")
             .WithMessage(Constants.Validation.Client.ShouldStartWithCapitalMessage)
+            .MaximumLength(Constants.Validation.Client.ClientMaximumNameLength)
             .MustAsync(NameMustNotExistsAsync)
             .WithMessage(Constants.Validation.Client.NameTakenMessage);
     }

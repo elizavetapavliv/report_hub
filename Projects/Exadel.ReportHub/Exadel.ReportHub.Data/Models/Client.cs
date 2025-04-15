@@ -8,5 +8,5 @@ public class Client : IDocument
 
     public IList<Guid> CustomerIds { get; set; }
 
-    public bool IsActive { get; set; } = true;
+    public bool IsDeleted { get; set; }
 }

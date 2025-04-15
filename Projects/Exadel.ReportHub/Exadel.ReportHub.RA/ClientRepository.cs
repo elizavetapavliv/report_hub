@@ -26,9 +26,9 @@ public class ClientRepository : BaseRepository, IClientRepository
         return await GetByIdAsync<Client>(id, cancellationToken);
     }
 
-    public async Task UpdateActivityAsync(Guid id, bool isActive, CancellationToken cancellationToken)
+    public async Task SoftDeleteAsync(Guid id, CancellationToken cancellationToken)
     {
-        var update = Builders<Client>.Update.Set(x => x.IsActive, isActive);
+        var update = Builders<Client>.Update.Set(x => x.IsDeleted, true);
         await UpdateAsync(id, update, cancellationToken);
     }
 
@@ -48,11 +48,5 @@ public class ClientRepository : BaseRepository, IClientRepository
         var filter = _filterBuilder.Eq(x => x.Name, name);
         var count = await GetCollection<Client>().Find(filter).CountDocumentsAsync(cancellationToken);
         return count > 0;
-    }
-
-    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken)
-    {
-        var filter = _filterBuilder.Eq(x => x.Id, id);
-        await GetCollection<Client>().DeleteOneAsync(filter, cancellationToken);
     }
 }

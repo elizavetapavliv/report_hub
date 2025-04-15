@@ -8,13 +8,11 @@ public interface IClientRepository
 
     Task<Client> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
-    Task UpdateActivityAsync(Guid id, bool isActive, CancellationToken cancellationToken);
-
     Task UpdateNameAsync(Guid id, string name, CancellationToken cancellationToken);
 
     Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken);
 
     Task<bool> NameExistsAsync(string name, CancellationToken cancellationToken);
 
-    Task DeleteAsync(Guid id, CancellationToken cancellationToken);
+    Task SoftDeleteAsync(Guid id, CancellationToken cancellationToken);
 }
