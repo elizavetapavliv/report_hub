@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Exadel.ReportHub.Handlers.Client.Create;
-using Exadel.ReportHub.Handlers.Client.Get;
 using Exadel.ReportHub.Handlers.Client.Delete;
+using Exadel.ReportHub.Handlers.Client.Get;
 using Exadel.ReportHub.Handlers.Client.UpdateName;
 using Exadel.ReportHub.SDK.DTOs.Client;
 using MediatR;
