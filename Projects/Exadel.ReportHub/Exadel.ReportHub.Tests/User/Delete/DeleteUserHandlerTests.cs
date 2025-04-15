@@ -4,7 +4,7 @@ using Exadel.ReportHub.Handlers.User.DeleteUser;
 using Exadel.ReportHub.RA.Abstract;
 using Moq;
 
-namespace Exadel.ReportHub.Tests.User.DeleteUser;
+namespace Exadel.ReportHub.Tests.User.Delete;
 
 public class DeleteUserHandlerTests
 {

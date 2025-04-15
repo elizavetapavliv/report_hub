@@ -2,7 +2,7 @@
 using Exadel.ReportHub.Handlers.User.Create;
 using Exadel.ReportHub.Handlers.User.DeleteUser;
 using Exadel.ReportHub.Handlers.User.Get;
-using Exadel.ReportHub.Handlers.User.GetActive;
+using Exadel.ReportHub.Handlers.User.GetById;
 using Exadel.ReportHub.Handlers.User.UpdateActivity;
 using Exadel.ReportHub.Handlers.User.UpdateName;
 using Exadel.ReportHub.Handlers.User.UpdatePassword;

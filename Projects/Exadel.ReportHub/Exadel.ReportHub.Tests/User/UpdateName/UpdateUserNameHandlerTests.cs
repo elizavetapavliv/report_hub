@@ -4,7 +4,7 @@ using Exadel.ReportHub.Handlers.User.UpdateName;
 using Exadel.ReportHub.RA.Abstract;
 using Moq;
 
-namespace Exadel.ReportHub.Tests;
+namespace Exadel.ReportHub.Tests.User.UpdateName;
 
 public class UpdateUserNameHandlerTests
 {

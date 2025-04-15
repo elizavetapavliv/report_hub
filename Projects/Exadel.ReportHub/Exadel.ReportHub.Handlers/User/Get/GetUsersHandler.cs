@@ -5,7 +5,7 @@ using Exadel.ReportHub.RA.Abstract;
 using Exadel.ReportHub.SDK.DTOs.User;
 using MediatR;
 
-namespace Exadel.ReportHub.Handlers.User.GetActive;
+namespace Exadel.ReportHub.Handlers.User.Get;
 
 public record GetUsersRequest(bool? IsActive) : IRequest<ErrorOr<IEnumerable<UserDTO>>>;
 

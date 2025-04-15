@@ -1,10 +1,10 @@
 ﻿using AutoFixture;
-using Exadel.ReportHub.Handlers.User.GetActive;
+using Exadel.ReportHub.Handlers.User.Get;
 using Exadel.ReportHub.RA.Abstract;
 using Exadel.ReportHub.Tests.Abstracts;
 using Moq;
 
-namespace Exadel.ReportHub.Tests.User.GetActive;
+namespace Exadel.ReportHub.Tests.User.GetUsers;
 
 [TestFixture]
 public class GetActiveUsersHandlerTests : BaseTestFixture
