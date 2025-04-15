@@ -67,4 +67,19 @@ public class ClientsService(ISender sender) : BaseService
 
         return FromResult(result);
     }
+
+
+    [Authorize(Policy = Constants.Authorization.Policy.Read)]
+    [HttpGet("{id:guid}")]
+    public IActionResult ClientAdminReadTest([FromRoute] Guid id)
+    {
+        return Ok();
+    }
+
+    [Authorize(Policy = Constants.Authorization.Policy.Update)]
+    [HttpPost("{id:guid}")]
+    public IActionResult ClientAdminUpdateTest([FromRoute] Guid id, [FromBody] string someData)
+    {
+        return Ok();
+    }
 }

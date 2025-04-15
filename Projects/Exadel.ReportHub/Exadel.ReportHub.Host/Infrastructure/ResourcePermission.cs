@@ -10,37 +10,54 @@ public static class ResourcePermission
     {
         return resource switch
         {
-            nameof(Client) => new()
+            "Clients" => new()
             {
                 { UserRole.SuperAdmin, new() { Permission.Create, Permission.Read, Permission.Update, Permission.Delete } },
                 { UserRole.Owner, new() { Permission.Read, Permission.Update } },
                 { UserRole.ClientAdmin, new() { Permission.Read } },
                 { UserRole.Operator, new() { Permission.Read } }
             },
-            nameof(User) => new()
+            "Users" => new()
             {
                 { UserRole.SuperAdmin, new() { Permission.Create, Permission.Read, Permission.Update, Permission.Delete } },
                 { UserRole.Owner, new() { Permission.Create, Permission.Read, Permission.Update, Permission.Delete } },
                 { UserRole.ClientAdmin, new() { Permission.Create, Permission.Read, Permission.Update, Permission.Delete } },
                 { UserRole.Operator, new() { Permission.Read } }
             },
-            nameof(Item) => new()
+            "UserAssignments" => new()
+            {
+                { UserRole.SuperAdmin, new() { Permission.Create, Permission.Read, Permission.Update, Permission.Delete } },
+                { UserRole.Owner, new() { Permission.Create, Permission.Read } },
+                { UserRole.ClientAdmin, new() { Permission.Read } },
+                { UserRole.Operator, new() { Permission.Read } }
+            },
+            "Items" => new()
             {
                 { UserRole.Owner, new() { Permission.Create, Permission.Read, Permission.Update, Permission.Delete } },
                 { UserRole.ClientAdmin, new() { Permission.Create, Permission.Read, Permission.Update, Permission.Delete } },
                 { UserRole.Operator, new() { Permission.Read } }
             },
-            nameof(Invoice) => new()
+            "Invoices" => new()
             {
                 { UserRole.Owner, new() { Permission.Create, Permission.Read, Permission.Update, Permission.Delete } },
                 { UserRole.ClientAdmin, new() { Permission.Create, Permission.Read, Permission.Update } },
                 { UserRole.Operator, new() { Permission.Create, Permission.Read } }
             },
-            nameof(Customer) => new()
+            "Customers" => new()
             {
                 { UserRole.Owner, new() { Permission.Create, Permission.Read, Permission.Update, Permission.Delete } },
                 { UserRole.ClientAdmin, new() { Permission.Create, Permission.Read, Permission.Update } },
                 { UserRole.Operator, new() { Permission.Create, Permission.Read } }
+            },
+            "Plans" => new()
+            {
+                { UserRole.Owner, new() { Permission.Create, Permission.Read, Permission.Update, Permission.Delete } },
+                { UserRole.ClientAdmin, new() { Permission.Create, Permission.Read, Permission.Update } },
+            },
+            "Reports" => new()
+            {
+                { UserRole.Owner, new() { Permission.Create, Permission.Read, Permission.Update, Permission.Delete } },
+                { UserRole.ClientAdmin, new() { Permission.Create, Permission.Read } },
             },
             _ => new()
         };
