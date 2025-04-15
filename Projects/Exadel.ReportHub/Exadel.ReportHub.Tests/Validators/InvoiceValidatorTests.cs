@@ -9,7 +9,7 @@ using FluentValidation;
 using FluentValidation.TestHelper;
 using Moq;
 
-namespace Exadel.ReportHub.Tests.Validators;
+namespace Exadel.ReportHub.Tests;
 
 public class InvoiceValidatorTests : BaseTestFixture
 {

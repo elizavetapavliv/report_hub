@@ -4,7 +4,7 @@ using Exadel.ReportHub.SDK.DTOs.User;
 using FluentValidation;
 using FluentValidation.TestHelper;
 
-namespace Exadel.ReportHub.Tests.Validators;
+namespace Exadel.ReportHub.Tests;
 
 [TestFixture]
 public class PasswordValidatorTests

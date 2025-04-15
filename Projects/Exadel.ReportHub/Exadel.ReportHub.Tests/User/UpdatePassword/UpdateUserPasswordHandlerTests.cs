@@ -6,7 +6,7 @@ using Exadel.ReportHub.RA.Abstract;
 using Microsoft.AspNetCore.Http;
 using Moq;
 
-namespace Exadel.ReportHub.Tests.User.UpdatePassword;
+namespace Exadel.ReportHub.Tests;
 
 public class UpdateUserPasswordHandlerTests
 {

@@ -1,7 +1,5 @@
 ﻿using Exadel.ReportHub.Handlers;
 using Exadel.ReportHub.Handlers.User.Create;
-using Exadel.ReportHub.Handlers.User.UpdateName;
-using Exadel.ReportHub.Handlers.Validators;
 using Exadel.ReportHub.RA.Abstract;
 using Exadel.ReportHub.SDK.DTOs.User;
 using FluentValidation;
@@ -24,23 +22,18 @@ public class CreateUserValidatorTests
         passwordValidator.RuleFor(x => x)
             .Matches("[^a-zA-Z0-9]")
             .WithMessage(Constants.Validation.User.PasswordSpecialCharacterMessage);
-
-        var userNameValidator = new InlineValidator<string>();
-        userNameValidator.RuleFor(x => x)
-            .NotEmpty()
-            .MaximumLength(Constants.Validation.User.FullNameMaxLength)
-            .WithName(nameof(CreateUserDTO.FullName));
-
-        _validator = new CreateUserRequestValidator(_userRepositoryMock.Object, passwordValidator, userNameValidator);
+        _validator = new CreateUserRequestValidator(_userRepositoryMock.Object, passwordValidator);
     }
 
     [Test]
-    public async Task ValidateAsync_FullNameIsEmpty_ErrorReturned()
+    [TestCase("")]
+    [TestCase(null)]
+    public async Task ValidateAsync_FullNameIsEmpty_ErrorReturned(string fullnameError)
     {
-        var createUserRequest = new CreateUserRequest(new CreateUserDTO { FullName = string.Empty, Email = "test@gmail.com", Password = "Testpassword123!" });
+        var createUserRequest = new CreateUserRequest(new CreateUserDTO { FullName = fullnameError, Email = "test@gmail.com", Password = "Testpassword123!" });
         var result = await _validator.TestValidateAsync(createUserRequest);
-        result.ShouldHaveAnyValidationError()
-            .WithErrorMessage("'FullName' must not be empty.");
+        result.ShouldHaveValidationErrorFor(x => x.CreateUserDto.FullName)
+            .WithErrorMessage("'Full Name' must not be empty.");
         Assert.That(result.Errors.Count, Is.EqualTo(1));
     }
 
@@ -51,18 +44,6 @@ public class CreateUserValidatorTests
         var result = await _validator.TestValidateAsync(createUserRequest);
         result.ShouldNotHaveAnyValidationErrors();
         Assert.That(result.Errors, Is.Empty);
-    }
-
-    [Test]
-    public async Task ValidateAsync_FullNameExceedsMaxLength_ErrorReturned()
-    {
-        var maxLength = 101;
-        var fullname = new string('x', maxLength);
-        var createUserRequest = new CreateUserRequest(new CreateUserDTO { FullName = fullname, Email = "test@gmail.com", Password = "Testpassword123!" });
-        var result = await _validator.TestValidateAsync(createUserRequest);
-        result.ShouldHaveAnyValidationError()
-            .WithErrorMessage($"The length of 'FullName' must be 100 characters or fewer. You entered {maxLength} characters.");
-        Assert.That(result.Errors, Has.Count.EqualTo(1));
     }
 
     [Test]

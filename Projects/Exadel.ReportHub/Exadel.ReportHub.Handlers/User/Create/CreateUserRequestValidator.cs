@@ -7,13 +7,11 @@ public class CreateUserRequestValidator : AbstractValidator<CreateUserRequest>
 {
     private readonly IUserRepository _userRepository;
     private readonly IValidator<string> _passwordValidator;
-    private readonly IValidator<string> _userNameValidator;
 
-    public CreateUserRequestValidator(IUserRepository userRepository, IValidator<string> passwordValidator, IValidator<string> userNameValidator)
+    public CreateUserRequestValidator(IUserRepository userRepository, IValidator<string> passwordValidator)
     {
         _userRepository = userRepository;
         _passwordValidator = passwordValidator;
-        _userNameValidator = userNameValidator;
         ConfigureRules();
     }
 
@@ -30,8 +28,9 @@ public class CreateUserRequestValidator : AbstractValidator<CreateUserRequest>
                     .WithMessage(Constants.Validation.User.EmailInvalidMessage)
                     .MustAsync(EmailMustNotExistAsync)
                     .WithMessage(Constants.Validation.User.EmailTakenMessage);
+
                 child.RuleFor(x => x.FullName)
-                    .SetValidator(_userNameValidator);
+                    .NotEmpty();
 
                 child.RuleFor(x => x.Password)
                     .SetValidator(_passwordValidator);

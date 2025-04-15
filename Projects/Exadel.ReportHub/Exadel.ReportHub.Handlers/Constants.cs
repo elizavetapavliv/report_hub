@@ -6,7 +6,6 @@ public static class Constants
     {
         public static class User
         {
-            public const int FullNameMaxLength = 100;
             public const string EmailTakenMessage = "Email is already taken.";
             public const string EmailInvalidMessage = "Email is invalid.";
 
