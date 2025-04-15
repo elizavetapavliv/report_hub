@@ -1,5 +1,5 @@
 ﻿const scriptName = "05_create_Client";
-const version = NumberInt(2);
+const version = NumberInt(3);
 
 if (db.MigrationHistory.findOne({ ScriptName: scriptName, Version: version })) {
     print(`${scriptName} v${version} is already applied`);
