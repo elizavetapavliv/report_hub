@@ -6,6 +6,7 @@ public static class Constants
     {
         public static class User
         {
+            public const int FullNameMaxLength = 100;
             public const string EmailTakenMessage = "Email is already taken.";
             public const string EmailInvalidMessage = "Email is invalid.";
 
@@ -14,6 +15,13 @@ public static class Constants
             public const string PasswordLowercaseMessage = "Password must have at least one lowercase letter.";
             public const string PasswordDigitMessage = "Password must have at least one digit.";
             public const string PasswordSpecialCharacterMessage = "Password must contain at least one special character.";
+        }
+
+        public static class Client
+        {
+            public const string ShouldStartWithCapitalMessage = "The name must begin with a capital letter.";
+            public const string NameTakenMessage = "Name is already taken";
+            public const int ClientMaximumNameLength = 20;
         }
 
         public static class Invoice
