@@ -13,6 +13,11 @@ public static class Constants
             public const string ClientAdmin = "ClientAdmin";
             public const string SuperAdmin = "SuperAdmin";
             public const string AllUsers = "AllUsers";
+
+            public const string Create = "Create";
+            public const string Read = "Read";
+            public const string Update = "Update";
+            public const string Delete = "Delete";
         }
     }
 

@@ -5,6 +5,7 @@ using Exadel.ReportHub.Common.Providers;
 using Exadel.ReportHub.Csv;
 using Exadel.ReportHub.Csv.Abstract;
 using Exadel.ReportHub.Data.Enums;
+using Exadel.ReportHub.Host.Infrastructure.Enums;
 using Exadel.ReportHub.Host.Infrastructure.Filters;
 using Exadel.ReportHub.Host.PolicyHandlers;
 using Exadel.ReportHub.Host.Registrations;
@@ -96,6 +97,15 @@ public class Startup(IConfiguration configuration)
                 policy.Requirements.Add(new ClientAssignmentRequirement(UserRole.ClientAdmin)));
             options.AddPolicy(Constants.Authorization.Policy.SuperAdmin, policy =>
                 policy.Requirements.Add(new ClientAssignmentRequirement()));
+
+            options.AddPolicy(Constants.Authorization.Policy.Create, policy =>
+                policy.Requirements.Add(new PermissionRequirement(Permission.Create)));
+            options.AddPolicy(Constants.Authorization.Policy.Read, policy =>
+                policy.Requirements.Add(new PermissionRequirement(Permission.Read)));
+            options.AddPolicy(Constants.Authorization.Policy.Update, policy =>
+                policy.Requirements.Add(new PermissionRequirement(Permission.Update)));
+            options.AddPolicy(Constants.Authorization.Policy.Delete, policy =>
+                policy.Requirements.Add(new PermissionRequirement(Permission.Delete)));
         });
 
         services.AddIdentity();
@@ -105,6 +115,7 @@ public class Startup(IConfiguration configuration)
         services.AddHttpContextAccessor();
         services.AddScoped<IUserProvider, UserProvider>();
         services.AddSingleton<IAuthorizationHandler, ClientAssignmentHandler>();
+        services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
         services.AddSingleton<ICsvProcessor, CsvProcessor>();
     }
 
