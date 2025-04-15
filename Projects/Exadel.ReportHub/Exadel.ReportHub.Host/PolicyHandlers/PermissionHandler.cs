@@ -66,7 +66,7 @@ public class PermissionHandler(
     private async Task<Guid?> GetClientIdFromRequestAsync(HttpRequest request, ILogger logger)
     {
         if (request.RouteValues.TryGetValue("controller", out var serviceName) &&
-            serviceName.ToString().Equals(typeof(ClientService).Name, StringComparison.Ordinal) &&
+            serviceName.ToString().Equals(typeof(ClientsService).Name, StringComparison.Ordinal) &&
             request.RouteValues.TryGetValue("id", out var routeClientIdObj) &&
             Guid.TryParse(routeClientIdObj.ToString(), out var routeClientId))
         {
