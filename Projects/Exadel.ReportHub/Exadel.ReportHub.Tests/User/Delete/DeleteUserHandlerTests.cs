@@ -1,6 +1,6 @@
 ﻿using AutoFixture;
 using ErrorOr;
-using Exadel.ReportHub.Handlers.User.DeleteUser;
+using Exadel.ReportHub.Handlers.User.Delete;
 using Exadel.ReportHub.RA.Abstract;
 using Moq;
 

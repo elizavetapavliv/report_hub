@@ -2,7 +2,7 @@
 using Exadel.ReportHub.RA.Abstract;
 using MediatR;
 
-namespace Exadel.ReportHub.Handlers.User.DeleteUser;
+namespace Exadel.ReportHub.Handlers.User.Delete;
 
 public record DeleteUserRequest(Guid UserId) : IRequest<ErrorOr<Deleted>>;
 

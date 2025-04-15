@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Exadel.ReportHub.Handlers.User.Create;
-using Exadel.ReportHub.Handlers.User.DeleteUser;
+using Exadel.ReportHub.Handlers.User.Delete;
 using Exadel.ReportHub.Handlers.User.Get;
 using Exadel.ReportHub.Handlers.User.GetById;
 using Exadel.ReportHub.Handlers.User.UpdateActivity;
