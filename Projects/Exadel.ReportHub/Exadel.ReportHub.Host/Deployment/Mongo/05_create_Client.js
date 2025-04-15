@@ -57,7 +57,7 @@ const clientNames = [
 ]
 
 const globalClient = {
-    id: UUID("e47501a8-547b-4dc4-ba97-e65ccfc39477"),
+    _id: UUID("e47501a8-547b-4dc4-ba97-e65ccfc39477"),
     Name: "Global client"
 }
 
