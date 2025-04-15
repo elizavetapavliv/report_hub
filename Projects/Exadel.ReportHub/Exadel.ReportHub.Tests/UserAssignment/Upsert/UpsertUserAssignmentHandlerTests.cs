@@ -29,7 +29,6 @@ public class UpsertUserAssignmentHandlerTests : BaseTestFixture
     {
         // Arrange
         var upsertUserAssignmentDto = Fixture.Build<UpsertUserAssignmentDTO>().With(x => x.Role, role).Create();
-        var userAssignment = Mapper.Map<Data.Models.UserAssignment>(upsertUserAssignmentDto);
 
         // Act
         var request = new UpsertUserAssignmentRequest(upsertUserAssignmentDto);
@@ -41,9 +40,9 @@ public class UpsertUserAssignmentHandlerTests : BaseTestFixture
 
         _userAssignmentRepositoryMock.Verify(
             x => x.UpsertAsync(It.Is<Data.Models.UserAssignment>(
-                ua => ua.UserId == userAssignment.UserId &&
-                ua.ClientId == userAssignment.ClientId &&
-                ua.Role == userAssignment.Role), CancellationToken.None),
+                ua => ua.UserId == upsertUserAssignmentDto.UserId &&
+                ua.ClientId == upsertUserAssignmentDto.ClientId &&
+                ua.Role == (Data.Enums.UserRole)upsertUserAssignmentDto.Role), CancellationToken.None),
             Times.Once);
     }
 }

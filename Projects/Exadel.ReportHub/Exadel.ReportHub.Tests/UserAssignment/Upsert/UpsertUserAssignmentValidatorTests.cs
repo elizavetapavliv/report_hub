@@ -33,10 +33,10 @@ public class UpsertUserAssignmentValidatorTests : BaseTestFixture
         // Arrange
         var upsertUserAssignmentDto = Fixture.Build<UpsertUserAssignmentDTO>().With(x => x.Role, role).Create();
         _userRepositoryMock
-            .Setup(x => x.ExistsAsync(upsertUserAssignmentDto.UserId, It.IsAny<CancellationToken>()))
+            .Setup(x => x.ExistsAsync(upsertUserAssignmentDto.UserId, CancellationToken.None))
             .ReturnsAsync(true);
         _clientRepositoryMock
-            .Setup(x => x.ExistsAsync(upsertUserAssignmentDto.ClientId, It.IsAny<CancellationToken>()))
+            .Setup(x => x.ExistsAsync(upsertUserAssignmentDto.ClientId, CancellationToken.None))
             .ReturnsAsync(true);
 
         // Act
@@ -64,7 +64,7 @@ public class UpsertUserAssignmentValidatorTests : BaseTestFixture
         var upsertUserAssignmentDto = Fixture.Build<UpsertUserAssignmentDTO>()
             .With(x => x.UserId, Guid.Empty).With(x => x.Role, role).Create();
         _clientRepositoryMock
-            .Setup(x => x.ExistsAsync(upsertUserAssignmentDto.ClientId, It.IsAny<CancellationToken>()))
+            .Setup(x => x.ExistsAsync(upsertUserAssignmentDto.ClientId, CancellationToken.None))
             .ReturnsAsync(true);
 
         // Act
@@ -92,10 +92,10 @@ public class UpsertUserAssignmentValidatorTests : BaseTestFixture
         // Arrange
         var upsertUserAssignmentDto = Fixture.Build<UpsertUserAssignmentDTO>().With(x => x.Role, role).Create();
         _userRepositoryMock
-            .Setup(x => x.ExistsAsync(upsertUserAssignmentDto.UserId, It.IsAny<CancellationToken>()))
+            .Setup(x => x.ExistsAsync(upsertUserAssignmentDto.UserId, CancellationToken.None))
             .ReturnsAsync(false);
         _clientRepositoryMock
-            .Setup(x => x.ExistsAsync(upsertUserAssignmentDto.ClientId, It.IsAny<CancellationToken>()))
+            .Setup(x => x.ExistsAsync(upsertUserAssignmentDto.ClientId, CancellationToken.None))
             .ReturnsAsync(true);
 
         // Act
@@ -124,7 +124,7 @@ public class UpsertUserAssignmentValidatorTests : BaseTestFixture
         var upsertUserAssignmentDto = Fixture.Build<UpsertUserAssignmentDTO>()
             .With(x => x.ClientId, Guid.Empty).With(x => x.Role, role).Create();
         _userRepositoryMock
-            .Setup(x => x.ExistsAsync(upsertUserAssignmentDto.UserId, It.IsAny<CancellationToken>()))
+            .Setup(x => x.ExistsAsync(upsertUserAssignmentDto.UserId, CancellationToken.None))
             .ReturnsAsync(true);
 
         // Act
@@ -152,10 +152,10 @@ public class UpsertUserAssignmentValidatorTests : BaseTestFixture
         // Arrange
         var upsertUserAssignmentDto = Fixture.Build<UpsertUserAssignmentDTO>().With(x => x.Role, role).Create();
         _userRepositoryMock
-            .Setup(x => x.ExistsAsync(upsertUserAssignmentDto.UserId, It.IsAny<CancellationToken>()))
+            .Setup(x => x.ExistsAsync(upsertUserAssignmentDto.UserId, CancellationToken.None))
             .ReturnsAsync(true);
         _clientRepositoryMock
-            .Setup(x => x.ExistsAsync(upsertUserAssignmentDto.ClientId, It.IsAny<CancellationToken>()))
+            .Setup(x => x.ExistsAsync(upsertUserAssignmentDto.ClientId, CancellationToken.None))
             .ReturnsAsync(false);
 
         // Act
@@ -182,10 +182,10 @@ public class UpsertUserAssignmentValidatorTests : BaseTestFixture
         // Arrange
         var upsertUserAssignmentDto = Fixture.Build<UpsertUserAssignmentDTO>().With(x => x.Role, role).Create();
         _userRepositoryMock
-            .Setup(x => x.ExistsAsync(upsertUserAssignmentDto.UserId, It.IsAny<CancellationToken>()))
+            .Setup(x => x.ExistsAsync(upsertUserAssignmentDto.UserId, CancellationToken.None))
             .ReturnsAsync(true);
         _clientRepositoryMock
-            .Setup(x => x.ExistsAsync(upsertUserAssignmentDto.ClientId, It.IsAny<CancellationToken>()))
+            .Setup(x => x.ExistsAsync(upsertUserAssignmentDto.ClientId, CancellationToken.None))
             .ReturnsAsync(true);
 
         // Act
