@@ -1,4 +1,4 @@
-﻿namespace Exadel.ReportHub.Host.Infrastructure.Enums;
+﻿namespace Exadel.ReportHub.Host.Infrastructure.Authorization;
 
 public enum Permission
 {

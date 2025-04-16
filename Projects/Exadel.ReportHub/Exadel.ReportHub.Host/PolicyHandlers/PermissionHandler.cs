@@ -1,11 +1,9 @@
 ﻿using System.Security.Claims;
 using System.Text.Json;
 using Duende.IdentityServer.Extensions;
-using Exadel.ReportHub.Host.Infrastructure;
-using Exadel.ReportHub.Host.Infrastructure.Enums;
+using Exadel.ReportHub.Host.Infrastructure.Authorization;
 using Exadel.ReportHub.Host.Services;
 using Exadel.ReportHub.RA.Abstract;
-using MediatR;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Exadel.ReportHub.Host.PolicyHandlers;
@@ -23,7 +21,7 @@ public class PermissionRequirement : IAuthorizationRequirement
 public class PermissionHandler(
     IHttpContextAccessor httpContextAccessor,
     IUserAssignmentRepository userAssignmentRepository,
-    ILogger<ClientAssignmentHandler> logger) : AuthorizationHandler<PermissionRequirement>
+    ILogger<PermissionHandler> logger) : AuthorizationHandler<PermissionRequirement>
 {
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
     {
@@ -39,7 +37,7 @@ public class PermissionHandler(
             return;
         }
 
-        var permissions = ResourcePermission.GetPermissions(serviceName.ToString().Replace("Service", string.Empty, StringComparison.Ordinal));
+        var permissions = ResourcePermission.GetPermissions(serviceName.ToString().Replace("sService", string.Empty, StringComparison.Ordinal));
         var allowedRoles = permissions.Where(x => x.Value.Contains(requirement.Permission)).Select(x => x.Key).ToList();
         var matchingRoles = allowedRoles.Where(r => context.User.IsInRole(r.ToString())).ToList();
 
