@@ -37,8 +37,8 @@ public class PermissionHandler(
             return;
         }
 
-        var permissions = ResourcePermission.GetPermissions(serviceName.ToString().Replace("sService", string.Empty, StringComparison.Ordinal));
-        var allowedRoles = permissions.Where(x => x.Value.Contains(requirement.Permission)).Select(x => x.Key).ToList();
+        var allowedRoles = ResourcePermission.GetAllowedRoles(
+            serviceName.ToString().Replace("sService", string.Empty, StringComparison.Ordinal), requirement.Permission);
         var matchingRoles = allowedRoles.Where(r => context.User.IsInRole(r.ToString())).ToList();
 
         if (matchingRoles.Count == 0)

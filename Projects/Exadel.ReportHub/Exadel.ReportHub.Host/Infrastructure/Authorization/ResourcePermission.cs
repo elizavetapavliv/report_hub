@@ -5,60 +5,84 @@ namespace Exadel.ReportHub.Host.Infrastructure.Authorization;
 
 public static class ResourcePermission
 {
-    public static Dictionary<UserRole, List<Permission>> GetPermissions(string resource)
+    private static Dictionary<string, Dictionary<Permission, List<UserRole>>> permissions = new()
     {
-        return resource switch
         {
-            nameof(Client) => new()
+            nameof(Client), new()
             {
-                { UserRole.SuperAdmin, new() { Permission.Create, Permission.Read, Permission.Update, Permission.Delete } },
-                { UserRole.Owner, new() { Permission.Read, Permission.Update } },
-                { UserRole.ClientAdmin, new() { Permission.Read } },
-                { UserRole.Operator, new() { Permission.Read } }
-            },
-            nameof(User) => new()
+                { Permission.Create, new() { UserRole.SuperAdmin } },
+                { Permission.Read, new() { UserRole.SuperAdmin, UserRole.Owner, UserRole.ClientAdmin, UserRole.Operator } },
+                { Permission.Update, new() { UserRole.SuperAdmin, UserRole.Owner } },
+                { Permission.Delete, new() { UserRole.SuperAdmin } },
+            }
+        },
+        {
+            nameof(User), new()
             {
-                { UserRole.SuperAdmin, new() { Permission.Create, Permission.Read, Permission.Update, Permission.Delete } },
-                { UserRole.Owner, new() { Permission.Create, Permission.Read, Permission.Update, Permission.Delete } },
-                { UserRole.ClientAdmin, new() { Permission.Create, Permission.Read, Permission.Update, Permission.Delete } },
-                { UserRole.Operator, new() { Permission.Read } }
-            },
-            nameof(UserAssignment) => new()
+                { Permission.Create, new() { UserRole.SuperAdmin, UserRole.Owner, UserRole.ClientAdmin } },
+                { Permission.Read, new() { UserRole.SuperAdmin, UserRole.Owner, UserRole.ClientAdmin, UserRole.Operator } },
+                { Permission.Update, new() { UserRole.SuperAdmin, UserRole.Owner, UserRole.ClientAdmin } },
+                { Permission.Delete, new() { UserRole.SuperAdmin, UserRole.Owner, UserRole.ClientAdmin } },
+            }
+        },
+        {
+            nameof(UserAssignment), new()
             {
-                { UserRole.SuperAdmin, new() { Permission.Create, Permission.Read, Permission.Update, Permission.Delete } },
-                { UserRole.Owner, new() { Permission.Read, Permission.Update } },
-                { UserRole.ClientAdmin, new() { Permission.Read } },
-                { UserRole.Operator, new() { Permission.Read } }
-            },
-            nameof(Item) => new()
+                { Permission.Create, new() { UserRole.SuperAdmin } },
+                { Permission.Read, new() { UserRole.SuperAdmin, UserRole.Owner, UserRole.ClientAdmin, UserRole.Operator } },
+                { Permission.Update, new() { UserRole.SuperAdmin, UserRole.Owner } },
+                { Permission.Delete, new() { UserRole.SuperAdmin } },
+            }
+        },
+        {
+            nameof(Item), new()
             {
-                { UserRole.Owner, new() { Permission.Create, Permission.Read, Permission.Update, Permission.Delete } },
-                { UserRole.ClientAdmin, new() { Permission.Create, Permission.Read, Permission.Update, Permission.Delete } },
-                { UserRole.Operator, new() { Permission.Read } }
-            },
-            nameof(Invoice) => new()
+                { Permission.Create, new() { UserRole.Owner, UserRole.ClientAdmin } },
+                { Permission.Read, new() { UserRole.Owner, UserRole.ClientAdmin, UserRole.Operator } },
+                { Permission.Update, new() { UserRole.Owner, UserRole.ClientAdmin } },
+                { Permission.Delete, new() { UserRole.Owner, UserRole.ClientAdmin } },
+            }
+        },
+        {
+            nameof(Invoice), new()
             {
-                { UserRole.Owner, new() { Permission.Create, Permission.Read, Permission.Update, Permission.Delete } },
-                { UserRole.ClientAdmin, new() { Permission.Create, Permission.Read, Permission.Update } },
-                { UserRole.Operator, new() { Permission.Create, Permission.Read } }
-            },
-            nameof(Customer) => new()
+                { Permission.Create, new() { UserRole.Owner, UserRole.ClientAdmin, UserRole.Operator } },
+                { Permission.Read, new() { UserRole.Owner, UserRole.ClientAdmin, UserRole.Operator } },
+                { Permission.Update, new() { UserRole.Owner, UserRole.ClientAdmin } },
+                { Permission.Delete, new() { UserRole.Owner } },
+            }
+        },
+        {
+            nameof(Customer), new()
             {
-                { UserRole.Owner, new() { Permission.Create, Permission.Read, Permission.Update, Permission.Delete } },
-                { UserRole.ClientAdmin, new() { Permission.Create, Permission.Read, Permission.Update } },
-                { UserRole.Operator, new() { Permission.Create, Permission.Read } }
-            },
-            "Plan" => new() // nameof(Plan)
+                { Permission.Create, new() { UserRole.Owner, UserRole.ClientAdmin, UserRole.Operator } },
+                { Permission.Read, new() { UserRole.Owner, UserRole.ClientAdmin, UserRole.Operator } },
+                { Permission.Update, new() { UserRole.Owner, UserRole.ClientAdmin } },
+                { Permission.Delete, new() { UserRole.Owner } },
+            }
+        },
+        {
+            "Plan", new() // nameof(Plan)
             {
-                { UserRole.Owner, new() { Permission.Create, Permission.Read, Permission.Update, Permission.Delete } },
-                { UserRole.ClientAdmin, new() { Permission.Create, Permission.Read, Permission.Update } },
-            },
-            "Report" => new() // nameof(Report)
+                { Permission.Create, new() { UserRole.Owner, UserRole.ClientAdmin } },
+                { Permission.Read, new() { UserRole.Owner, UserRole.ClientAdmin } },
+                { Permission.Update, new() { UserRole.Owner, UserRole.ClientAdmin } },
+                { Permission.Delete, new() { UserRole.Owner } },
+            }
+        },
+        {
+            "Report", new() // nameof(Report)
             {
-                { UserRole.Owner, new() { Permission.Create, Permission.Read, Permission.Update, Permission.Delete } },
-                { UserRole.ClientAdmin, new() { Permission.Create, Permission.Read } },
-            },
-            _ => new()
-        };
+                { Permission.Create, new() { UserRole.Owner, UserRole.ClientAdmin } },
+                { Permission.Read, new() { UserRole.Owner, UserRole.ClientAdmin } },
+                { Permission.Update, new() { UserRole.Owner } },
+                { Permission.Delete, new() { UserRole.Owner } },
+            }
+        },
+    };
+
+    public static IList<UserRole> GetAllowedRoles(string resource, Permission permission)
+    {
+        return permissions.GetValueOrDefault(resource)?.GetValueOrDefault(permission) ?? new List<UserRole>();
     }
 }
