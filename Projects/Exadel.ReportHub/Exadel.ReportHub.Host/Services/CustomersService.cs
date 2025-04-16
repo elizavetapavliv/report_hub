@@ -3,7 +3,7 @@ using Exadel.ReportHub.Handlers.Customer.Create;
 using Exadel.ReportHub.Handlers.Customer.Delete;
 using Exadel.ReportHub.Handlers.Customer.Get;
 using Exadel.ReportHub.Handlers.Customer.GetById;
-using Exadel.ReportHub.Handlers.Customer.UpdateName;
+using Exadel.ReportHub.Handlers.Customer.Update;
 using Exadel.ReportHub.SDK.DTOs.Customer;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -31,9 +31,9 @@ public class CustomersService(ISender sender) : BaseService
     [Authorize(Policy = Constants.Authorization.Policy.ClientAdmin)]
     [Authorize(Policy = Constants.Authorization.Policy.Operator)]
     [HttpGet]
-    public async Task<IActionResult> GetCustomers([FromQuery] bool? IsDeleted)
+    public async Task<IActionResult> GetCustomers()
     {
-        var result = await sender.Send(new GetCustomersRequest(IsDeleted));
+        var result = await sender.Send(new GetCustomersRequest());
         return FromResult(result);
     }
 
@@ -57,10 +57,10 @@ public class CustomersService(ISender sender) : BaseService
 
     [Authorize(Policy = Constants.Authorization.Policy.Owner)]
     [Authorize(Policy = Constants.Authorization.Policy.ClientAdmin)]
-    [HttpPatch("{id:guid}/name")]
-    public async Task<IActionResult> UpdateCustomer([FromRoute] Guid id, [FromBody] string name)
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> UpdateCustomer([FromRoute] Guid id, [FromBody] UpdateCustomerDTO updateCustomerDTO)
     {
-        var result = await sender.Send(new UpdateCustomerNameRequest(id, name));
+        var result = await sender.Send(new UpdateCustomerRequest(id, updateCustomerDTO));
         return FromResult(result);
     }
 }

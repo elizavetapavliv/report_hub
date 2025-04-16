@@ -2,9 +2,9 @@
 
 namespace Exadel.ReportHub.Handlers.Validators;
 
-public class CustomerNameValidator : AbstractValidator<string>
+public class NameValidator : AbstractValidator<string>
 {
-    public CustomerNameValidator()
+    public NameValidator()
     {
         ConfigureRules();
     }
@@ -17,6 +17,7 @@ public class CustomerNameValidator : AbstractValidator<string>
             .NotEmpty()
             .MaximumLength(Constants.Validation.Customer.NameMaxLength)
             .Matches("^[A-Z]")
-            .WithMessage(Constants.Validation.Customer.NameShouldStartWithCapitalMessage);
+            .WithMessage(Constants.Validation.Customer.NameShouldStartWithCapitalMessage)
+            .WithName(nameof(Data.Models.Customer.Name));
     }
 }

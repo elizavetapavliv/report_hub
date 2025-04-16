@@ -32,11 +32,9 @@ public class CustomerRepository : BaseRepository, ICustomerRepository
         return await ExistsAsync<Customer>(id, cancellationToken);
     }
 
-    public Task<IEnumerable<Customer>> GetAsync(bool? isDeleted, CancellationToken cancellationToken)
+    public Task<IEnumerable<Customer>> GetAsync(CancellationToken cancellationToken)
     {
-        var filter = isDeleted.HasValue
-            ? _filterBuilder.Eq(x => x.IsDeleted, isDeleted.Value)
-            : _filterBuilder.Empty;
+        var filter = _filterBuilder.Eq(x => x.IsDeleted, false);
 
         return GetAsync(filter, cancellationToken);
     }
@@ -52,9 +50,12 @@ public class CustomerRepository : BaseRepository, ICustomerRepository
         await UpdateAsync(id, definition, cancellationToken);
     }
 
-    public async Task UpdateNameAsync(Guid id, string name, CancellationToken cancellationToken)
+    public async Task UpdateAsync(Customer customer, CancellationToken cancellationToken)
     {
-        var definition = Builders<Customer>.Update.Set(x => x.Name, name);
-        await UpdateAsync(id, definition, cancellationToken);
+        var definition = Builders<Customer>.Update
+            .Set(x => x.Name, customer.Name)
+            .Set(x => x.Country, customer.Country);
+
+        await UpdateAsync<Customer>(customer.Id, definition, cancellationToken);
     }
 }

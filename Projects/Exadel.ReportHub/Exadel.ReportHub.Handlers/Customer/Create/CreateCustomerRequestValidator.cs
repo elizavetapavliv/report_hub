@@ -25,7 +25,7 @@ public class CreateCustomerRequestValidator : AbstractValidator<CreateCustomerRe
                 child.RuleLevelCascadeMode = CascadeMode.Stop;
 
                 child.RuleFor(x => x.Name)
-                    .SetValidator(new CustomerNameValidator());
+                    .SetValidator(new NameValidator());
 
                 child.RuleFor(x => x.Email)
                     .NotEmpty()
@@ -35,10 +35,7 @@ public class CreateCustomerRequestValidator : AbstractValidator<CreateCustomerRe
                     .WithMessage(Constants.Validation.Customer.EmailTakenMessage);
 
                 child.RuleFor(x => x.Country)
-                    .NotEmpty()
-                    .Matches("^[A-Z]")
-                    .WithMessage(Constants.Validation.Customer.CountryShouldStartWithCapitalMessage)
-                    .MaximumLength(Constants.Validation.Customer.CountryMaxLength);
+                    .SetValidator(new CountryValidator());
             });
     }
 

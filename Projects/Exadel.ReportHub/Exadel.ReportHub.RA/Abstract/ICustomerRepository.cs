@@ -6,7 +6,7 @@ public interface ICustomerRepository
 {
     Task AddAsync(Customer customer, CancellationToken cancellationToken);
 
-    Task<IEnumerable<Customer>> GetAsync(bool? isDeleted, CancellationToken cancellationToken);
+    Task<IEnumerable<Customer>> GetAsync(CancellationToken cancellationToken);
 
     Task<Customer> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
@@ -16,5 +16,5 @@ public interface ICustomerRepository
 
     Task SoftDeleteAsync(Guid id, CancellationToken cancellationToken);
 
-    Task UpdateNameAsync(Guid id, string name, CancellationToken cancellationToken);
+    Task UpdateAsync(Customer customer, CancellationToken cancellationToken);
 }
