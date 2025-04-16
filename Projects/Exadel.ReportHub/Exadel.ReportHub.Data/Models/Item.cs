@@ -1,6 +1,8 @@
-﻿namespace Exadel.ReportHub.Data.Models;
+﻿using Exadel.ReportHub.Data.Abstract;
 
-public class Item
+namespace Exadel.ReportHub.Data.Models;
+
+public class Item : IDocument, ISoftDeletable
 {
     public Guid Id { get; set; }
 
@@ -13,4 +15,6 @@ public class Item
     public decimal Price { get; set; }
 
     public string Currency { get; set; }
+
+    public bool IsDeleted { get; set; }
 }
