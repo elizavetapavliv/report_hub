@@ -3,7 +3,7 @@ using Exadel.ReportHub.Data.Models;
 
 namespace Exadel.ReportHub.Host.Infrastructure.Authorization;
 
-public static class ResourcePermission
+public static class Permissions
 {
     private static Dictionary<string, Dictionary<Permission, List<UserRole>>> permissions = new()
     {
@@ -62,7 +62,7 @@ public static class ResourcePermission
             }
         },
         {
-            "Plan", new() // nameof(Plan)
+            nameof(Plan), new()
             {
                 { Permission.Create, new() { UserRole.Owner, UserRole.ClientAdmin } },
                 { Permission.Read, new() { UserRole.Owner, UserRole.ClientAdmin } },
@@ -71,7 +71,7 @@ public static class ResourcePermission
             }
         },
         {
-            "Report", new() // nameof(Report)
+            nameof(Report), new()
             {
                 { Permission.Create, new() { UserRole.Owner, UserRole.ClientAdmin } },
                 { Permission.Read, new() { UserRole.Owner, UserRole.ClientAdmin } },
