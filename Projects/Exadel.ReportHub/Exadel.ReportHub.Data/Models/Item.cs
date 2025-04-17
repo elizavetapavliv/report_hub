@@ -1,6 +1,6 @@
 ﻿namespace Exadel.ReportHub.Data.Models;
 
-public class Item
+public class Item : IDocument
 {
     public Guid Id { get; set; }
 

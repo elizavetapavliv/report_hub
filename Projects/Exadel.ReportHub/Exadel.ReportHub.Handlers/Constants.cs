@@ -60,5 +60,14 @@ public static class Constants
             public const string FileExtentionError = "The file must be in CSV format (.csv extension).";
             public const string UploadedFileLengthError = "Uploaded file must not be empty.";
         }
+
+        public static class Plan
+        {
+            public const string ItemDoesNotExistMessage = "Item does not exist";
+            public const string ClientDoesNotExistMessage = "Client does not exist";
+            public const string PlanStartDateErrorMessage = "Start date must be less than end date";
+            public const string PlanEndDateErrorMessage = "End date must be greater than start date";
+            public const string PlandEndDateInThePastErrorMessage = "End date must be in the future";
+        }
     }
 }

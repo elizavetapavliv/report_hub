@@ -1,6 +1,6 @@
-﻿namespace Exadel.ReportHub.Data.Models;
+﻿namespace Exadel.ReportHub.SDK.DTOs.Plan;
 
-public class Plan : IDocument
+public class PlanDTO
 {
     public Guid Id { get; set; }
 
@@ -13,6 +13,4 @@ public class Plan : IDocument
     public DateTime StartDate { get; set; }
 
     public DateTime EndDate { get; set; }
-
-    public bool IsDeleted { get; set; }
 }
