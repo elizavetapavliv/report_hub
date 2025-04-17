@@ -16,9 +16,7 @@ namespace Exadel.ReportHub.Host.Services;
 [ApiController]
 public class CustomersService(ISender sender) : BaseService
 {
-    [Authorize(Policy = Constants.Authorization.Policy.Owner)]
-    [Authorize(Policy = Constants.Authorization.Policy.ClientAdmin)]
-    [Authorize(Policy = Constants.Authorization.Policy.Operator)]
+    [Authorize(Policy = Constants.Authorization.Policy.Create)]
     [HttpPost]
     public async Task<IActionResult> AddCustomer([FromBody] CreateCustomerDTO createCustomerDto)
     {
@@ -27,9 +25,7 @@ public class CustomersService(ISender sender) : BaseService
         return FromResult(result);
     }
 
-    [Authorize(Policy = Constants.Authorization.Policy.Owner)]
-    [Authorize(Policy = Constants.Authorization.Policy.ClientAdmin)]
-    [Authorize(Policy = Constants.Authorization.Policy.Operator)]
+    [Authorize(Policy = Constants.Authorization.Policy.Read)]
     [HttpGet]
     public async Task<IActionResult> GetCustomers()
     {
@@ -37,9 +33,7 @@ public class CustomersService(ISender sender) : BaseService
         return FromResult(result);
     }
 
-    [Authorize(Policy = Constants.Authorization.Policy.Owner)]
-    [Authorize(Policy = Constants.Authorization.Policy.ClientAdmin)]
-    [Authorize(Policy = Constants.Authorization.Policy.Operator)]
+    [Authorize(Policy = Constants.Authorization.Policy.Read)]
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetCustomerById([FromRoute] Guid id)
     {
@@ -47,7 +41,7 @@ public class CustomersService(ISender sender) : BaseService
         return FromResult(result);
     }
 
-    [Authorize(Policy = Constants.Authorization.Policy.Owner)]
+    [Authorize(Policy = Constants.Authorization.Policy.Delete)]
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteCustomer([FromRoute] Guid id)
     {
@@ -55,8 +49,7 @@ public class CustomersService(ISender sender) : BaseService
         return FromResult(result);
     }
 
-    [Authorize(Policy = Constants.Authorization.Policy.Owner)]
-    [Authorize(Policy = Constants.Authorization.Policy.ClientAdmin)]
+    [Authorize(Policy = Constants.Authorization.Policy.Update)]
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> UpdateCustomer([FromRoute] Guid id, [FromBody] UpdateCustomerDTO updateCustomerDTO)
     {
