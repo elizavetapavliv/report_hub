@@ -4,17 +4,17 @@ namespace Exadel.ReportHub.Handlers.User.UpdateName;
 
 public class UpdateUserNameRequestValidator : AbstractValidator<UpdateUserNameRequest>
 {
-    private readonly IValidator<string> _userNameValidator;
+    private readonly IValidator<string> _validator;
 
-    public UpdateUserNameRequestValidator(IValidator<string> userNameValidator)
+    public UpdateUserNameRequestValidator(IValidator<string> validator)
     {
-        _userNameValidator = userNameValidator;
+        _validator = validator;
         ConfigureRules();
     }
 
     private void ConfigureRules()
     {
         RuleFor(x => x.FullName)
-            .SetValidator(_userNameValidator);
+            .SetValidator(_validator, Constants.Validation.RuleSet.Names);
     }
 }

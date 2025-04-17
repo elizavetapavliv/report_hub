@@ -6,6 +6,8 @@ namespace Exadel.ReportHub.RA;
 
 public class ItemRepository : BaseRepository, IItemRepository
 {
+    private static readonly FilterDefinitionBuilder<Item> _filterBuilder = Builders<Item>.Filter;
+
     public ItemRepository(MongoDbContext context)
         : base(context)
     {
@@ -24,6 +26,12 @@ public class ItemRepository : BaseRepository, IItemRepository
     public async Task<Item> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return await GetByIdAsync<Item>(id, cancellationToken);
+    }
+
+    public async Task<Guid> GetClientIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var filter = _filterBuilder.Eq(x => x.Id, id);
+        return await GetCollection<Item>().Find(filter).Project(x => x.ClientId).SingleOrDefaultAsync(cancellationToken);
     }
 
     public async Task SoftDeleteAsync(Guid id, CancellationToken cancellationToken)

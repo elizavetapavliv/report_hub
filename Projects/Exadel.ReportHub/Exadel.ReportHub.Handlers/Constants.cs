@@ -4,29 +4,42 @@ public static class Constants
 {
     public static class Validation
     {
+        public static class RuleSet
+        {
+            public const string Names = nameof(Names);
+            public const string Passwords = nameof(Passwords);
+            public const string Countries = nameof(Countries);
+        }
+
         public static class Name
         {
-            public const int NameMaxLength = 100;
-            public const string NameShouldStartWithCapitalMessage = "Name must begin with a capital letter.";
+            public const int MaxLength = 100;
+            public const string ShouldStartWithCapitalMessage = "Name must begin with a capital letter.";
+        }
+
+        public static class Password
+        {
+            public const int MinimumLength = 8;
+            public const string UppercaseMessage = "Password must have at least one uppercase letter.";
+            public const string LowercaseMessage = "Password must have at least one lowercase letter.";
+            public const string DigitMessage = "Password must have at least one digit.";
+            public const string SpecialCharacterMessage = "Password must contain at least one special character.";
+        }
+
+        public static class Country
+        {
+            public const int MaxLength = 56;
+            public const string ShouldStartWithCapitalMessage = "Country must begin with a capital letter.";
         }
 
         public static class User
         {
-            public const int FullNameMaxLength = 100;
             public const string EmailTakenMessage = "Email is already taken.";
             public const string EmailInvalidMessage = "Email is invalid.";
-
-            public const int PasswordMinimumLength = 8;
-            public const string PasswordUppercaseMessage = "Password must have at least one uppercase letter.";
-            public const string PasswordLowercaseMessage = "Password must have at least one lowercase letter.";
-            public const string PasswordDigitMessage = "Password must have at least one digit.";
-            public const string PasswordSpecialCharacterMessage = "Password must contain at least one special character.";
         }
 
         public static class Customer
         {
-            public const int CountryMaxLength = 56;
-            public const string CountryShouldStartWithCapitalMessage = "Country must begin with a capital letter.";
             public const string EmailTakenMessage = "Email is already taken.";
             public const string EmailInvalidMessage = "Email is invalid.";
         }

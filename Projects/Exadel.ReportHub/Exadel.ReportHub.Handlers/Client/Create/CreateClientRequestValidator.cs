@@ -1,15 +1,15 @@
-﻿using Exadel.ReportHub.Handlers.Validators;
+﻿using Exadel.ReportHub.RA.Abstract;
 using FluentValidation;
 
 namespace Exadel.ReportHub.Handlers.Client.Create;
 
 public class CreateClientRequestValidator : AbstractValidator<CreateClientRequest>
 {
-    private readonly ClientNameValidator _clientNameValidator;
+    private readonly IClientRepository _clientRepository;
 
-    public CreateClientRequestValidator(ClientNameValidator clientNameValidator)
+    public CreateClientRequestValidator(IClientRepository clientRepository)
     {
-        _clientNameValidator = clientNameValidator;
+        _clientRepository = clientRepository;
         ConfigureRules();
     }
 
@@ -20,8 +20,18 @@ public class CreateClientRequestValidator : AbstractValidator<CreateClientReques
             .ChildRules(child =>
             {
                 child.RuleFor(x => x.Name)
-                .NotEmpty()
-                .SetValidator(_clientNameValidator);
+                    .NotEmpty()
+                    .Matches("^[A-Z]")
+                    .WithMessage(Constants.Validation.Client.ShouldStartWithCapitalMessage)
+                    .MaximumLength(Constants.Validation.Client.ClientMaximumNameLength)
+                    .MustAsync(NameMustNotExistsAsync)
+                    .WithMessage(Constants.Validation.Client.NameTakenMessage);
             });
+    }
+
+    private async Task<bool> NameMustNotExistsAsync(string name, CancellationToken cancellationToken)
+    {
+        var nameExists = await _clientRepository.NameExistsAsync(name, cancellationToken);
+        return !nameExists;
     }
 }

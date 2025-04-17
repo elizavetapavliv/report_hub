@@ -1,6 +1,5 @@
 ﻿using Exadel.ReportHub.Handlers;
 using Exadel.ReportHub.Handlers.Validators;
-using Exadel.ReportHub.SDK.DTOs.User;
 using FluentValidation;
 using FluentValidation.TestHelper;
 
@@ -9,29 +8,29 @@ namespace Exadel.ReportHub.Tests.Validators;
 [TestFixture]
 public class PasswordValidatorTests
 {
-    private IValidator<string> _passwordValidator;
+    private IValidator<string> _validator;
 
     [SetUp]
     public void Setup()
     {
-        _passwordValidator = new PasswordValidator();
+        _validator = new PropertyValidator();
     }
 
     [Test]
     public async Task ValidateAsync_PasswordIsEmpty_ErrorReturned()
     {
-        var result = await _passwordValidator.TestValidateAsync(string.Empty);
-        result.ShouldHaveValidationErrorFor(nameof(CreateUserDTO.Password))
-            .WithErrorMessage($"'{nameof(CreateUserDTO.Password)}' must not be empty.");
+        var result = await _validator.TestValidateAsync(string.Empty, options => options.IncludeRuleSets(Constants.Validation.RuleSet.Passwords));
+        result.ShouldHaveValidationErrorFor(nameof(Constants.Validation.Password))
+            .WithErrorMessage($"'{nameof(Constants.Validation.Password)}' must not be empty.");
         Assert.That(result.Errors.Count, Is.EqualTo(1));
     }
 
     [Test]
     [TestCase("Test1!")]
-    [TestCase("test1234!", Constants.Validation.User.PasswordUppercaseMessage)]
-    [TestCase("TEST1234!", Constants.Validation.User.PasswordLowercaseMessage)]
-    [TestCase("Testtest!", Constants.Validation.User.PasswordDigitMessage)]
-    [TestCase("Test12345", Constants.Validation.User.PasswordSpecialCharacterMessage)]
+    [TestCase("test1234!", Constants.Validation.Password.UppercaseMessage)]
+    [TestCase("TEST1234!", Constants.Validation.Password.LowercaseMessage)]
+    [TestCase("Testtest!", Constants.Validation.Password.DigitMessage)]
+    [TestCase("Test12345", Constants.Validation.Password.SpecialCharacterMessage)]
     public async Task ValidateAsync_PasswordIsInvalid_ErrorReturned(string password, string expectedMessage = null)
     {
         if(expectedMessage == null)
@@ -39,8 +38,8 @@ public class PasswordValidatorTests
             expectedMessage = GetPasswordLengthMessage(password.Length);
         }
 
-        var result = await _passwordValidator.TestValidateAsync(password);
-        result.ShouldHaveValidationErrorFor(nameof(CreateUserDTO.Password))
+        var result = await _validator.TestValidateAsync(password, options => options.IncludeRuleSets(Constants.Validation.RuleSet.Passwords));
+        result.ShouldHaveValidationErrorFor(nameof(Constants.Validation.Password))
             .WithErrorMessage(expectedMessage);
         Assert.That(result.Errors.Count, Is.EqualTo(1));
     }
@@ -49,11 +48,11 @@ public class PasswordValidatorTests
     public async Task ValidateAsync_PasswordIsValid_NoErrorReturned()
     {
         var password = "Test1234!";
-        var result = await _passwordValidator.TestValidateAsync(password);
+        var result = await _validator.TestValidateAsync(password, options => options.IncludeRuleSets(Constants.Validation.RuleSet.Passwords));
         result.ShouldNotHaveAnyValidationErrors();
         Assert.That(result.Errors, Is.Empty);
     }
 
     private static string GetPasswordLengthMessage(int totalLength) =>
-    $"The length of '{nameof(CreateUserDTO.Password)}' must be at least 8 characters. You entered {totalLength} characters.";
+    $"The length of '{nameof(Constants.Validation.Password)}' must be at least 8 characters. You entered {totalLength} characters.";
 }

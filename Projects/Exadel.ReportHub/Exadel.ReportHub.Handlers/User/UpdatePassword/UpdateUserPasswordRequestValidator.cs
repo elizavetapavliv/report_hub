@@ -4,17 +4,17 @@ namespace Exadel.ReportHub.Handlers.User.UpdatePassword;
 
 public class UpdateUserPasswordRequestValidator : AbstractValidator<UpdateUserPasswordRequest>
 {
-    private readonly IValidator<string> _passwordValidator;
+    private readonly IValidator<string> _validator;
 
-    public UpdateUserPasswordRequestValidator(IValidator<string> passwordValidator)
+    public UpdateUserPasswordRequestValidator(IValidator<string> validator)
     {
-        _passwordValidator = passwordValidator;
+        _validator = validator;
         ConfigureRules();
     }
 
     private void ConfigureRules()
     {
         RuleFor(x => x.Password)
-            .SetValidator(_passwordValidator);
+            .SetValidator(_validator, Constants.Validation.RuleSet.Passwords);
     }
 }

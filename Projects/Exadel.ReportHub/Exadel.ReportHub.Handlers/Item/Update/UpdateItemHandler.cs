@@ -12,14 +12,15 @@ public class UpdateItemHandler(IItemRepository itemRepository, ICurrencyReposito
 {
     public async Task<ErrorOr<Updated>> Handle(UpdateItemRequest request, CancellationToken cancellationToken)
     {
-        if (!await itemRepository.ExistsAsync(request.Id, cancellationToken))
+        var itemClientId = await itemRepository.GetClientIdAsync(request.Id, cancellationToken);
+        if (itemClientId == Guid.Empty)
         {
             return Error.NotFound();
         }
 
-        if ((await itemRepository.GetByIdAsync(request.Id, cancellationToken)).ClientId != request.UpdateItemDTO.ClientId)
+        if (itemClientId != request.UpdateItemDTO.ClientId)
         {
-            return Error.Conflict();
+            return Error.Validation(description: "Client Id cannot be changed.");
         }
 
         var item = mapper.Map<Data.Models.Item>(request.UpdateItemDTO);

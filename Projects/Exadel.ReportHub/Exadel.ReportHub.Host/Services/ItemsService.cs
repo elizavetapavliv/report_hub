@@ -36,7 +36,7 @@ public class ItemsService(ISender sender) : BaseService
 
     [Authorize(Policy = Constants.Authorization.Policy.Update)]
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> UpdateItemPrice([FromRoute] Guid id, [FromBody] CreateUpdateItemDTO updateItemDTO)
+    public async Task<IActionResult> UpdateItem([FromRoute] Guid id, [FromBody] CreateUpdateItemDTO updateItemDTO)
     {
         var result = await sender.Send(new UpdateItemRequest(id, updateItemDTO));
 
