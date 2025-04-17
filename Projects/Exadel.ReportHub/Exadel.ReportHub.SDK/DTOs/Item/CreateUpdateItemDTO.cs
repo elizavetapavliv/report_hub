@@ -1,6 +1,6 @@
 ﻿namespace Exadel.ReportHub.SDK.DTOs.Item;
 
-public class CreateItemDTO
+public class CreateUpdateItemDTO
 {
     public Guid ClientId { get; set; }
 

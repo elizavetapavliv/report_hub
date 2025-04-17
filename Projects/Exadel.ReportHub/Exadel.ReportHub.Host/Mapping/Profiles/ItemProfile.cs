@@ -9,11 +9,8 @@ public class ItemProfile : Profile
     public ItemProfile()
     {
         CreateMap<Item, ItemDTO>();
-        CreateMap<CreateItemDTO, Item>()
+        CreateMap<CreateUpdateItemDTO, Item>()
             .ForMember(x => x.Id, opt => opt.Ignore())
-            .ForMember(x => x.IsDeleted, opt => opt.Ignore())
-            .ForMember(x => x.CurrencyCode, opt => opt.Ignore());
-        CreateMap<UpdateItemDTO, Item>()
             .ForMember(x => x.IsDeleted, opt => opt.Ignore())
             .ForMember(x => x.CurrencyCode, opt => opt.Ignore());
     }

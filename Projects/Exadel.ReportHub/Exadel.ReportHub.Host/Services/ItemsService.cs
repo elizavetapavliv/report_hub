@@ -18,7 +18,7 @@ public class ItemsService(ISender sender) : BaseService
 {
     [Authorize(Policy = Constants.Authorization.Policy.Create)]
     [HttpPost]
-    public async Task<IActionResult> AddItem([FromBody] CreateItemDTO createItemDto)
+    public async Task<IActionResult> AddItem([FromBody] CreateUpdateItemDTO createItemDto)
     {
         var result = await sender.Send(new CreateItemRequest(createItemDto));
 
@@ -35,10 +35,10 @@ public class ItemsService(ISender sender) : BaseService
     }
 
     [Authorize(Policy = Constants.Authorization.Policy.Update)]
-    [HttpPut]
-    public async Task<IActionResult> UpdateItemPrice([FromBody] UpdateItemDTO updateItemDTO)
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> UpdateItemPrice([FromRoute] Guid id, [FromBody] CreateUpdateItemDTO updateItemDTO)
     {
-        var result = await sender.Send(new UpdateItemRequest(updateItemDTO));
+        var result = await sender.Send(new UpdateItemRequest(id, updateItemDTO));
 
         return FromResult(result);
     }
