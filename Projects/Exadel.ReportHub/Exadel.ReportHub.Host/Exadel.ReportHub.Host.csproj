@@ -11,7 +11,7 @@
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0" />
     <PackageReference Include="Hangfire.AspNetCore" Version="1.8.18" />
     <PackageReference Include="Hangfire.Core" Version="1.8.18" />
-    <PackageReference Include="Hangfire.Mongo" Version="1.11.5" />
+    <PackageReference Include="Hangfire.MemoryStorage" Version="1.8.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.14" />
     <PackageReference Include="SonarAnalyzer.CSharp" Version="10.7.0.110445">
       <PrivateAssets>all</PrivateAssets>
@@ -27,13 +27,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Exadel.ReportHub.Common\Exadel.ReportHub.Common.csproj" />
+    <ProjectReference Include="..\Exadel.ReportHub.ExchangeRate\Exadel.ReportHub.ExchangeRate.csproj" />
     <ProjectReference Include="..\Exadel.ReportHub.Handlers\Exadel.ReportHub.Handlers.csproj" />
     <ProjectReference Include="..\Exadel.ReportHub.Identity\Exadel.ReportHub.Identity.csproj" />
     <ProjectReference Include="..\Exadel.ReportHub.RA\Exadel.ReportHub.RA.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Infrastructure\ECBIntegration\" />
   </ItemGroup>
 
 </Project>

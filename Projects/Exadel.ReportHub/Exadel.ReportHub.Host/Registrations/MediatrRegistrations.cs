@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
 using Exadel.ReportHub.Handlers.Test;
-using Exadel.ReportHub.Handlers.Validators;
 using Exadel.ReportHub.Host.Mediatr;
 using FluentValidation;
 using MediatR;

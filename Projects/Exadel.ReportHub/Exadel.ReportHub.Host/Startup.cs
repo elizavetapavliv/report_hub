@@ -6,14 +6,9 @@ using Exadel.ReportHub.Csv;
 using Exadel.ReportHub.Csv.Abstract;
 using Exadel.ReportHub.Data.Enums;
 using Exadel.ReportHub.Host.Infrastructure.Filters;
-using Exadel.ReportHub.Host.Jobs;
 using Exadel.ReportHub.Host.PolicyHandlers;
 using Exadel.ReportHub.Host.Registrations;
 using Exadel.ReportHub.RA;
-using Hangfire;
-using Hangfire.Mongo;
-using Hangfire.Mongo.Migration.Strategies;
-using Hangfire.Mongo.Migration.Strategies.Backup;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -109,25 +104,10 @@ public class Startup(IConfiguration configuration)
         services.AddAutoMapper(typeof(Startup));
         services.AddHttpContextAccessor();
         services.AddScoped<IUserProvider, UserProvider>();
-        services.AddScoped<IExchangeRateProvider,  ExchangeRateProvider>();
         services.AddSingleton<IAuthorizationHandler, ClientAssignmentHandler>();
         services.AddSingleton<ICsvProcessor, CsvProcessor>();
-
-        services.AddHangfire(config =>
-        {
-            config.UseMongoStorage(
-                configuration.GetConnectionString("Mongo"),
-                new MongoStorageOptions
-                 {
-                     MigrationOptions = new MongoMigrationOptions
-                     {
-                         MigrationStrategy = new MigrateMongoMigrationStrategy(),
-                         BackupStrategy = new CollectionMongoBackupStrategy()
-                     },
-                     Prefix = "hangfire"
-                 });
-        });
-        services.AddHangfireServer();
+        services.AddExchangeRate(configuration);
+        services.AddHangfireMemoryStorage();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)
@@ -154,15 +134,6 @@ public class Startup(IConfiguration configuration)
             endpoints.MapControllers();
         });
 
-        app.UseHangfireDashboard();
-
-        RecurringJob.AddOrUpdate<ExchangeRateJob>(
-            recurringJobId: "ExchangeRateUpdater",
-            methodCall: job => job.UpdateExchangeRatesAsync(),
-            cronExpression: "0 14 * * 1-5",
-            options: new RecurringJobOptions
-            {
-                TimeZone = TimeZoneInfo.Utc
-            });
+        app.UseHangfireDashboardAndJobs();
     }
 }

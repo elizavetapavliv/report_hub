@@ -4,11 +4,11 @@ using MongoDB.Driver;
 
 namespace Exadel.ReportHub.RA;
 
-public class ExchangeRepository : BaseRepository, IExchangeRepository
+public class ExchangeRateRepository : BaseRepository, IExchangeRateRepository
 {
     private static readonly FilterDefinitionBuilder<ExchangeRate> _filterBuilder = Builders<ExchangeRate>.Filter;
 
-    public ExchangeRepository(MongoDbContext context)
+    public ExchangeRateRepository(MongoDbContext context)
         : base(context)
     {
     }

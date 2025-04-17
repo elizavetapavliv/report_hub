@@ -2,7 +2,7 @@
 
 namespace Exadel.ReportHub.RA.Abstract;
 
-public interface IExchangeRepository
+public interface IExchangeRateRepository
 {
     Task AddManyAsync(IEnumerable<ExchangeRate> exchangeRates, CancellationToken cancellationToken);
 

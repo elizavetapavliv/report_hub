@@ -1,9 +1,9 @@
 ﻿using Exadel.ReportHub.Handlers.ExchangeRate.Update;
 using MediatR;
 
-namespace Exadel.ReportHub.Host.Jobs;
+namespace Exadel.ReportHub.Host.Services;
 
-public class ExchangeRateJob(ISender sender)
+public class ExchangeRateService(ISender sender)
 {
     public async Task UpdateExchangeRatesAsync()
     {
