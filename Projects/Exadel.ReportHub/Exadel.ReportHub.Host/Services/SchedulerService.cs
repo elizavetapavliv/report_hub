@@ -9,7 +9,7 @@ public class SchedulerService
         RecurringJob.AddOrUpdate<ExchangeRateService>(
             recurringJobId: "ExchangeRateUpdater",
             methodCall: job => job.UpdateExchangeRatesAsync(),
-            cronExpression: "0 14 * * 1-5",
+            cronExpression: "0 16 * * 1-5",
             options: new RecurringJobOptions
             {
                 TimeZone = TimeZoneInfo.Utc
