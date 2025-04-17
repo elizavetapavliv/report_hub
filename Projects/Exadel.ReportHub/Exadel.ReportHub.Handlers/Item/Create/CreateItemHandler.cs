@@ -6,19 +6,19 @@ using MediatR;
 
 namespace Exadel.ReportHub.Handlers.Item.Create;
 
-public record CreateItemRequest(CreateItemDTO createItemDto) : IRequest<ErrorOr<ItemDTO>>;
+public record CreateItemRequest(CreateItemDTO CreateItemDto) : IRequest<ErrorOr<ItemDTO>>;
 public class CreateItemHandler(IItemRepository itemRepository, ICurrencyRepository currencyRepository, IMapper mapper) : IRequestHandler<CreateItemRequest, ErrorOr<ItemDTO>>
 {
     public async Task<ErrorOr<ItemDTO>> Handle(CreateItemRequest request, CancellationToken cancellationToken)
     {
-        if (!await currencyRepository.ExistsAsync(request.createItemDto.CurrencyId, cancellationToken))
+        if (!await currencyRepository.ExistsAsync(request.CreateItemDto.CurrencyId, cancellationToken))
         {
             return Error.NotFound();
         }
 
-        var item = mapper.Map<Data.Models.Item>(request.createItemDto);
+        var item = mapper.Map<Data.Models.Item>(request.CreateItemDto);
         item.Id = Guid.NewGuid();
-        item.CurrencyCode = (await currencyRepository.GetByIdAsync(request.createItemDto.CurrencyId, cancellationToken)).CurrencyCode;
+        item.CurrencyCode = (await currencyRepository.GetByIdAsync(request.CreateItemDto.CurrencyId, cancellationToken)).CurrencyCode;
 
         await itemRepository.AddAsync(item, cancellationToken);
 
