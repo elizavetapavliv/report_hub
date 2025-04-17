@@ -1,16 +1,15 @@
 ﻿using Exadel.ReportHub.Handlers.Validators;
-using Exadel.ReportHub.RA.Abstract;
 using FluentValidation;
 
 namespace Exadel.ReportHub.Handlers.Client.Create;
 
 public class CreateClientRequestValidator : AbstractValidator<CreateClientRequest>
 {
-    private readonly IClientRepository _clientRepository;
+    private readonly ClientNameValidator _clientNameValidator;
 
-    public CreateClientRequestValidator(IClientRepository clientRepository)
+    public CreateClientRequestValidator(ClientNameValidator clientNameValidator)
     {
-        _clientRepository = clientRepository;
+        _clientNameValidator = clientNameValidator;
         ConfigureRules();
     }
 
@@ -22,7 +21,7 @@ public class CreateClientRequestValidator : AbstractValidator<CreateClientReques
             {
                 child.RuleFor(x => x.Name)
                 .NotEmpty()
-                .SetValidator(new ClientNameValidator(_clientRepository));
+                .SetValidator(_clientNameValidator);
             });
     }
 }

@@ -1,12 +1,23 @@
 ﻿using Exadel.ReportHub.Handlers.Validators;
-using Exadel.ReportHub.RA;
 using Exadel.ReportHub.RA.Abstract;
 using FluentValidation;
 
 namespace Exadel.ReportHub.Handlers.Item.Update;
 
-public class UpdateItemRequestValidator(IClientRepository clientRepository, ICurrencyRepository currencyRepository) : AbstractValidator<UpdateItemRequest>
+public class UpdateItemRequestValidator : AbstractValidator<UpdateItemRequest>
 {
+    private readonly ICurrencyRepository _currencyRepository;
+    private readonly IClientRepository _clientRepository;
+    private readonly NameValidator _nameValidator;
+
+    public UpdateItemRequestValidator(ICurrencyRepository currencyRepository, IClientRepository clientRepository, NameValidator nameValidator)
+    {
+        _currencyRepository = currencyRepository;
+        _clientRepository = clientRepository;
+        _nameValidator = nameValidator;
+        ConfigureRules();
+    }
+
     public void ConfigureRules()
     {
         RuleLevelCascadeMode = CascadeMode.Stop;
@@ -18,16 +29,16 @@ public class UpdateItemRequestValidator(IClientRepository clientRepository, ICur
 
                 child.RuleFor(x => x.ClientId)
                     .NotEmpty()
-                    .MustAsync(clientRepository.ExistsAsync)
+                    .MustAsync(_clientRepository.ExistsAsync)
                     .WithMessage(Constants.Validation.Item.ClientDoesNotExistMessage);
 
                 child.RuleFor(x => x.CurrencyId)
                     .NotEmpty()
-                    .MustAsync(currencyRepository.ExistsAsync)
+                    .MustAsync(_currencyRepository.ExistsAsync)
                     .WithMessage(Constants.Validation.Item.CurrencyDoesNotExistMessage);
 
                 child.RuleFor(x => x.Name)
-                    .SetValidator(new NameValidator());
+                    .SetValidator(_nameValidator);
 
                 child.RuleFor(x => x.Description)
                     .NotEmpty()
