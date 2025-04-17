@@ -31,9 +31,8 @@ public class ItemRepository : BaseRepository, IItemRepository
         await SoftDeleteAsync<Item>(id, cancellationToken);
     }
 
-    public async Task UpdatePriceAsync(Guid id, decimal price, CancellationToken cancellationToken)
+    public async Task UpdateAsync(Item item, CancellationToken cancellationToken)
     {
-        var update = Builders<Item>.Update.Set(x => x.Price, price);
-        await UpdateAsync(id, update, cancellationToken);
+        await UpdateAsync(item.Id, item, cancellationToken);
     }
 }

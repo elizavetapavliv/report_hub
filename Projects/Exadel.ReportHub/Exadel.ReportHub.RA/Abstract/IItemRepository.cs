@@ -10,7 +10,7 @@ public interface IItemRepository
 
     Task<Item> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
-    Task UpdatePriceAsync(Guid id, decimal price, CancellationToken cancellationToken);
+    Task UpdateAsync(Item item, CancellationToken cancellationToken);
 
     Task SoftDeleteAsync(Guid id, CancellationToken cancellationToken);
 }

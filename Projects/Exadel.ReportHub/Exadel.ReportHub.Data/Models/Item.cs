@@ -14,7 +14,9 @@ public class Item : IDocument, ISoftDeletable
 
     public decimal Price { get; set; }
 
-    public string Currency { get; set; }
+    public Guid CurrencyId { get; set; }
+
+    public string CurrencyCode { get; set; }
 
     public bool IsDeleted { get; set; }
 }

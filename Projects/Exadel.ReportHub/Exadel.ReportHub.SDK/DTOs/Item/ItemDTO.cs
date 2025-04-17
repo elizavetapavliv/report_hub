@@ -12,5 +12,5 @@ public class ItemDTO
 
     public decimal Price { get; set; }
 
-    public string Currency { get; set; }
+    public string CurrencyCode { get; set; }
 }

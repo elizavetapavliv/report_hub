@@ -25,5 +25,5 @@ public class Invoice : IDocument
 
     public string BankAccountNumber { get; set; }
 
-    public IList<Item> Items { get; set; }
+    public IList<Guid> ItemIds { get; set; }
 }
