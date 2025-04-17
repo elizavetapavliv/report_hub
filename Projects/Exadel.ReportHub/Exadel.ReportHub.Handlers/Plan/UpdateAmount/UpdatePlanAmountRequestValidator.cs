@@ -1,20 +1,19 @@
 ﻿using FluentValidation;
 
-namespace Exadel.ReportHub.Handlers.Plan.UpdateAmount
+namespace Exadel.ReportHub.Handlers.Plan.UpdateAmount;
+
+public class UpdatePlanAmountRequestValidator : AbstractValidator<UpdatePlanAmountRequest>
 {
-    public class UpdatePlanAmountRequestValidator : AbstractValidator<UpdatePlanAmountRequest>
+    public UpdatePlanAmountRequestValidator()
     {
-        public UpdatePlanAmountRequestValidator()
-        {
-            ConfigureRules();
-        }
+        ConfigureRules();
+    }
 
-        public void ConfigureRules()
-        {
-            RuleLevelCascadeMode = CascadeMode.Stop;
+    public void ConfigureRules()
+    {
+        RuleLevelCascadeMode = CascadeMode.Stop;
 
-            RuleFor(x => x.Amount)
-                .GreaterThan(0);
-        }
+        RuleFor(x => x.Amount)
+            .GreaterThan(0);
     }
 }
