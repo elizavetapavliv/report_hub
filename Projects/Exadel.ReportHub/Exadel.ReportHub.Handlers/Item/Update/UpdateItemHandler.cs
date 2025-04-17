@@ -12,8 +12,7 @@ public class UpdateItemHandler(IItemRepository itemRepository, ICurrencyReposito
 {
     public async Task<ErrorOr<Updated>> Handle(UpdateItemRequest request, CancellationToken cancellationToken)
     {
-        if (!await itemRepository.ExistsAsync(request.UpdateItemDTO.Id, cancellationToken) ||
-            !await currencyRepository.ExistsAsync(request.UpdateItemDTO.CurrencyId, cancellationToken))
+        if (!await itemRepository.ExistsAsync(request.UpdateItemDTO.Id, cancellationToken))
         {
             return Error.NotFound();
         }
@@ -24,6 +23,7 @@ public class UpdateItemHandler(IItemRepository itemRepository, ICurrencyReposito
         }
 
         var item = mapper.Map<Data.Models.Item>(request.UpdateItemDTO);
+        item.CurrencyCode = (await currencyRepository.GetByIdAsync(request.UpdateItemDTO.CurrencyId, cancellationToken)).CurrencyCode;
 
         await itemRepository.UpdateAsync(item, cancellationToken);
         return Result.Updated;

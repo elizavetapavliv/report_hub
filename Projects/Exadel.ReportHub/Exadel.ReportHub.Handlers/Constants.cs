@@ -4,6 +4,12 @@ public static class Constants
 {
     public static class Validation
     {
+        public static class Name
+        {
+            public const int NameMaxLength = 100;
+            public const string NameShouldStartWithCapitalMessage = "Name must begin with a capital letter.";
+        }
+
         public static class User
         {
             public const int FullNameMaxLength = 100;
@@ -20,9 +26,7 @@ public static class Constants
         public static class Customer
         {
             public const int CountryMaxLength = 56;
-            public const int NameMaxLength = 100;
             public const string CountryShouldStartWithCapitalMessage = "Country must begin with a capital letter.";
-            public const string NameShouldStartWithCapitalMessage = "Name must begin with a capital letter.";
             public const string EmailTakenMessage = "Email is already taken.";
             public const string EmailInvalidMessage = "Email is invalid.";
         }
@@ -47,6 +51,15 @@ public static class Constants
             public const string BankAccountNumberErrorMessage = "Bank account number must only contain digits and dashes.";
             public const string CustomerDoesntExistsErrorMessage = "Customer does not exist.";
             public const string ClientDoesntExistsErrorMessage = "Client does not exist.";
+        }
+
+        public static class Item
+        {
+            public const int DescriptionMaxLength = 250;
+            public const string DescriptionShouldStartWithCapitalMessage = "Description must begin with a capital letter.";
+            public const string ClientDoesNotExistMessage = "Client does not exist.";
+            public const string CurrencyDoesNotExistMessage = "Currency does not exist.";
+            public const string NegativePriceErrorMessage = "Price must be positive";
         }
 
         public static class UserAssignment

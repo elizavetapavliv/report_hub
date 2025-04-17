@@ -11,11 +11,6 @@ public class CreateItemHandler(IItemRepository itemRepository, ICurrencyReposito
 {
     public async Task<ErrorOr<ItemDTO>> Handle(CreateItemRequest request, CancellationToken cancellationToken)
     {
-        if (!await currencyRepository.ExistsAsync(request.CreateItemDto.CurrencyId, cancellationToken))
-        {
-            return Error.NotFound();
-        }
-
         var item = mapper.Map<Data.Models.Item>(request.CreateItemDto);
         item.Id = Guid.NewGuid();
         item.CurrencyCode = (await currencyRepository.GetByIdAsync(request.CreateItemDto.CurrencyId, cancellationToken)).CurrencyCode;

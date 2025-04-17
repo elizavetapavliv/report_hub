@@ -15,9 +15,9 @@ public class NameValidator : AbstractValidator<string>
 
         RuleFor(x => x)
             .NotEmpty()
-            .MaximumLength(Constants.Validation.Customer.NameMaxLength)
+            .MaximumLength(Constants.Validation.Name.NameMaxLength)
             .Matches("^[A-Z]")
-            .WithMessage(Constants.Validation.Customer.NameShouldStartWithCapitalMessage)
-            .WithName(nameof(Data.Models.Customer.Name));
+            .WithMessage(Constants.Validation.Name.NameShouldStartWithCapitalMessage)
+            .WithName(nameof(Constants.Validation.Name));
     }
 }
