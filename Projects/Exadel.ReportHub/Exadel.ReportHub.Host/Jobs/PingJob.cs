@@ -1,7 +1,7 @@
-﻿using Exadel.ReportHub.SDK.Abstract;
+﻿using Exadel.ReportHub.Host.Jobs.Abstract;
 using Hangfire;
 
-namespace Exadel.ReportHub.Host.Job;
+namespace Exadel.ReportHub.Host.Jobs;
 
 public class PingJob(IHttpClientFactory clientFactory, ILogger<PingJob> logger) : IJob
 {

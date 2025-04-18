@@ -2,5 +2,5 @@
 
 public interface IExchangeRateProvider
 {
-    Task<IList<Data.Models.ExchangeRate>> GetDailyRatesAsync();
+    Task<IList<Data.Models.ExchangeRate>> GetDailyRatesAsync(CancellationToken cancellationToken);
 }

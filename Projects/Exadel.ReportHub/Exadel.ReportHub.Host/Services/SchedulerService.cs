@@ -1,4 +1,4 @@
-﻿using Exadel.ReportHub.Host.Job;
+﻿using Exadel.ReportHub.Host.Jobs.Abstract;
 using Exadel.ReportHub.SDK.Abstract;
 
 namespace Exadel.ReportHub.Host.Services;

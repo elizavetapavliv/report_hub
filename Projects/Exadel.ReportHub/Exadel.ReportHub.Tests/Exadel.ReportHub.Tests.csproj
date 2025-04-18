@@ -10,6 +10,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Client\**" />
+    <EmbeddedResource Remove="Client\**" />
+    <None Remove="Client\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoFixture" Version="4.18.1" />
     <PackageReference Include="coverlet.msbuild" Version="6.0.4">
       <PrivateAssets>all</PrivateAssets>
@@ -40,10 +46,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Exadel.ReportHub.Host\Exadel.ReportHub.Host.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Client\Create\" />
   </ItemGroup>
 
 </Project>

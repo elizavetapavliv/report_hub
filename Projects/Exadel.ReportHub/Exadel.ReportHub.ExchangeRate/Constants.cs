@@ -13,6 +13,6 @@ public static class Constants
 
     public static class FeedPath
     {
-        public static readonly Uri ExchangeRate = new Uri("stats/eurofxref/eurofxref-daily.xml", UriKind.Relative);
+        public static readonly Uri ExchangeRate = new Uri("/stats/eurofxref/eurofxref-daily.xml", UriKind.Relative);
     }
 }

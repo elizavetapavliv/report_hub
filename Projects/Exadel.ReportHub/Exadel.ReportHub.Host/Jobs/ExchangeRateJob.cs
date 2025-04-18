@@ -1,8 +1,8 @@
-﻿using Exadel.ReportHub.Host.Services;
-using Exadel.ReportHub.SDK.Abstract;
+﻿using Exadel.ReportHub.Host.Jobs.Abstract;
+using Exadel.ReportHub.Host.Services;
 using Hangfire;
 
-namespace Exadel.ReportHub.Host.Job;
+namespace Exadel.ReportHub.Host.Jobs;
 
 public class ExchangeRateJob : IJob
 {

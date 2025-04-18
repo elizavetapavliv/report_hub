@@ -6,14 +6,14 @@ namespace Exadel.ReportHub.Ecb;
 
 public class ExchangeRateProvider(IHttpClientFactory factory, ILogger<ExchangeRateProvider> logger) : IExchangeRateProvider
 {
-    public async Task<IList<Data.Models.ExchangeRate>> GetDailyRatesAsync()
+    public async Task<IList<Data.Models.ExchangeRate>> GetDailyRatesAsync(CancellationToken cancellationToken)
     {
         var client = factory.CreateClient(Constants.ClientName);
 
         HttpResponseMessage response;
         try
         {
-            response = await client.GetAsync(Constants.FeedPath.ExchangeRate);
+            response = await client.GetAsync(Constants.FeedPath.ExchangeRate, cancellationToken);
             response.EnsureSuccessStatusCode();
         }
         catch(HttpRequestException ex)
@@ -27,7 +27,7 @@ public class ExchangeRateProvider(IHttpClientFactory factory, ILogger<ExchangeRa
             return new List<Data.Models.ExchangeRate>();
         }
 
-        var result = await response.Content.ReadAsStringAsync();
+        var result = await response.Content.ReadAsStringAsync(cancellationToken);
 
         XDocument document;
         try

@@ -27,7 +27,7 @@ public static class Constants
     {
         public static class ReportHub
         {
-            public static readonly Uri Ping = new Uri("PingService", UriKind.Relative);
+            public static readonly Uri Ping = new Uri("/api/ping", UriKind.Relative);
         }
     }
 

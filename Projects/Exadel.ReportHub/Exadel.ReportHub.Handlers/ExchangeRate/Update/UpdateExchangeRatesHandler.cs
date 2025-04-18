@@ -16,10 +16,10 @@ public class UpdateExchangeRatesHandler(
     {
         try
         {
-            var rates = await exchangeRateProvider.GetDailyRatesAsync();
+            var rates = await exchangeRateProvider.GetDailyRatesAsync(cancellationToken);
             if (!rates.Any())
             {
-                logger.LogInformation(Constants.Error.ExchangeRate.EcbReturnsNothing);
+                logger.LogError(Constants.Error.ExchangeRate.EcbReturnsNothing);
             }
             else
             {

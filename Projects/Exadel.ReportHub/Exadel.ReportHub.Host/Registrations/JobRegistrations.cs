@@ -1,5 +1,5 @@
-﻿using Exadel.ReportHub.Host.Job;
-using Exadel.ReportHub.SDK.Abstract;
+﻿using Exadel.ReportHub.Host.Jobs;
+using Exadel.ReportHub.Host.Jobs.Abstract;
 
 namespace Exadel.ReportHub.Host.Registrations;
 
@@ -9,7 +9,7 @@ public static class JobRegistrations
     {
         var assembly = typeof(PingJob).Assembly;
 
-        var types = assembly.GetTypes().Where(type => typeof(IJob).IsAssignableFrom(type));
+        var types = assembly.GetTypes().Where(type => typeof(IJob).IsAssignableFrom(type) && !type.IsInterface);
 
         foreach (var type in types)
         {
