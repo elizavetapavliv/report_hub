@@ -2,7 +2,7 @@
 
 namespace Exadel.ReportHub.Data.Models;
 
-public class Plan : IDocument
+public class Plan : IDocument, ISoftDeletable
 {
     public Guid Id { get; set; }
 

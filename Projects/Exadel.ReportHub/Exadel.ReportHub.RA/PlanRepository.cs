@@ -20,8 +20,7 @@ public class PlanRepository : BaseRepository, IPlanRepository
 
     public async Task SoftDeleteAsync(Guid id, CancellationToken cancellationToken)
     {
-        var update = Builders<Plan>.Update.Set(x => x.IsDeleted, true);
-        await UpdateAsync(id, update, cancellationToken);
+        await SoftDeleteAsync<Plan>(id, cancellationToken);
     }
 
     public Task<IList<Plan>> GetByClientIdAsync(Guid clientId, CancellationToken cancellationToken)
