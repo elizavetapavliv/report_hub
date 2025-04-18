@@ -125,6 +125,8 @@ const opt = invoices.map(invoice => ({
 }));
 db.Invoice.bulkWrite(opt);
 
+db.Invoice.updateMany({}, { $unset: { Items: 1} });
+
 db.MigrationHistory.insertOne({
     ScriptName: scriptName,
     Version: version,
