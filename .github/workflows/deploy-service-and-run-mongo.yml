@@ -18,7 +18,7 @@ jobs:
        Mongo_Connection_String: ${{secrets.MONGO_CONNECTION_STRING}}
        
        Updates: |
-         AUTHORITY: ${{ vars.AUTHORITY }}
+         Authority: ${{ vars.AUTHORITY }}
          ConnectionStrings__Mongo: ${{secrets.MONGO_CONNECTION_STRING}}
          EcbConfig__Host: ${{vars.ECB_CONFIG_HOST}}
          ReportHubConfig__Host: ${{vars.REPORTHUB_CONFIG_HOST}}
