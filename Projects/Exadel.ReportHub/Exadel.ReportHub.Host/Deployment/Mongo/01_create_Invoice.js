@@ -98,29 +98,21 @@ const invoices = [];
 const invoiceCount = 10;
 
 for (let i = 0; i < invoiceCount; i++) {
-    const index = NumberInt(i / 2);
-    const newClientId = clientIds[index];
-    const newCustomerId = customerIds[getRandomInt(customerIds.length)];
-    const invoiceNumber = generateInvoiceNumber(i)
-    const issueDate = generateIssueDate();
-    const dueDate = generateDueDate(issueDate);
-    const amount = NumberDecimal((Math.random() * 4000 + 100).toFixed(2))
-    const currency = currencies[index];
-    const bankAccountNumber = bankAccountNumbers[index]
-    const newItemIds = [itemIds[index * 2], itemIds[index * 2 + 1]];
+    var index = NumberInt(i / 2);
+    var issueDate = generateIssueDate();
 
     invoices.push({
         _id: invoiceIds[i],
-        ClientId: newClientId,
-        CustomerId: newCustomerId,
-        InvoiceNumber: invoiceNumber,
+        ClientId: clientIds[index],
+        CustomerId: customerIds[getRandomInt(customerIds.length)],
+        InvoiceNumber: generateInvoiceNumber(i),
         IssueDate: issueDate,
-        DueDate: dueDate,
-        Amount: amount,
-        Currency: currency,
+        DueDate: generateDueDate(issueDate),
+        Amount: NumberDecimal((Math.random() * 4000 + 100).toFixed(2)),
+        Currency: currencies[index],
         PaymentStatus: paymentStatuses[getRandomInt(paymentStatuses.length)],
-        BankAccountNumber: bankAccountNumber,
-        ItemIds: newItemIds
+        BankAccountNumber: bankAccountNumbers[index],
+        ItemIds: [itemIds[index * 2], itemIds[index * 2 + 1]]
     });
 }
 
