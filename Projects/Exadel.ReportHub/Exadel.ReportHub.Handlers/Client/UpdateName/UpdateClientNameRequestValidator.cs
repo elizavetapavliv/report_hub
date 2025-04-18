@@ -6,20 +6,19 @@ namespace Exadel.ReportHub.Handlers.Client.UpdateName;
 public class UpdateClientNameRequestValidator : AbstractValidator<UpdateClientNameRequest>
 {
     private readonly IClientRepository _clientRepository;
+    private readonly IValidator<string> _stringValidator;
 
-    public UpdateClientNameRequestValidator(IClientRepository clientRepository)
+    public UpdateClientNameRequestValidator(IClientRepository clientRepository, IValidator<string> stringValidator)
     {
         _clientRepository = clientRepository;
+        _stringValidator = stringValidator;
         ConfigureRules();
     }
 
     private void ConfigureRules()
     {
         RuleFor(x => x.Name)
-            .NotEmpty()
-            .Matches("^[A-Z]")
-            .WithMessage(Constants.Validation.Client.ShouldStartWithCapitalMessage)
-            .MaximumLength(Constants.Validation.Client.ClientMaximumNameLength)
+            .SetValidator(_stringValidator, Constants.Validation.RuleSet.Names)
             .MustAsync(NameMustNotExistsAsync)
             .WithMessage(Constants.Validation.Client.NameTakenMessage);
     }

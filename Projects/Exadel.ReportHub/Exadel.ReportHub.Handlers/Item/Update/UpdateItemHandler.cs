@@ -13,19 +13,19 @@ public class UpdateItemHandler(IItemRepository itemRepository, ICurrencyReposito
     public async Task<ErrorOr<Updated>> Handle(UpdateItemRequest request, CancellationToken cancellationToken)
     {
         var itemClientId = await itemRepository.GetClientIdAsync(request.Id, cancellationToken);
-        if (itemClientId == Guid.Empty)
+        if (itemClientId == null)
         {
             return Error.NotFound();
         }
 
         if (itemClientId != request.UpdateItemDTO.ClientId)
         {
-            return Error.Validation(description: "Client Id cannot be changed.");
+            return Error.Validation(description: Constants.Validation.Item.ClientIdCannotBeChangedMessage);
         }
 
         var item = mapper.Map<Data.Models.Item>(request.UpdateItemDTO);
         item.Id = request.Id;
-        item.CurrencyCode = (await currencyRepository.GetByIdAsync(request.UpdateItemDTO.CurrencyId, cancellationToken)).CurrencyCode;
+        item.CurrencyCode = await currencyRepository.GetCodeByIdAsync(request.UpdateItemDTO.CurrencyId, cancellationToken);
 
         await itemRepository.UpdateAsync(item, cancellationToken);
         return Result.Updated;

@@ -13,7 +13,7 @@ public class CreateItemHandler(IItemRepository itemRepository, ICurrencyReposito
     {
         var item = mapper.Map<Data.Models.Item>(request.CreateItemDto);
         item.Id = Guid.NewGuid();
-        item.CurrencyCode = (await currencyRepository.GetByIdAsync(request.CreateItemDto.CurrencyId, cancellationToken)).CurrencyCode;
+        item.CurrencyCode = await currencyRepository.GetCodeByIdAsync(request.CreateItemDto.CurrencyId, cancellationToken);
 
         await itemRepository.AddAsync(item, cancellationToken);
 

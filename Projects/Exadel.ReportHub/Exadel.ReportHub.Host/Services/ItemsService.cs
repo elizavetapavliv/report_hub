@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Exadel.ReportHub.Handlers.Item.Create;
 using Exadel.ReportHub.Handlers.Item.Delete;
+using Exadel.ReportHub.Handlers.Item.Get;
 using Exadel.ReportHub.Handlers.Item.GetById;
 using Exadel.ReportHub.Handlers.Item.Update;
 using Exadel.ReportHub.SDK.DTOs.Item;
@@ -21,6 +22,15 @@ public class ItemsService(ISender sender) : BaseService
     public async Task<IActionResult> AddItem([FromBody] CreateUpdateItemDTO createItemDto)
     {
         var result = await sender.Send(new CreateItemRequest(createItemDto));
+
+        return FromResult(result);
+    }
+
+    [Authorize(Policy = Constants.Authorization.Policy.Read)]
+    [HttpGet]
+    public async Task<IActionResult> GetAllItems([FromQuery][Required] Guid clientId)
+    {
+        var result = await sender.Send(new GetItemsRequest());
 
         return FromResult(result);
     }

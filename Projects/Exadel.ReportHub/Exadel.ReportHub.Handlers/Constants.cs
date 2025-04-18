@@ -46,9 +46,7 @@ public static class Constants
 
         public static class Client
         {
-            public const string ShouldStartWithCapitalMessage = "The name must begin with a capital letter.";
             public const string NameTakenMessage = "Name is already taken";
-            public const int ClientMaximumNameLength = 20;
         }
 
         public static class Invoice
@@ -73,6 +71,7 @@ public static class Constants
             public const string ClientDoesNotExistMessage = "Client does not exist.";
             public const string CurrencyDoesNotExistMessage = "Currency does not exist.";
             public const string NegativePriceErrorMessage = "Price must be positive";
+            public const string ClientIdCannotBeChangedMessage = "Client Id cannot be changed.";
         }
 
         public static class UserAssignment

@@ -8,9 +8,11 @@ public interface IItemRepository
 
     Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken);
 
+    Task<IEnumerable<Item>> GetAllAsync(CancellationToken cancellationToken);
+
     Task<Item> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
-    Task<Guid> GetClientIdAsync(Guid id, CancellationToken cancellationToken);
+    Task<Guid?> GetClientIdAsync(Guid id, CancellationToken cancellationToken);
 
     Task UpdateAsync(Item item, CancellationToken cancellationToken);
 

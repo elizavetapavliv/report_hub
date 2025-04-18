@@ -6,12 +6,12 @@ namespace Exadel.ReportHub.Handlers.Customer.Create;
 public class CreateCustomerRequestValidator : AbstractValidator<CreateCustomerRequest>
 {
     private readonly ICustomerRepository _customerRepository;
-    private readonly IValidator<string> _validator;
+    private readonly IValidator<string> _stringValidator;
 
-    public CreateCustomerRequestValidator(ICustomerRepository customerRepository, IValidator<string> validator)
+    public CreateCustomerRequestValidator(ICustomerRepository customerRepository, IValidator<string> stringValidator)
     {
         _customerRepository = customerRepository;
-        _validator = validator;
+        _stringValidator = stringValidator;
         ConfigureRules();
     }
 
@@ -25,7 +25,7 @@ public class CreateCustomerRequestValidator : AbstractValidator<CreateCustomerRe
                 child.RuleLevelCascadeMode = CascadeMode.Stop;
 
                 child.RuleFor(x => x.Name)
-                    .SetValidator(_validator, Constants.Validation.RuleSet.Names);
+                    .SetValidator(_stringValidator, Constants.Validation.RuleSet.Names);
 
                 child.RuleFor(x => x.Email)
                     .NotEmpty()
@@ -35,7 +35,7 @@ public class CreateCustomerRequestValidator : AbstractValidator<CreateCustomerRe
                     .WithMessage(Constants.Validation.Customer.EmailTakenMessage);
 
                 child.RuleFor(x => x.Country)
-                    .SetValidator(_validator, Constants.Validation.RuleSet.Countries);
+                    .SetValidator(_stringValidator, Constants.Validation.RuleSet.Countries);
             });
     }
 

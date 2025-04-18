@@ -7,13 +7,13 @@ public class UpdateItemRequestValidator : AbstractValidator<UpdateItemRequest>
 {
     private readonly ICurrencyRepository _currencyRepository;
     private readonly IClientRepository _clientRepository;
-    private readonly IValidator<string> _validator;
+    private readonly IValidator<string> _stringValidator;
 
-    public UpdateItemRequestValidator(ICurrencyRepository currencyRepository, IClientRepository clientRepository, IValidator<string> validator)
+    public UpdateItemRequestValidator(ICurrencyRepository currencyRepository, IClientRepository clientRepository, IValidator<string> stringValidator)
     {
         _currencyRepository = currencyRepository;
         _clientRepository = clientRepository;
-        _validator = validator;
+        _stringValidator = stringValidator;
         ConfigureRules();
     }
 
@@ -37,7 +37,7 @@ public class UpdateItemRequestValidator : AbstractValidator<UpdateItemRequest>
                     .WithMessage(Constants.Validation.Item.CurrencyDoesNotExistMessage);
 
                 child.RuleFor(x => x.Name)
-                    .SetValidator(_validator, Constants.Validation.RuleSet.Names);
+                    .SetValidator(_stringValidator, Constants.Validation.RuleSet.Names);
 
                 child.RuleFor(x => x.Description)
                     .NotEmpty()

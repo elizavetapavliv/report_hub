@@ -4,11 +4,11 @@ namespace Exadel.ReportHub.Handlers.Customer.Update;
 
 public class UpdateCustomerValidator : AbstractValidator<UpdateCustomerRequest>
 {
-    private readonly IValidator<string> _validator;
+    private readonly IValidator<string> _stringValidator;
 
-    public UpdateCustomerValidator(IValidator<string> validator)
+    public UpdateCustomerValidator(IValidator<string> stringValidator)
     {
-        _validator = validator;
+        _stringValidator = stringValidator;
         ConfigureRules();
     }
 
@@ -20,10 +20,10 @@ public class UpdateCustomerValidator : AbstractValidator<UpdateCustomerRequest>
                child.RuleLevelCascadeMode = CascadeMode.Stop;
 
                child.RuleFor(x => x.Name)
-                   .SetValidator(_validator, Constants.Validation.RuleSet.Names);
+                   .SetValidator(_stringValidator, Constants.Validation.RuleSet.Names);
 
                child.RuleFor(x => x.Country)
-                   .SetValidator(_validator, Constants.Validation.RuleSet.Countries);
+                   .SetValidator(_stringValidator, Constants.Validation.RuleSet.Countries);
            });
     }
 }

@@ -13,7 +13,7 @@ public class PasswordValidatorTests
     [SetUp]
     public void Setup()
     {
-        _validator = new PropertyValidator();
+        _validator = new StringValidator();
     }
 
     [Test]

@@ -2,9 +2,9 @@
 
 namespace Exadel.ReportHub.Handlers.Validators;
 
-public class PropertyValidator : AbstractValidator<string>
+public class StringValidator : AbstractValidator<string>
 {
-    public PropertyValidator()
+    public StringValidator()
     {
         ConfigureRules();
     }

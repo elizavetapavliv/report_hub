@@ -6,10 +6,12 @@ namespace Exadel.ReportHub.Handlers.Client.Create;
 public class CreateClientRequestValidator : AbstractValidator<CreateClientRequest>
 {
     private readonly IClientRepository _clientRepository;
+    private readonly IValidator<string> _stringValidator;
 
-    public CreateClientRequestValidator(IClientRepository clientRepository)
+    public CreateClientRequestValidator(IClientRepository clientRepository, IValidator<string> stringValidator)
     {
         _clientRepository = clientRepository;
+        _stringValidator = stringValidator;
         ConfigureRules();
     }
 
@@ -20,10 +22,7 @@ public class CreateClientRequestValidator : AbstractValidator<CreateClientReques
             .ChildRules(child =>
             {
                 child.RuleFor(x => x.Name)
-                    .NotEmpty()
-                    .Matches("^[A-Z]")
-                    .WithMessage(Constants.Validation.Client.ShouldStartWithCapitalMessage)
-                    .MaximumLength(Constants.Validation.Client.ClientMaximumNameLength)
+                    .SetValidator(_stringValidator, Constants.Validation.RuleSet.Names)
                     .MustAsync(NameMustNotExistsAsync)
                     .WithMessage(Constants.Validation.Client.NameTakenMessage);
             });

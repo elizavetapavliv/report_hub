@@ -12,7 +12,7 @@ public class UpdateUserNameValidatorTests
     [SetUp]
     public void Setup()
     {
-        var userNameValidator = new PropertyValidator();
+        var userNameValidator = new StringValidator();
 
         _validator = new UpdateUserNameRequestValidator(userNameValidator);
     }

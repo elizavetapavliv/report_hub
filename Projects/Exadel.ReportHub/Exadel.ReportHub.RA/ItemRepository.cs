@@ -23,12 +23,17 @@ public class ItemRepository : BaseRepository, IItemRepository
         return await ExistsAsync<Item>(id, cancellationToken);
     }
 
+    public async Task<IEnumerable<Item>> GetAllAsync(CancellationToken cancellationToken)
+    {
+        return await GetAllAsync<Item>(cancellationToken);
+    }
+
     public async Task<Item> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return await GetByIdAsync<Item>(id, cancellationToken);
     }
 
-    public async Task<Guid> GetClientIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<Guid?> GetClientIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.Eq(x => x.Id, id);
         return await GetCollection<Item>().Find(filter).Project(x => x.ClientId).SingleOrDefaultAsync(cancellationToken);

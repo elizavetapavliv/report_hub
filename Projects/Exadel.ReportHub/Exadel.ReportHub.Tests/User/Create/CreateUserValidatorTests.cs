@@ -1,8 +1,8 @@
 ﻿using Exadel.ReportHub.Handlers;
 using Exadel.ReportHub.Handlers.User.Create;
-using Exadel.ReportHub.Handlers.Validators;
 using Exadel.ReportHub.RA.Abstract;
 using Exadel.ReportHub.SDK.DTOs.User;
+using FluentValidation;
 using FluentValidation.TestHelper;
 using Moq;
 
@@ -18,9 +18,22 @@ public class CreateUserValidatorTests
     public void Setup()
     {
         _userRepositoryMock = new Mock<IUserRepository>();
-        var propertyValidator = new PropertyValidator();
+        var stringValidator = new InlineValidator<string>();
+        stringValidator.RuleSet(Constants.Validation.RuleSet.Passwords, () =>
+        {
+            stringValidator.RuleFor(x => x)
+                .Matches("[^a-zA-Z0-9]")
+                .WithMessage(Constants.Validation.Password.SpecialCharacterMessage);
+        });
+        stringValidator.RuleSet(Constants.Validation.RuleSet.Names, () =>
+        {
+            stringValidator.RuleFor(x => x)
+                .NotEmpty()
+                .MaximumLength(Constants.Validation.Name.MaxLength)
+                .WithName(nameof(Constants.Validation.Name));
+        });
 
-        _validator = new CreateUserRequestValidator(_userRepositoryMock.Object, propertyValidator);
+        _validator = new CreateUserRequestValidator(_userRepositoryMock.Object, stringValidator);
     }
 
     [Test]
