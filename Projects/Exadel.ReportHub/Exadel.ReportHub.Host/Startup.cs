@@ -8,7 +8,10 @@ using Exadel.ReportHub.Data.Enums;
 using Exadel.ReportHub.Host.Infrastructure.Filters;
 using Exadel.ReportHub.Host.PolicyHandlers;
 using Exadel.ReportHub.Host.Registrations;
+using Exadel.ReportHub.Host.Services;
 using Exadel.ReportHub.RA;
+using Exadel.ReportHub.SDK.Abstract;
+using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -106,8 +109,11 @@ public class Startup(IConfiguration configuration)
         services.AddScoped<IUserProvider, UserProvider>();
         services.AddSingleton<IAuthorizationHandler, ClientAssignmentHandler>();
         services.AddSingleton<ICsvProcessor, CsvProcessor>();
+        services.AddSingleton<ISchedulerService, SchedulerService>();
         services.AddExchangeRate(configuration);
-        services.AddHangfireMemoryStorage();
+        services.AddPing(configuration);
+        services.AddJobs();
+        services.AddHangfire();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)
@@ -134,6 +140,7 @@ public class Startup(IConfiguration configuration)
             endpoints.MapControllers();
         });
 
-        app.UseHangfireDashboardAndJobs();
+        app.UseHangfireDashboard();
+        app.ApplicationServices.GetRequiredService<ISchedulerService>().StartJobs();
     }
 }

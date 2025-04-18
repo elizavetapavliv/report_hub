@@ -1,4 +1,5 @@
 ﻿using Exadel.ReportHub.Host.Services;
+using Exadel.ReportHub.SDK.Abstract;
 using Hangfire;
 using Hangfire.MemoryStorage;
 
@@ -6,7 +7,7 @@ namespace Exadel.ReportHub.Host.Registrations;
 
 public static class HangfireRegistrations
 {
-    public static void AddHangfireMemoryStorage(this IServiceCollection services)
+    public static void AddHangfire(this IServiceCollection services)
     {
         services.AddHangfire(config =>
             config
@@ -15,14 +16,5 @@ public static class HangfireRegistrations
                 .UseMemoryStorage());
 
         services.AddHangfireServer();
-        services.AddSingleton<SchedulerService>();
-    }
-
-    public static void UseHangfireDashboardAndJobs(this IApplicationBuilder app)
-    {
-        app.UseHangfireDashboard();
-
-        var scheduler = app.ApplicationServices.GetRequiredService<SchedulerService>();
-        scheduler.StartJobs();
     }
 }

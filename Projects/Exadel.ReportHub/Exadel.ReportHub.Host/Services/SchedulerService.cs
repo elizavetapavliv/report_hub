@@ -1,27 +1,15 @@
-﻿using Hangfire;
+﻿using Exadel.ReportHub.Host.Job;
+using Exadel.ReportHub.SDK.Abstract;
 
 namespace Exadel.ReportHub.Host.Services;
 
-public class SchedulerService
+public class SchedulerService(IEnumerable<IJob> jobs) : ISchedulerService
 {
     public void StartJobs()
     {
-        RecurringJob.AddOrUpdate<ExchangeRateService>(
-            recurringJobId: "ExchangeRateUpdater",
-            methodCall: job => job.UpdateExchangeRatesAsync(),
-            cronExpression: "0 16 * * 1-5",
-            options: new RecurringJobOptions
-            {
-                TimeZone = TimeZoneInfo.Utc
-            });
-
-        RecurringJob.AddOrUpdate<PingService>(
-            recurringJobId: "SelfPing",
-            methodCall: ping => ping.PingAsync(),
-            cronExpression: "*/14 * * * *",
-            options: new RecurringJobOptions
-            {
-                TimeZone = TimeZoneInfo.Utc
-            });
+        foreach (var job in jobs)
+        {
+            job.Schedule();
+        }
     }
 }

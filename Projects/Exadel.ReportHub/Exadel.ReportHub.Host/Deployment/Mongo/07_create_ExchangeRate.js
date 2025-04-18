@@ -1,5 +1,5 @@
 ﻿const scriptName = "02_create_ExchangeRateCollection";
-const version = NumberInt(1);
+const version = NumberInt(2);
 
 if (db.MigrationHistory.findOne({ ScriptName: scriptName, Version: version })) {
     print(`${scriptName} v${version} is already applied`);
@@ -12,11 +12,14 @@ db.createCollection("ExchangeRate", {
 
 db.ExchangeRate.createIndex(
     { Currency: 1 },
-    { background: true }
+    {
+        unique: true,
+        background: true
+    }
 );
 
 db.ExchangeRate.createIndex(
-    { Date: 1 },
+    { RateDate: 1 },
     { expireAfterSeconds: 24 * 60 * 60 }
 );
 

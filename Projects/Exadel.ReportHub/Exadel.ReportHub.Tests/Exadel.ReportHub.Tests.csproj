@@ -42,4 +42,8 @@
     <ProjectReference Include="..\Exadel.ReportHub.Host\Exadel.ReportHub.Host.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Client\Create\" />
+  </ItemGroup>
+
 </Project>

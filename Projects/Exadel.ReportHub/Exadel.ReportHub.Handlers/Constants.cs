@@ -51,4 +51,13 @@ public static class Constants
             public const string UploadedFileLengthError = "Uploaded file must not be empty.";
         }
     }
+
+    public static class Error
+    {
+        public static class ExchangeRate
+        {
+            public const string RatesUpdateError = "Rates update Error";
+            public const string EcbReturnsNothing = "ECB returns nothing";
+        }
+    }
 }

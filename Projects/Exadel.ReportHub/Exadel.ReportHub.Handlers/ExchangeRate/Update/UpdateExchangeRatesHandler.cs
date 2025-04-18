@@ -1,4 +1,4 @@
-﻿using Exadel.ReportHub.ExchangeRate;
+﻿using Exadel.ReportHub.Ecb;
 using Exadel.ReportHub.RA.Abstract;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -17,9 +17,9 @@ public class UpdateExchangeRatesHandler(
         try
         {
             var rates = await exchangeRateProvider.GetDailyRatesAsync();
-            if (rates == null || !rates.Any())
+            if (!rates.Any())
             {
-                logger.LogInformation("ECB returns nothing");
+                logger.LogInformation(Constants.Error.ExchangeRate.EcbReturnsNothing);
             }
             else
             {
@@ -28,7 +28,7 @@ public class UpdateExchangeRatesHandler(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Rates update Error");
+            logger.LogError(ex, Constants.Error.ExchangeRate.RatesUpdateError);
         }
 
         return Unit.Value;

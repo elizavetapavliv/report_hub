@@ -1,15 +1,32 @@
 ﻿using System.Globalization;
 using System.Xml.Linq;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
-namespace Exadel.ReportHub.ExchangeRate;
+namespace Exadel.ReportHub.Ecb;
 
-public class ExchangeRateProvider(HttpClient httpClient, IOptions<ExchangeRateConfig> config, ILogger<ExchangeRateProvider> logger) : IExchangeRateProvider
+public class ExchangeRateProvider(IHttpClientFactory factory, ILogger<ExchangeRateProvider> logger) : IExchangeRateProvider
 {
-    public async Task<IEnumerable<Data.Models.ExchangeRate>> GetDailyRatesAsync()
+    public async Task<IList<Data.Models.ExchangeRate>> GetDailyRatesAsync()
     {
-        var response = await httpClient.GetAsync(config.Value.FeedUri);
+        var client = factory.CreateClient(Constants.ClientName);
+
+        HttpResponseMessage response;
+        try
+        {
+            response = await client.GetAsync(Constants.FeedPath.ExchangeRate);
+            response.EnsureSuccessStatusCode();
+        }
+        catch(HttpRequestException ex)
+        {
+            logger.LogError(ex, Constants.Error.HttpFetchError);
+            return new List<Data.Models.ExchangeRate>();
+        }
+        catch(TaskCanceledException ex)
+        {
+            logger.LogError(ex, Constants.Error.TimeoutError);
+            return new List<Data.Models.ExchangeRate>();
+        }
+
         var result = await response.Content.ReadAsStringAsync();
 
         XDocument document;
@@ -19,7 +36,7 @@ public class ExchangeRateProvider(HttpClient httpClient, IOptions<ExchangeRateCo
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Failed to parse ECB xml");
+            logger.LogError(ex, Constants.Error.ParseError);
             return new List<Data.Models.ExchangeRate>();
         }
 
@@ -27,22 +44,16 @@ public class ExchangeRateProvider(HttpClient httpClient, IOptions<ExchangeRateCo
 
         var cubeTime = document
             .Descendants(root + "Cube")
-            .SingleOrDefault(x => x.Attribute("time") != null);
+            .Single(x => x.Attribute("time") != null);
 
-        if(cubeTime is null)
-        {
-            logger.LogError("ECb didn't contain Cube time element");
-            return new List<Data.Models.ExchangeRate>();
-        }
-
-        var rateDate = DateTime.Parse(cubeTime.Attribute("time").Value, CultureInfo.InvariantCulture);
+        var rateDate = DateTime.Parse(cubeTime.Attribute("time").Value, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).AddHours(16);
 
         var rates = cubeTime.Elements(root + "Cube")
             .Select(x => new Data.Models.ExchangeRate
             {
                 Currency = x.Attribute("currency").Value,
                 Rate = decimal.Parse(x.Attribute("rate").Value, CultureInfo.InvariantCulture),
-                Date = rateDate
+                RateDate = rateDate
             })
             .ToList();
 

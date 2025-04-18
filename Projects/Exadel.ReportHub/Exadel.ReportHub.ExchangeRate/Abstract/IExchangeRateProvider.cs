@@ -1,6 +1,6 @@
-﻿namespace Exadel.ReportHub.ExchangeRate;
+﻿namespace Exadel.ReportHub.Ecb;
 
 public interface IExchangeRateProvider
 {
-    Task<IEnumerable<Data.Models.ExchangeRate>> GetDailyRatesAsync();
+    Task<IList<Data.Models.ExchangeRate>> GetDailyRatesAsync();
 }

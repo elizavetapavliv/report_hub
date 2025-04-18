@@ -1,5 +1,8 @@
-﻿using Exadel.ReportHub.ExchangeRate;
+﻿using Exadel.ReportHub.Ecb;
+using Exadel.ReportHub.Host.Configs;
 using Exadel.ReportHub.Host.Services;
+using Exadel.ReportHub.SDK.Abstract;
+using Microsoft.Extensions.Options;
 
 namespace Exadel.ReportHub.Host.Registrations;
 
@@ -7,20 +10,15 @@ public static class ExchangeRateRegistrations
 {
     public static void AddExchangeRate(this IServiceCollection services, IConfiguration configuration)
     {
-        services.Configure<ExchangeRateConfig>(configuration.GetSection("ExchangeRate"));
+        services.Configure<EcbConfig>(configuration.GetSection(nameof(EcbConfig)));
 
-        services.AddHttpClient<IExchangeRateProvider, ExchangeRateProvider>(client =>
-                {
-                    client.BaseAddress = new Uri("https://www.ecb.europa.eu/");
-                    client.Timeout = TimeSpan.FromSeconds(10);
-                });
-
-        services.AddHttpClient<PingService>(client =>
+        services.AddHttpClient(Constants.HttpClient.ExchangeRateClient, (cfg, client) =>
         {
-            client.BaseAddress = new Uri("https://report-hub-f3k3.onrender.com");
+            var value = cfg.GetRequiredService<IOptionsMonitor<EcbConfig>>().CurrentValue;
+            client.BaseAddress = value.Host;
             client.Timeout = TimeSpan.FromSeconds(10);
         });
-
-        services.AddSingleton<ExchangeRateService>();
+        services.AddSingleton<IExchangeRateProvider, ExchangeRateProvider>();
+        services.AddSingleton<IExchangeRateService, ExchangeRateService>();
     }
 }

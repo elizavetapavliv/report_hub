@@ -26,7 +26,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exadel.ReportHub.Identity",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exadel.ReportHub.Csv", "Exadel.ReportHub.Csv\Exadel.ReportHub.Csv.csproj", "{96057DB3-2753-4529-BB0A-E37F46D43B49}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exadel.ReportHub.ExchangeRate", "Exadel.ReportHub.ExchangeRate\Exadel.ReportHub.ExchangeRate.csproj", "{F41926FE-7B64-46AA-905F-1068B02B991C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exadel.ReportHub.Ecb", "Exadel.ReportHub.ExchangeRate\Exadel.ReportHub.Ecb.csproj", "{F41926FE-7B64-46AA-905F-1068B02B991C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

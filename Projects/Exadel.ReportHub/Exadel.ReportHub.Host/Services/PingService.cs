@@ -1,18 +1,14 @@
-﻿namespace Exadel.ReportHub.Host.Services;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.AspNetCore.Mvc;
 
-public class PingService(HttpClient httpClient, ILogger<PingService> logger)
+namespace Exadel.ReportHub.Host.Services;
+
+[ExcludeFromCodeCoverage]
+public class PingService : BaseService
 {
-    public async Task PingAsync()
+    [HttpGet]
+    public IActionResult Ping()
     {
-        try
-        {
-            var response = await httpClient.GetAsync("/");
-
-            logger.LogInformation("Ping Job:", httpClient.BaseAddress, response.StatusCode);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "PingService failed");
-        }
+        return Ok();
     }
 }
