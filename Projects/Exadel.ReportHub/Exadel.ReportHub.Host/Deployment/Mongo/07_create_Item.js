@@ -58,7 +58,7 @@ const currencyIds = [
 ];
 
 
-const currencies = ["USD", "EUR", "JPY", "BYN", "PLN"]
+const currencyCodes = ["USD", "EUR", "JPY", "BYN", "PLN"]
 
 function getRandomInt(max) {
     return Math.floor(Math.random() * max);
@@ -78,7 +78,7 @@ for (let i = 0; i < itemCount; i++) {
         Description: descriptions[nameIndex],
         Price: NumberDecimal((Math.random() * 2000 + 100).toFixed(2)),
         CurrencyId: currencyIds[index],
-        currencyCode: currencyCodes[index],
+        CurrencyCode: currencyCodes[index],
         IsDeleted: false
     });
 }
