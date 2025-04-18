@@ -1,4 +1,5 @@
 ﻿using Exadel.ReportHub.RA.Abstract;
+using Exadel.ReportHub.SDK.DTOs.Plan;
 using FluentValidation;
 
 namespace Exadel.ReportHub.Handlers.Plan.Create;
@@ -7,9 +8,11 @@ public class CreatePlanRequestValidator : AbstractValidator<CreatePlanRequest>
 {
     private readonly IClientRepository _clientRepository;
     private readonly IItemRepository _itemRepository;
+    private readonly IPlanRepository _planRepository;
 
-    public CreatePlanRequestValidator(IClientRepository clientRepository, IItemRepository itemRepository)
+    public CreatePlanRequestValidator(IClientRepository clientRepository, IItemRepository itemRepository, IPlanRepository planRepository)
     {
+        _planRepository = planRepository;
         _itemRepository = itemRepository;
         _clientRepository = clientRepository;
         ConfigureRules();
@@ -21,6 +24,10 @@ public class CreatePlanRequestValidator : AbstractValidator<CreatePlanRequest>
             .ChildRules(child =>
             {
                 child.RuleLevelCascadeMode = CascadeMode.Stop;
+
+                child.RuleFor(x => x)
+                    .MustAsync(IsUniquePlanAsync)
+                    .WithMessage(Constants.Validation.Plan.PlanAlreadyExistsForItemAndClient);
 
                 child.RuleFor(x => x.ItemId)
                     .NotEmpty()
@@ -43,9 +50,13 @@ public class CreatePlanRequestValidator : AbstractValidator<CreatePlanRequest>
                 child.RuleFor(x => x.EndDate)
                     .NotEmpty()
                     .GreaterThan(DateTime.UtcNow)
-                    .WithMessage(Constants.Validation.Plan.PlandEndDateInThePastErrorMessage)
-                    .GreaterThan(x => x.StartDate)
-                    .WithMessage(Constants.Validation.Plan.PlanEndDateErrorMessage);
+                    .WithMessage(Constants.Validation.Plan.PlandEndDateInThePastErrorMessage);
             });
+    }
+
+    private async Task<bool> IsUniquePlanAsync(CreatePlanDTO createPlanDTO, CancellationToken cancellationToken)
+    {
+        var isExists = await _planRepository.ExistsAsync(createPlanDTO.ItemId, createPlanDTO.ClientId, cancellationToken);
+        return !isExists;
     }
 }

@@ -1,5 +1,5 @@
-﻿const scriptName = "08_create_Plan";
-const version = NumberInt(1);
+﻿const scriptName = "09_create_Plan";
+const version = NumberInt(2);
 
 if (db.MigrationHistory.findOne({ ScriptName: scriptName, Version: version })) {
     print(`${scriptName} v${version} is already applied`);

@@ -4,7 +4,7 @@ namespace Exadel.ReportHub.RA.Abstract;
 
 public interface IPlanRepository
 {
-    Task<IEnumerable<Plan>> GetAsync(CancellationToken cancellationToken);
+    Task<IList<Plan>> GetByClientIdAsync(Guid clientId, CancellationToken cancellationToken);
 
     Task<Plan> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
@@ -15,8 +15,6 @@ public interface IPlanRepository
     Task<bool> ExistsAsync(Guid itemId, Guid clientId, CancellationToken cancellationToken);
 
     Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken);
-
-    Task UpdateAmountAsync(Guid id, int amount, CancellationToken cancellationToken);
 
     Task UpdateDateAsync(Guid id, Plan plan, CancellationToken cancellationToken);
 }

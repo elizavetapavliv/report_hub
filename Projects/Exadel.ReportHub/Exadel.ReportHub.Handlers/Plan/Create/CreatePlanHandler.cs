@@ -11,12 +11,6 @@ public class CreatePlanHandler(IPlanRepository planRepository, IMapper mapper) :
 {
     public async Task<ErrorOr<PlanDTO>> Handle(CreatePlanRequest request, CancellationToken cancellationToken)
     {
-        var isExists = await planRepository.ExistsAsync(request.CreatePlanDto.ItemId, request.CreatePlanDto.ClientId, cancellationToken);
-        if (isExists)
-        {
-            return Error.Conflict();
-        }
-
         var plan = mapper.Map<Data.Models.Plan>(request.CreatePlanDto);
         plan.Id = Guid.NewGuid();
 

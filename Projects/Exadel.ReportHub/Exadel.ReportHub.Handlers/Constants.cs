@@ -66,8 +66,8 @@ public static class Constants
             public const string ItemDoesNotExistMessage = "Item does not exist";
             public const string ClientDoesNotExistMessage = "Client does not exist";
             public const string PlanStartDateErrorMessage = "Start date must be less than end date";
-            public const string PlanEndDateErrorMessage = "End date must be greater than start date";
             public const string PlandEndDateInThePastErrorMessage = "End date must be in the future";
+            public const string PlanAlreadyExistsForItemAndClient = "Plan already exists for this item and client";
         }
     }
 }

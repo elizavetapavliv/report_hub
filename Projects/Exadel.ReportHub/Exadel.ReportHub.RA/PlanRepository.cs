@@ -24,9 +24,11 @@ public class PlanRepository : BaseRepository, IPlanRepository
         await UpdateAsync(id, update, cancellationToken);
     }
 
-    public Task<IEnumerable<Plan>> GetAsync(CancellationToken cancellationToken)
+    public Task<IList<Plan>> GetByClientIdAsync(Guid clientId, CancellationToken cancellationToken)
     {
-        var filter = _filterBuilder.Eq(x => x.IsDeleted, false);
+        var filter = _filterBuilder.And(
+            _filterBuilder.Eq(x => x.IsDeleted, false),
+            _filterBuilder.Eq(x => x.ClientId, clientId));
         return GetAsync(filter, cancellationToken);
     }
 
@@ -35,17 +37,12 @@ public class PlanRepository : BaseRepository, IPlanRepository
         return GetByIdAsync<Plan>(id, cancellationToken);
     }
 
-    public async Task UpdateAmountAsync(Guid id, int amount, CancellationToken cancellationToken)
-    {
-        var update = Builders<Plan>.Update.Set(x => x.Amount, amount);
-        await UpdateAsync(id, update, cancellationToken);
-    }
-
     public async Task UpdateDateAsync(Guid id, Plan plan, CancellationToken cancellationToken)
     {
         var update = Builders<Plan>.Update
             .Set(x => x.StartDate, plan.StartDate)
-            .Set(x => x.EndDate, plan.EndDate);
+            .Set(x => x.EndDate, plan.EndDate)
+            .Set(x => x.Amount, plan.Amount);
         await UpdateAsync(id, update, cancellationToken);
     }
 

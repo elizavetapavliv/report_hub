@@ -1,11 +1,10 @@
-﻿using Exadel.ReportHub.RA.Abstract;
-using FluentValidation;
+﻿using FluentValidation;
 
-namespace Exadel.ReportHub.Handlers.Plan.UpdateDate;
+namespace Exadel.ReportHub.Handlers.Plan.Update;
 
-public class UpdatePlanDateRequestValidator : AbstractValidator<UpdatePlanDateRequest>
+public class UpdatePlanRequestValidator : AbstractValidator<UpdatePlanRequest>
 {
-    public UpdatePlanDateRequestValidator()
+    public UpdatePlanRequestValidator()
     {
         ConfigureRules();
     }
@@ -17,6 +16,9 @@ public class UpdatePlanDateRequestValidator : AbstractValidator<UpdatePlanDateRe
             {
                 child.RuleLevelCascadeMode = CascadeMode.Stop;
 
+                child.RuleFor(x => x.Amount)
+                    .GreaterThan(0);
+
                 child.RuleFor(x => x.StartDate)
                     .NotEmpty()
                     .LessThan(x => x.EndDate)
@@ -25,9 +27,7 @@ public class UpdatePlanDateRequestValidator : AbstractValidator<UpdatePlanDateRe
                 child.RuleFor(x => x.EndDate)
                     .NotEmpty()
                     .GreaterThan(DateTime.UtcNow)
-                    .WithMessage(Constants.Validation.Plan.PlandEndDateInThePastErrorMessage)
-                    .GreaterThan(x => x.StartDate)
-                    .WithMessage(Constants.Validation.Plan.PlanEndDateErrorMessage);
+                    .WithMessage(Constants.Validation.Plan.PlandEndDateInThePastErrorMessage);
             });
     }
 }

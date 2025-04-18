@@ -6,11 +6,11 @@ using MediatR;
 
 namespace Exadel.ReportHub.Handlers.Plan.GetById;
 
-public record GetPlansByIdRequest(Guid Id) : IRequest<ErrorOr<PlanDTO>>;
+public record GetPlanByIdRequest(Guid Id) : IRequest<ErrorOr<PlanDTO>>;
 
-public class GetPlansByIdHandler(IPlanRepository planRepository, IMapper mapper) : IRequestHandler<GetPlansByIdRequest, ErrorOr<PlanDTO>>
+public class GetPlanByIdHandler(IPlanRepository planRepository, IMapper mapper) : IRequestHandler<GetPlanByIdRequest, ErrorOr<PlanDTO>>
 {
-    public async Task<ErrorOr<PlanDTO>> Handle(GetPlansByIdRequest request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<PlanDTO>> Handle(GetPlanByIdRequest request, CancellationToken cancellationToken)
     {
         var plan = await planRepository.GetByIdAsync(request.Id, cancellationToken);
         if (plan == null)
