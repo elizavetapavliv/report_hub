@@ -2,7 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Exadel.ReportHub.Handlers.Item.Create;
 using Exadel.ReportHub.Handlers.Item.Delete;
-using Exadel.ReportHub.Handlers.Item.Get;
+using Exadel.ReportHub.Handlers.Item.GetByClientId;
 using Exadel.ReportHub.Handlers.Item.GetById;
 using Exadel.ReportHub.Handlers.Item.Update;
 using Exadel.ReportHub.SDK.DTOs.Item;
@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace Exadel.ReportHub.Host.Services;
 
 [ExcludeFromCodeCoverage]
-[ApiController]
 [Route("api/items")]
 public class ItemsService(ISender sender) : BaseService
 {
@@ -28,9 +27,9 @@ public class ItemsService(ISender sender) : BaseService
 
     [Authorize(Policy = Constants.Authorization.Policy.Read)]
     [HttpGet]
-    public async Task<IActionResult> GetAllItems([FromQuery][Required] Guid clientId)
+    public async Task<IActionResult> GetItemsByClientId([FromQuery][Required] Guid clientId)
     {
-        var result = await sender.Send(new GetItemsRequest());
+        var result = await sender.Send(new GetItemsByClientIdRequest(clientId));
 
         return FromResult(result);
     }

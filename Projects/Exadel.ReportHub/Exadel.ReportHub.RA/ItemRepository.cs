@@ -23,9 +23,10 @@ public class ItemRepository : BaseRepository, IItemRepository
         return await ExistsAsync<Item>(id, cancellationToken);
     }
 
-    public async Task<IEnumerable<Item>> GetAllAsync(CancellationToken cancellationToken)
+    public async Task<IEnumerable<Item>> GetByClientIdAsync(Guid clientId, CancellationToken cancellationToken)
     {
-        return await GetAllAsync<Item>(cancellationToken);
+        var filter = _filterBuilder.Eq(x => x.ClientId, clientId);
+        return await GetAsync(filter, cancellationToken);
     }
 
     public async Task<Item> GetByIdAsync(Guid id, CancellationToken cancellationToken)
@@ -36,7 +37,7 @@ public class ItemRepository : BaseRepository, IItemRepository
     public async Task<Guid?> GetClientIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.Eq(x => x.Id, id);
-        return await GetCollection<Item>().Find(filter).Project(x => x.ClientId).SingleOrDefaultAsync(cancellationToken);
+        return await GetCollection<Item>().Find(filter).Project(x => (Guid?)x.ClientId).SingleOrDefaultAsync(cancellationToken);
     }
 
     public async Task SoftDeleteAsync(Guid id, CancellationToken cancellationToken)
