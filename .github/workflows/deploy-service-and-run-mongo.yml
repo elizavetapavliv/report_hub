@@ -20,6 +20,7 @@ jobs:
        Render_Service_Id: ${{ secrets.RENDER_SERVICE_ID }}
        ReportHubService_ClientSecret: ${{ secrets.REPORT_HUB_SERVICE_CLIENT_SECRET }}
        Authority: ${{ vars.AUTHORITY }}
+       Mongo_Connection_String: ${{secrets.MONGO_CONNECTION_STRING}}
        
     steps:
     - name: Checkout
@@ -32,7 +33,14 @@ jobs:
              -H 'accept: application/json' \
              -H 'authorization: Bearer ${{ env.Render_Api_Key }}' \
              -H 'content-type: application/json' \
-             -d '{"value": "${{ env.Authority }}"}'
+             -d '{"value": "${{ env.Authority }}"}' 
+              
+        curl -X PUT \
+             https://api.render.com/v1/services/${{ env.Render_Service_Id}}/env-vars/ConnectionStrings__Mongo \
+             -H 'accept: application/json' \
+             -H 'authorization: Bearer ${{ env.Render_Api_Key }}' \
+             -H 'content-type: application/json' \
+             -d '{"value": "${{ env.Mongo_Connection_String }}"}' 
 
     - name: Deploy
       run: curl -X POST "${{ env.Render_Deploy_Hook }}"
