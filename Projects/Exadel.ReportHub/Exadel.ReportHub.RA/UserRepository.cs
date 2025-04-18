@@ -22,7 +22,7 @@ public class UserRepository : BaseRepository, IUserRepository
         return count > 0;
     }
 
-    public async Task<IEnumerable<User>> GetAsync(bool? isActive, CancellationToken cancellationToken)
+    public async Task<IList<User>> GetAsync(bool? isActive, CancellationToken cancellationToken)
     {
         var filter = isActive.HasValue
             ? _filterBuilder.Eq(x => x.IsActive, isActive.Value)
@@ -81,7 +81,6 @@ public class UserRepository : BaseRepository, IUserRepository
 
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken)
     {
-        var filter = _filterBuilder.Eq(x => x.Id, id);
-        await GetCollection<User>().DeleteOneAsync(filter, cancellationToken);
+        await DeleteAsync<User>(id, cancellationToken);
     }
 }

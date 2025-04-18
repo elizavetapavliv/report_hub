@@ -1,6 +1,8 @@
-﻿namespace Exadel.ReportHub.Data.Models;
+﻿using Exadel.ReportHub.Data.Abstract;
 
-public class Customer : IDocument
+namespace Exadel.ReportHub.Data.Models;
+
+public class Customer : IDocument, ISoftDeletable
 {
     public Guid Id { get; set; }
 
@@ -9,4 +11,6 @@ public class Customer : IDocument
     public string Email { get; set; }
 
     public string Name { get; set; }
+
+    public bool IsDeleted { get; set; }
 }

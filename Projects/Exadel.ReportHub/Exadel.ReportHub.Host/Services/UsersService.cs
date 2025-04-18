@@ -14,11 +14,10 @@ using Microsoft.AspNetCore.Mvc;
 namespace Exadel.ReportHub.Host.Services;
 
 [ExcludeFromCodeCoverage]
-[ApiController]
 [Route("api/users")]
 public class UsersService(ISender sender) : BaseService
 {
-    [Authorize(Policy = Constants.Authorization.Policy.SuperAdmin)]
+    [Authorize(Policy = Constants.Authorization.Policy.Create)]
     [HttpPost]
     public async Task<IActionResult> AddUser([FromBody] CreateUserDTO createUserDto)
     {
@@ -27,7 +26,7 @@ public class UsersService(ISender sender) : BaseService
         return FromResult(result, StatusCodes.Status201Created);
     }
 
-    [Authorize(Policy = Constants.Authorization.Policy.AllUsers)]
+    [Authorize(Policy = Constants.Authorization.Policy.Read)]
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetUserById([FromRoute] Guid id)
     {
@@ -36,7 +35,7 @@ public class UsersService(ISender sender) : BaseService
         return FromResult(result);
     }
 
-    [Authorize(Policy = Constants.Authorization.Policy.AllUsers)]
+    [Authorize(Policy = Constants.Authorization.Policy.Read)]
     [HttpGet]
     public async Task<IActionResult> GetUsers([FromQuery] bool? isActive)
     {
@@ -45,7 +44,7 @@ public class UsersService(ISender sender) : BaseService
         return FromResult(result);
     }
 
-    [Authorize(Policy = Constants.Authorization.Policy.SuperAdmin)]
+    [Authorize(Policy = Constants.Authorization.Policy.Update)]
     [HttpPatch("{id:guid}/activity")]
     public async Task<IActionResult> UpdateUserActivity([FromRoute] Guid id, [FromBody] bool isActive)
     {
@@ -54,7 +53,7 @@ public class UsersService(ISender sender) : BaseService
         return FromResult(result);
     }
 
-    [Authorize(Policy = Constants.Authorization.Policy.AllUsers)]
+    [Authorize]
     [HttpPatch("password")]
     public async Task<IActionResult> UpdateUserPassword([FromBody] string password)
     {
@@ -62,7 +61,7 @@ public class UsersService(ISender sender) : BaseService
         return FromResult(result);
     }
 
-    [Authorize(Policy = Constants.Authorization.Policy.SuperAdmin)]
+    [Authorize(Policy = Constants.Authorization.Policy.Update)]
     [HttpPatch("{id:guid}/fullname")]
     public async Task<IActionResult> UpdateUserFullName([FromRoute] Guid id, [FromBody] string fullName)
     {
@@ -70,7 +69,7 @@ public class UsersService(ISender sender) : BaseService
         return FromResult(result);
     }
 
-    [Authorize(Policy = Constants.Authorization.Policy.SuperAdmin)]
+    [Authorize(Policy = Constants.Authorization.Policy.Delete)]
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteUser([FromRoute] Guid id)
     {

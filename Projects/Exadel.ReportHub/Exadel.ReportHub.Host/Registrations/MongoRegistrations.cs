@@ -28,6 +28,9 @@ public static class MongoRegistrations
         services.AddSingleton<ICustomerRepository, CustomerRepository>();
         services.AddSingleton<IInvoiceRepository, InvoiceRepository>();
         services.AddSingleton<IExchangeRateRepository, ExchangeRateRepository>();
+        services.AddSingleton<IItemRepository, ItemRepository>();
+        services.AddSingleton<ICurrencyRepository, CurrencyRepository>();
+        services.AddSingleton<IPlanRepository, PlanRepository>();
         BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
         return services;
     }
