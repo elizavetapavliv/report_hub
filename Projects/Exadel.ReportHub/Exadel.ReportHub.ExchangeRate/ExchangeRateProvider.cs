@@ -13,7 +13,7 @@ public class ExchangeRateProvider(IHttpClientFactory factory, ILogger<ExchangeRa
         HttpResponseMessage response;
         try
         {
-            response = await client.GetAsync(Constants.FeedPath.ExchangeRate, cancellationToken);
+            response = await client.GetAsync(Constants.Path.ExchangeRate, cancellationToken);
             response.EnsureSuccessStatusCode();
         }
         catch(HttpRequestException ex)

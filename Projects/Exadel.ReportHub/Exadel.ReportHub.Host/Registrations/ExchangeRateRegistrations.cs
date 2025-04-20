@@ -16,7 +16,7 @@ public static class ExchangeRateRegistrations
         {
             var value = cfg.GetRequiredService<IOptionsMonitor<EcbConfig>>().CurrentValue;
             client.BaseAddress = value.Host;
-            client.Timeout = value.TimeSpan;
+            client.Timeout = value.ConnectionTimeout;
         });
         services.AddSingleton<IExchangeRateProvider, ExchangeRateProvider>();
         services.AddSingleton<IExchangeRateService, ExchangeRateService>();

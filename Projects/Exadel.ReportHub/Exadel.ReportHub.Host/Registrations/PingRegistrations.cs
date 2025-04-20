@@ -13,7 +13,7 @@ public static class PingRegistrations
         {
             var value = cfg.GetRequiredService<IOptionsMonitor<ReportHubConfig>>().CurrentValue;
             client.BaseAddress = value.Host;
-            client.Timeout = value.TimeSpan;
+            client.Timeout = value.ConnectionTimeout;
         });
     }
 }

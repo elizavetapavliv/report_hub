@@ -22,7 +22,7 @@ public class PingJob(IHttpClientFactory clientFactory, ILogger<PingJob> logger) 
         try
         {
             var client = clientFactory.CreateClient(Constants.HttpClient.PingClient);
-            var response = await client.GetAsync(Constants.FeedPath.ReportHub.Ping);
+            var response = await client.GetAsync(Constants.HttpClient.Path.Ping);
             response.EnsureSuccessStatusCode();
 
             logger.LogInformation("Ping Job – BaseAddress: {BaseAddress}, StatusCode: {StatusCode}", client.BaseAddress, response.StatusCode);

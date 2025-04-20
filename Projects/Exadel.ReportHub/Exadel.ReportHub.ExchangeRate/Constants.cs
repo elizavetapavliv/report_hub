@@ -11,7 +11,7 @@ public static class Constants
         public const string ParseError = "Failed to parse ECB xml";
     }
 
-    public static class FeedPath
+    public static class Path
     {
         public static readonly Uri ExchangeRate = new Uri("/stats/eurofxref/eurofxref-daily.xml", UriKind.Relative);
     }
