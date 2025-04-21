@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Exadel.ReportHub.Handlers.Country.GetAll;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Exadel.ReportHub.Host.Services;
@@ -9,6 +10,7 @@ namespace Exadel.ReportHub.Host.Services;
 [Route("api/countries")]
 public class CountriesService(ISender sender) : BaseService
 {
+    [Authorize]
     [HttpGet]
     public async Task<IActionResult> GetAllCountries()
     {
