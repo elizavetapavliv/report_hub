@@ -3,43 +3,43 @@ using ErrorOr;
 using Exadel.ReportHub.Host.Infrastructure.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Exadel.ReportHub.Host.Services;
+namespace Exadel.ReportHub.Host.Services.Abstract;
 
 [ExcludeFromCodeCoverage]
 [ApiController]
 [Route("api/[controller]")]
 public abstract class BaseService : ControllerBase
 {
-    protected IActionResult FromResult(ErrorOr<Created> result)
+    protected ActionResult<Created> FromResult(ErrorOr<Created> result)
     {
         return result.Match(
-            _ => Created(),
-            errors => GetErrorResult(errors));
+            _ => StatusCode(StatusCodes.Status201Created),
+            errors => GetErrorResult<Created>(errors));
     }
 
-    protected IActionResult FromResult(ErrorOr<Updated> result)
+    protected ActionResult<Updated> FromResult(ErrorOr<Updated> result)
     {
         return result.Match(
-            _ => NoContent(),
-            errors => GetErrorResult(errors));
+            _ => StatusCode(StatusCodes.Status204NoContent),
+            errors => GetErrorResult<Updated>(errors));
     }
 
-    protected IActionResult FromResult(ErrorOr<Deleted> result)
+    protected ActionResult<Deleted> FromResult(ErrorOr<Deleted> result)
     {
         return result.Match(
-            _ => NoContent(),
-            errors => GetErrorResult(errors));
+            _ => StatusCode(StatusCodes.Status204NoContent),
+            errors => GetErrorResult<Deleted>(errors));
     }
 
-    protected IActionResult FromResult<TResult>(ErrorOr<TResult> result, int statusCode = StatusCodes.Status200OK)
+    protected ActionResult<TResult> FromResult<TResult>(ErrorOr<TResult> result, int statusCode = StatusCodes.Status200OK)
         where TResult : class
     {
         return result.Match(
             value => StatusCode(statusCode, value),
-            errors => GetErrorResult(errors));
+            errors => GetErrorResult<TResult>(errors));
     }
 
-    private IActionResult GetErrorResult(List<Error> errors)
+    private ActionResult<TResult> GetErrorResult<TResult>(List<Error> errors)
     {
         var errorResponse = new ErrorResponse
         {
