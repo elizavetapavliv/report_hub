@@ -27,7 +27,6 @@ public class InvoiceValidatorTests : BaseTestFixture
         _invoiceValidator = new InvoiceValidator(_customerRepositoryMock.Object, _clientRepositoryMock.Object, _invoiceRepositoryMock.Object);
     }
 
-    // Not Empty Tests
     [Test]
     public async Task ValidateAsync_EverythingIsValid_NoErrorReturned()
     {
@@ -42,6 +41,7 @@ public class InvoiceValidatorTests : BaseTestFixture
         Assert.That(result.Errors, Has.Count.EqualTo(0));
     }
 
+    // Not Empty Tests
     [Test]
     public async Task ValidateAsync_ClientIdIsEmpty_ErrorReturned()
     {
@@ -278,6 +278,24 @@ public class InvoiceValidatorTests : BaseTestFixture
         Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo(Constants.Validation.Invoice.InvoiceNumberErrorMessage));
     }
 
+    [Test]
+    public async Task ValidateAsync_InvoiceNumberExists_ErrorReturned()
+    {
+        // Arrange
+        var invoice = GetValidInvoice();
+        _invoiceRepositoryMock.Setup(x => x.ExistsAsync(invoice.InvoiceNumber, CancellationToken.None))
+            .ReturnsAsync(true);
+
+        // Act
+        var result = await _invoiceValidator.TestValidateAsync(invoice);
+
+        // Assert
+        Assert.That(result.IsValid, Is.False);
+        Assert.That(result.Errors.Count, Is.EqualTo(1));
+        Assert.That(result.Errors[0].PropertyName, Is.EqualTo(nameof(CreateInvoiceDTO.InvoiceNumber)));
+        Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo(Constants.Validation.Invoice.InvoiceNumberExistsMessage));
+    }
+
     // IssueDate and DueDate tests
     [Test]
     public async Task ValidateAsync_IssueDateIsInFuture_ErrorReturned()
@@ -337,7 +355,7 @@ public class InvoiceValidatorTests : BaseTestFixture
     {
         // Arrange
         var invoice = GetValidInvoice();
-        invoice.BankAccountNumber = "banknumber";
+        invoice.BankAccountNumber = "234432423432432432";
 
         // Act
         var result = await _invoiceValidator.TestValidateAsync(invoice);
@@ -426,20 +444,23 @@ public class InvoiceValidatorTests : BaseTestFixture
     {
         var clientId = Guid.Parse("BA18CC29-C7FF-48C4-9B7B-456BCEF231D0");
         var customerId = Guid.Parse("6D024627-568B-4D57-B477-2274C9D807B9");
+        var invoiceNumber = "INV20230051";
 
         _clientRepositoryMock.Setup(x => x.ExistsAsync(clientId, CancellationToken.None))
             .ReturnsAsync(true);
         _customerRepositoryMock.Setup(x => x.ExistsAsync(customerId, CancellationToken.None))
             .ReturnsAsync(true);
+        _invoiceRepositoryMock.Setup(x => x.ExistsAsync(invoiceNumber, CancellationToken.None))
+            .ReturnsAsync(false);
 
         return Fixture.Build<CreateInvoiceDTO>()
                 .With(x => x.ClientId, clientId )
                 .With(x => x.CustomerId, customerId)
-                .With(x => x.InvoiceNumber, "INV123456")
+                .With(x => x.InvoiceNumber, invoiceNumber)
                 .With(x => x.IssueDate, DateTime.UtcNow.Date.AddDays(-5))
                 .With(x => x.DueDate, DateTime.UtcNow.Date.AddDays(30))
                 .With(x => x.Currency, "USD")
-                .With(x => x.BankAccountNumber, "1234-1234-1234")
+                .With(x => x.BankAccountNumber, "GE359459402653871205990733")
                 .Create();
     }
 }
