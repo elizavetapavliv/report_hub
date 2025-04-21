@@ -16,4 +16,9 @@ public class InvoiceRepository : BaseRepository, IInvoiceRepository
     {
         await base.AddManyAsync(invoices, cancellationToken);
     }
+
+    public async Task<Invoice> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        return await GetByIdAsync<Invoice>(id, cancellationToken);
+    }
 }

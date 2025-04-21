@@ -1,6 +1,8 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 using AutoMapper;
+using Exadel.ReportHub.Aspose;
+using Exadel.ReportHub.Aspose.Abstract;
 using Exadel.ReportHub.Common.Providers;
 using Exadel.ReportHub.Csv;
 using Exadel.ReportHub.Csv.Abstract;
@@ -98,6 +100,7 @@ public class Startup(IConfiguration configuration)
         services.AddScoped<IUserProvider, UserProvider>();
         services.AddSingleton<ICsvProcessor, CsvProcessor>();
         services.AddSingleton<ISchedulerService, SchedulerService>();
+        services.AddSingleton<IAsposeInvoiceGenerator, AsposeInvoiceGenerator>();
         services.AddExchangeRate(configuration);
         services.AddPing(configuration);
         services.AddJobs();

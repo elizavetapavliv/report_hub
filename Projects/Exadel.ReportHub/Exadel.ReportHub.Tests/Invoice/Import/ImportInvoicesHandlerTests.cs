@@ -82,7 +82,6 @@ public class ImportInvoicesHandlerTests : BaseTestFixture
                         x.IssueDate == invoiceDtos[0].IssueDate &&
                         x.DueDate == invoiceDtos[0].DueDate &&
                         x.Amount == invoiceDtos[0].Amount &&
-                        x.Currency == invoiceDtos[0].Currency &&
                         (int)x.PaymentStatus == (int)invoiceDtos[0].PaymentStatus &&
                         x.BankAccountNumber == invoiceDtos[0].BankAccountNumber) &&
 
@@ -93,7 +92,6 @@ public class ImportInvoicesHandlerTests : BaseTestFixture
                         x.IssueDate == invoiceDtos[1].IssueDate &&
                         x.DueDate == invoiceDtos[1].DueDate &&
                         x.Amount == invoiceDtos[1].Amount &&
-                        x.Currency == invoiceDtos[1].Currency &&
                         (int)x.PaymentStatus == (int)invoiceDtos[1].PaymentStatus &&
                         x.BankAccountNumber == invoiceDtos[1].BankAccountNumber)),
                     CancellationToken.None),
