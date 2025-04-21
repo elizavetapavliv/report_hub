@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using ErrorOr;
 using Exadel.ReportHub.Handlers.Client.Create;
 using Exadel.ReportHub.Handlers.Client.Delete;
 using Exadel.ReportHub.Handlers.Client.Get;
@@ -46,7 +45,7 @@ public class ClientsService(ISender sender) : BaseService
 
     [Authorize(Policy = Constants.Authorization.Policy.Update)]
     [HttpPatch("{id:guid}/name")]
-    public async Task<ActionResult<Updated>> UpdateClientName([FromRoute] Guid id, [FromBody] string name)
+    public async Task<ActionResult> UpdateClientName([FromRoute] Guid id, [FromBody] string name)
     {
         var result = await sender.Send(new UpdateClientNameRequest(id, name));
 
@@ -55,7 +54,7 @@ public class ClientsService(ISender sender) : BaseService
 
     [Authorize(Policy = Constants.Authorization.Policy.Delete)]
     [HttpDelete("{id:guid}")]
-    public async Task<ActionResult<Deleted>> DeleteClient([FromRoute] Guid id)
+    public async Task<ActionResult> DeleteClient([FromRoute] Guid id)
     {
         var result = await sender.Send(new DeleteClientRequest(id));
 

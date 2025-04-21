@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using ErrorOr;
 using Exadel.ReportHub.Handlers.User.Create;
 using Exadel.ReportHub.Handlers.User.Delete;
 using Exadel.ReportHub.Handlers.User.Get;
@@ -48,7 +47,7 @@ public class UsersService(ISender sender) : BaseService
 
     [Authorize(Policy = Constants.Authorization.Policy.Update)]
     [HttpPatch("{id:guid}/activity")]
-    public async Task<ActionResult<Updated>> UpdateUserActivity([FromRoute] Guid id, [FromBody] bool isActive)
+    public async Task<ActionResult> UpdateUserActivity([FromRoute] Guid id, [FromBody] bool isActive)
     {
         var result = await sender.Send(new UpdateUserActivityRequest(id, isActive));
 
@@ -57,7 +56,7 @@ public class UsersService(ISender sender) : BaseService
 
     [Authorize]
     [HttpPatch("password")]
-    public async Task<ActionResult<Updated>> UpdateUserPassword([FromBody] string password)
+    public async Task<ActionResult> UpdateUserPassword([FromBody] string password)
     {
         var result = await sender.Send(new UpdateUserPasswordRequest(password));
         return FromResult(result);
@@ -65,7 +64,7 @@ public class UsersService(ISender sender) : BaseService
 
     [Authorize(Policy = Constants.Authorization.Policy.Update)]
     [HttpPatch("{id:guid}/fullname")]
-    public async Task<ActionResult<Updated>> UpdateUserFullName([FromRoute] Guid id, [FromBody] string fullName)
+    public async Task<ActionResult> UpdateUserFullName([FromRoute] Guid id, [FromBody] string fullName)
     {
         var result = await sender.Send(new UpdateUserNameRequest(id, fullName));
         return FromResult(result);
@@ -73,7 +72,7 @@ public class UsersService(ISender sender) : BaseService
 
     [Authorize(Policy = Constants.Authorization.Policy.Delete)]
     [HttpDelete("{id:guid}")]
-    public async Task<ActionResult<Deleted>> DeleteUser([FromRoute] Guid id)
+    public async Task<ActionResult> DeleteUser([FromRoute] Guid id)
     {
         var result = await sender.Send(new DeleteUserRequest(id));
         return FromResult(result);

@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
-using ErrorOr;
 using Exadel.ReportHub.Handlers.Plan.Create;
 using Exadel.ReportHub.Handlers.Plan.Delete;
 using Exadel.ReportHub.Handlers.Plan.GetByClientId;
@@ -44,7 +43,7 @@ public class PlansService(ISender sender) : BaseService
 
     [Authorize(Policy = Constants.Authorization.Policy.Update)]
     [HttpPut("{id:guid}")]
-    public async Task<ActionResult<Updated>> UpdatePlan([FromRoute] Guid id, [FromBody] UpdatePlanDTO updatePlanDateDto)
+    public async Task<ActionResult> UpdatePlan([FromRoute] Guid id, [FromBody] UpdatePlanDTO updatePlanDateDto)
     {
         var result = await sender.Send(new UpdatePlanRequest(id, updatePlanDateDto));
         return FromResult(result);
@@ -52,7 +51,7 @@ public class PlansService(ISender sender) : BaseService
 
     [Authorize(Policy = Constants.Authorization.Policy.Delete)]
     [HttpDelete("{id:guid}")]
-    public async Task<ActionResult<Deleted>> DeletePlan([FromRoute] Guid id, [FromQuery][Required] Guid clientId)
+    public async Task<ActionResult> DeletePlan([FromRoute] Guid id, [FromQuery][Required] Guid clientId)
     {
         var result = await sender.Send(new DeletePlanRequest(id));
         return FromResult(result);

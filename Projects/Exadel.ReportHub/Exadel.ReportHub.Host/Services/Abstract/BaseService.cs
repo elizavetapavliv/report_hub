@@ -10,25 +10,25 @@ namespace Exadel.ReportHub.Host.Services.Abstract;
 [Route("api/[controller]")]
 public abstract class BaseService : ControllerBase
 {
-    protected ActionResult<Created> FromResult(ErrorOr<Created> result)
+    protected ActionResult FromResult(ErrorOr<Created> result)
     {
         return result.Match(
-            _ => StatusCode(StatusCodes.Status201Created),
-            errors => GetErrorResult<Created>(errors));
+            _ => Created(),
+            errors => GetErrorResult(errors));
     }
 
-    protected ActionResult<Updated> FromResult(ErrorOr<Updated> result)
+    protected ActionResult FromResult(ErrorOr<Updated> result)
     {
         return result.Match(
-            _ => StatusCode(StatusCodes.Status204NoContent),
-            errors => GetErrorResult<Updated>(errors));
+            _ => NoContent(),
+            errors => GetErrorResult(errors));
     }
 
-    protected ActionResult<Deleted> FromResult(ErrorOr<Deleted> result)
+    protected ActionResult FromResult(ErrorOr<Deleted> result)
     {
         return result.Match(
-            _ => StatusCode(StatusCodes.Status204NoContent),
-            errors => GetErrorResult<Deleted>(errors));
+            _ => NoContent(),
+            errors => GetErrorResult(errors));
     }
 
     protected ActionResult<TResult> FromResult<TResult>(ErrorOr<TResult> result, int statusCode = StatusCodes.Status200OK)
@@ -36,10 +36,10 @@ public abstract class BaseService : ControllerBase
     {
         return result.Match(
             value => StatusCode(statusCode, value),
-            errors => GetErrorResult<TResult>(errors));
+            errors => GetErrorResult(errors));
     }
 
-    private ActionResult<TResult> GetErrorResult<TResult>(List<Error> errors)
+    private ActionResult GetErrorResult(List<Error> errors)
     {
         var errorResponse = new ErrorResponse
         {

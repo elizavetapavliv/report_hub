@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
-using ErrorOr;
 using Exadel.ReportHub.Handlers.Item.Create;
 using Exadel.ReportHub.Handlers.Item.Delete;
 using Exadel.ReportHub.Handlers.Item.GetByClientId;
@@ -47,7 +46,7 @@ public class ItemsService(ISender sender) : BaseService
 
     [Authorize(Policy = Constants.Authorization.Policy.Update)]
     [HttpPut("{id:guid}")]
-    public async Task<ActionResult<Updated>> UpdateItem([FromRoute] Guid id, [FromBody] CreateUpdateItemDTO updateItemDTO)
+    public async Task<ActionResult> UpdateItem([FromRoute] Guid id, [FromBody] CreateUpdateItemDTO updateItemDTO)
     {
         var result = await sender.Send(new UpdateItemRequest(id, updateItemDTO));
 
@@ -56,7 +55,7 @@ public class ItemsService(ISender sender) : BaseService
 
     [Authorize(Policy = Constants.Authorization.Policy.Delete)]
     [HttpDelete("{id:guid}")]
-    public async Task<ActionResult<Deleted>> DeleteItem([FromRoute] Guid id, [FromQuery][Required] Guid clientId)
+    public async Task<ActionResult> DeleteItem([FromRoute] Guid id, [FromQuery][Required] Guid clientId)
     {
         var result = await sender.Send(new DeleteItemRequest(id));
 
