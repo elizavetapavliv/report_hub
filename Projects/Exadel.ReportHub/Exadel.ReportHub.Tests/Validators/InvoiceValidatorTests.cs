@@ -128,42 +128,6 @@ public class InvoiceValidatorTests : BaseTestFixture
     }
 
     [Test]
-    public async Task ValidateAsync_AmountIsZero_ErrorReturned()
-    {
-        // Arrange
-        var invoice = GetValidInvoice();
-        invoice.Amount = 0m;
-
-        // Act
-        var result = await _invoiceValidator.TestValidateAsync(invoice);
-
-        // Assert
-        Assert.That(result.IsValid, Is.False);
-        Assert.That(result.Errors.Count, Is.EqualTo(1));
-        Assert.That(result.Errors[0].PropertyName, Is.EqualTo(nameof(CreateInvoiceDTO.Amount)));
-        Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo("'Amount' must be greater than '0'."));
-    }
-
-    [Test]
-    [TestCase("")]
-    [TestCase(null)]
-    public async Task ValidateAsync_CurrencyIsNullOrEmpty_ErrorReturned(string value)
-    {
-        // Arrange
-        var invoice = GetValidInvoice();
-        invoice.Currency = value;
-
-        // Act
-        var result = await _invoiceValidator.TestValidateAsync(invoice);
-
-        // Assert
-        Assert.That(result.IsValid, Is.False);
-        Assert.That(result.Errors.Count, Is.EqualTo(1));
-        Assert.That(result.Errors.Any(x => x.PropertyName == nameof(CreateInvoiceDTO.Currency)), Is.True);
-        Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo("'Currency' must not be empty."));
-    }
-
-    [Test]
     [TestCase("")]
     [TestCase(null)]
     public async Task ValidateAsync_BankAccountNumberIsNullOrEmpty_ErrorReturned(string value)
@@ -312,23 +276,6 @@ public class InvoiceValidatorTests : BaseTestFixture
         Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo(Constants.Validation.Invoice.DueDateErrorMessage));
     }
 
-    // Amount tests
-    [Test]
-    public async Task ValidateAsync_AmountIsNegative_ErrorReturned()
-    {
-        // Arrange
-        var invoice = GetValidInvoice();
-        invoice.Amount = -1000.00m;
-
-        // Act
-        var result = await _invoiceValidator.TestValidateAsync(invoice);
-
-        // Assert
-        Assert.That(result.IsValid, Is.False);
-        Assert.That(result.Errors, Has.Count.EqualTo(1));
-        Assert.That(result.Errors[0].PropertyName, Is.EqualTo(nameof(CreateInvoiceDTO.Amount)));
-    }
-
     // BankAccountNumber tests
     [Test]
     public async Task ValidateAsync_BankAccountNumberIsNotNumericAndNotDash_ErrorReturned()
@@ -367,41 +314,6 @@ public class InvoiceValidatorTests : BaseTestFixture
             $"{Constants.Validation.Invoice.BankAccountNumberMaxLength} characters. You entered {bankAccountNumber.Length} characters."));
     }
 
-    // Currency tests
-    [Test]
-    public async Task ValidateAsync_CurrencyCodeNotFixedLength_ErrorReturned()
-    {
-        // Arrange
-        var invoice = GetValidInvoice();
-        invoice.Currency = "US";
-
-        // Act
-        var result = await _invoiceValidator.TestValidateAsync(invoice);
-
-        // Assert
-        Assert.That(result.IsValid, Is.False);
-        Assert.That(result.Errors, Has.Count.EqualTo(1));
-        Assert.That(result.Errors[0].PropertyName, Is.EqualTo(nameof(CreateInvoiceDTO.Currency)));
-        Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo($"Currency must be exactly {Constants.Validation.Invoice.CurrencyCodeLength} characters long."));
-    }
-
-    [Test]
-    public async Task ValidateAsync_CurrencyCodeNotUpperCase_ErrorReturned()
-    {
-        // Arrange
-        var invoice = GetValidInvoice();
-        invoice.Currency = "usd";
-
-        // Act
-        var result = await _invoiceValidator.TestValidateAsync(invoice);
-
-        // Assert
-        Assert.That(result.IsValid, Is.False);
-        Assert.That(result.Errors, Has.Count.EqualTo(1));
-        Assert.That(result.Errors[0].PropertyName, Is.EqualTo(nameof(CreateInvoiceDTO.Currency)));
-        Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo($"Currency code must be exactly {Constants.Validation.Invoice.CurrencyCodeLength} uppercase letters."));
-    }
-
     // PaymentStatus tests
     [Test]
     public async Task ValidateAsync_PaymentStatusIsInvalid_ErrorReturned()
@@ -436,7 +348,6 @@ public class InvoiceValidatorTests : BaseTestFixture
                 .With(x => x.InvoiceNumber, "INV123456")
                 .With(x => x.IssueDate, DateTime.UtcNow.Date.AddDays(-5))
                 .With(x => x.DueDate, DateTime.UtcNow.Date.AddDays(30))
-                .With(x => x.Currency, "USD")
                 .With(x => x.BankAccountNumber, "1234-1234-1234")
                 .Create();
     }

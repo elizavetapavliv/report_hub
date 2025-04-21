@@ -62,6 +62,7 @@ public static class Constants
             public const string BankAccountNumberErrorMessage = "Bank account number must only contain digits and dashes.";
             public const string CustomerDoesntExistsErrorMessage = "Customer does not exist.";
             public const string ClientDoesntExistsErrorMessage = "Client does not exist.";
+            public const string CurrencyExistsErrorMessage = "Currency does not exist.";
         }
 
         public static class Item

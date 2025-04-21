@@ -58,9 +58,6 @@ public class InvoiceValidator : AbstractValidator<CreateInvoiceDTO>
                 .WithMessage(Constants.Validation.Invoice.TimeComponentErrorMassage);
             });
 
-        RuleFor(x => x.Amount)
-            .GreaterThan(0);
-
         RuleFor(x => x.PaymentStatus)
             .IsInEnum();
 
