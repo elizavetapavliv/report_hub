@@ -24,18 +24,16 @@ public class UpdateInvoiceValidator : AbstractValidator<UpdateInvoiceRequest>
                   .NotEmpty()
                   .LessThan(DateTime.UtcNow)
                   .WithMessage(Constants.Validation.Invoice.IssueDateErrorMessage);
-
-              child.RuleFor(x => x.IssueDate)
-                  .Must(date => date.TimeOfDay == TimeSpan.Zero)
+              child.RuleFor(x => x.IssueDate.TimeOfDay)
+                  .Equal(TimeSpan.Zero)
                   .WithMessage(Constants.Validation.Invoice.TimeComponentErrorMassage);
 
               child.RuleFor(x => x.DueDate)
                   .NotEmpty()
                   .GreaterThan(x => x.IssueDate)
                   .WithMessage(Constants.Validation.Invoice.DueDateErrorMessage);
-
-              child.RuleFor(x => x.DueDate)
-                  .Must(date => date.TimeOfDay == TimeSpan.Zero)
+              child.RuleFor(x => x.DueDate.TimeOfDay)
+                  .Equal(TimeSpan.Zero)
                   .WithMessage(Constants.Validation.Invoice.TimeComponentErrorMassage);
 
               child.RuleFor(x => x.PaymentStatus)
