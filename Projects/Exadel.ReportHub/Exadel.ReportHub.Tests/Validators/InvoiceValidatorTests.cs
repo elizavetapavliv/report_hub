@@ -16,13 +16,15 @@ public class InvoiceValidatorTests : BaseTestFixture
     private IValidator<CreateInvoiceDTO> _invoiceValidator;
     private Mock<IClientRepository> _clientRepositoryMock;
     private Mock<ICustomerRepository> _customerRepositoryMock;
+    private Mock<IInvoiceRepository> _invoiceRepositoryMock;
 
     [SetUp]
     public void Setup()
     {
         _clientRepositoryMock = new Mock<IClientRepository>();
         _customerRepositoryMock = new Mock<ICustomerRepository>();
-        _invoiceValidator = new InvoiceValidator(_customerRepositoryMock.Object, _clientRepositoryMock.Object);
+        _invoiceRepositoryMock = new Mock<IInvoiceRepository>();
+        _invoiceValidator = new InvoiceValidator(_customerRepositoryMock.Object, _clientRepositoryMock.Object, _invoiceRepositoryMock.Object);
     }
 
     // Not Empty Tests
