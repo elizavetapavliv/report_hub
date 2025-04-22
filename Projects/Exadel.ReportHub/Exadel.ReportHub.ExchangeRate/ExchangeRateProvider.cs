@@ -1,62 +1,37 @@
-﻿using System.Globalization;
-using System.Xml.Linq;
-using Microsoft.Extensions.Logging;
+﻿using Exadel.ReportHub.Ecb.Abstract;
+using Exadel.ReportHub.RA.Abstract;
+using MongoDB.Driver;
 
 namespace Exadel.ReportHub.Ecb;
 
-public class ExchangeRateProvider(IHttpClientFactory factory, ILogger<ExchangeRateProvider> logger) : IExchangeRateProvider
+public class ExchangeRateProvider : IExchangeRateClient
 {
+    private readonly IExchangeRateRepository _exhangerRateRepository;
+    private readonly IExchangeRateClient _exchangeRateProvider;
+
+    public ExchangeRateProvider(IExchangeRateRepository exhangeRateRepository, IExchangeRateClient exchangeRateProvider)
+    {
+        _exhangerRateRepository = exhangeRateRepository;
+        _exchangeRateProvider = exchangeRateProvider;
+    }
+
+    public async Task<Data.Models.ExchangeRate> GetByCurrencyAsync(string currency, CancellationToken cancellationToken)
+    {
+        var exchangeRate = await _exhangerRateRepository.GetByCurrencyAsync(currency, cancellationToken);
+
+        if (exchangeRate != null)
+        {
+            return exchangeRate;
+        }
+
+        var exchangeRates = await GetDailyRatesAsync(cancellationToken);
+        await _exhangerRateRepository.AddManyAsync(exchangeRates, cancellationToken);
+
+        return exchangeRates.SingleOrDefault(x => x.Currency.Equals(currency, StringComparison.Ordinal));
+    }
+
     public async Task<IList<Data.Models.ExchangeRate>> GetDailyRatesAsync(CancellationToken cancellationToken)
     {
-        var client = factory.CreateClient(Constants.ClientName);
-
-        HttpResponseMessage response;
-        try
-        {
-            response = await client.GetAsync(Constants.Path.ExchangeRate, cancellationToken);
-            response.EnsureSuccessStatusCode();
-        }
-        catch(HttpRequestException ex)
-        {
-            logger.LogError(ex, Constants.Error.HttpFetchError);
-            return new List<Data.Models.ExchangeRate>();
-        }
-        catch(TaskCanceledException ex)
-        {
-            logger.LogError(ex, Constants.Error.TimeoutError);
-            return new List<Data.Models.ExchangeRate>();
-        }
-
-        var result = await response.Content.ReadAsStringAsync(cancellationToken);
-
-        XDocument document;
-        try
-        {
-            document = XDocument.Parse(result);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, Constants.Error.ParseError);
-            return new List<Data.Models.ExchangeRate>();
-        }
-
-        var root = document.Root.GetDefaultNamespace();
-
-        var cubeTime = document
-            .Descendants(root + "Cube")
-            .Single(x => x.Attribute("time") != null);
-
-        var rateDate = DateTime.Parse(cubeTime.Attribute("time").Value, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).AddHours(16);
-
-        var rates = cubeTime.Elements(root + "Cube")
-            .Select(x => new Data.Models.ExchangeRate
-            {
-                Currency = x.Attribute("currency").Value,
-                Rate = decimal.Parse(x.Attribute("rate").Value, CultureInfo.InvariantCulture),
-                RateDate = rateDate
-            })
-            .ToList();
-
-        return rates;
+        return await _exchangeRateProvider.GetDailyRatesAsync(cancellationToken);
     }
 }

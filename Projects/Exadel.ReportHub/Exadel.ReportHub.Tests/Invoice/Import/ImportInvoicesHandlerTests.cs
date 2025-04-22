@@ -3,10 +3,10 @@ using AutoFixture;
 using ErrorOr;
 using Exadel.ReportHub.Csv.Abstract;
 using Exadel.ReportHub.Data.Models;
+using Exadel.ReportHub.Ecb.Abstract;
+using Exadel.ReportHub.Handlers;
 using Exadel.ReportHub.Handlers.Invoice.Import;
-using Exadel.ReportHub.Handlers.Invoice.Import.CurrencyConverter_replace;
 using Exadel.ReportHub.RA.Abstract;
-using Exadel.ReportHub.SDK.DTOs.Import;
 using Exadel.ReportHub.SDK.DTOs.Invoice;
 using Exadel.ReportHub.Tests.Abstracts;
 using FluentValidation;
@@ -56,10 +56,10 @@ public class ImportInvoicesHandlerTests : BaseTestFixture
         foreach (var invoiceDto in invoiceDtos)
         {
             decimal amount = 0;
-            customers.Add(invoiceDto.CustomerId, Fixture.Build<Customer>().With(x => x.Id, invoiceDto.CustomerId).With(x => x.CurrencyCode, "EUR").Create());
+            customers.Add(invoiceDto.CustomerId, Fixture.Build<Customer>().With(x => x.Id, invoiceDto.CustomerId).With(x => x.CurrencyCode, Constants.Currency.DefalutCurrencyCode).Create());
             foreach (var itemId in invoiceDto.ItemIds)
             {
-                items.Add(itemId, Fixture.Build<Item>().With(x => x.Id, itemId).With(x => x.CurrencyCode, "EUR").Create());
+                items.Add(itemId, Fixture.Build<Item>().With(x => x.Id, itemId).With(x => x.CurrencyCode, Constants.Currency.DefalutCurrencyCode).Create());
                 amount += items[itemId].Price;
             }
 
@@ -72,22 +72,20 @@ public class ImportInvoicesHandlerTests : BaseTestFixture
             .Setup(x => x.ReadInvoices(It.Is<Stream>(str => str.Length == memoryStream.Length)))
             .Returns(invoiceDtos);
 
-        foreach (var customer in customers)
-        {
-            _customerRepositoryMock
-                .Setup(x => x.GetByIdAsync(customer.Key, CancellationToken.None))
-                .ReturnsAsync(customer.Value);
-        }
+        _customerRepositoryMock
+            .Setup(x => x.GetByIdsAsync(customers.Keys.ToList(), CancellationToken.None))
+            .ReturnsAsync(customers.Values.ToList());
 
-        foreach (var item in items)
-        {
-            _itemRepositoryMock
-                .Setup(x => x.GetByIdAsync(item.Key, CancellationToken.None))
-                .ReturnsAsync(item.Value);
+        _itemRepositoryMock
+            .Setup(x => x.GetByIdsAsync(items.Keys.ToList(), CancellationToken.None))
+            .ReturnsAsync(items.Values.ToList());
 
+        foreach (var invoiceDto in invoiceDtos)
+        {
+            var amount = items.Where(x => invoiceDto.ItemIds.Contains(x.Key)).Sum(x => x.Value.Price);
             _currencyConverterMock
-                .Setup(x => x.ConvertAsync(item.Value.Price, "EUR", "EUR", CancellationToken.None))
-                .ReturnsAsync(item.Value.Price);
+                .Setup(x => x.ConvertAsync(amount, Constants.Currency.DefalutCurrencyCode, Constants.Currency.DefalutCurrencyCode, CancellationToken.None))
+                .ReturnsAsync(amount);
         }
 
         _invoiceValidatorMock
@@ -126,6 +124,7 @@ public class ImportInvoicesHandlerTests : BaseTestFixture
                         x.IssueDate == invoiceDtos[0].IssueDate &&
                         x.DueDate == invoiceDtos[0].DueDate &&
                         x.Amount == amounts[0] &&
+                        x.CurrencyId == customers[invoiceDtos[0].CustomerId].CurrencyId &&
                         x.Currency == customers[invoiceDtos[0].CustomerId].CurrencyCode &&
                         (int)x.PaymentStatus == (int)invoiceDtos[0].PaymentStatus &&
                         x.BankAccountNumber == invoiceDtos[0].BankAccountNumber) &&
@@ -137,6 +136,7 @@ public class ImportInvoicesHandlerTests : BaseTestFixture
                         x.IssueDate == invoiceDtos[1].IssueDate &&
                         x.DueDate == invoiceDtos[1].DueDate &&
                         x.Amount == amounts[1] &&
+                        x.CurrencyId == customers[invoiceDtos[1].CustomerId].CurrencyId &&
                         x.Currency == customers[invoiceDtos[1].CustomerId].CurrencyCode &&
                         (int)x.PaymentStatus == (int)invoiceDtos[1].PaymentStatus &&
                         x.BankAccountNumber == invoiceDtos[1].BankAccountNumber)),

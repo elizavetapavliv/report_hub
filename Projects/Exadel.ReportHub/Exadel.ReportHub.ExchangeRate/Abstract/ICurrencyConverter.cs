@@ -1,4 +1,4 @@
-﻿namespace Exadel.ReportHub.Handlers.Invoice.Import.CurrencyConverter_replace;
+﻿namespace Exadel.ReportHub.Ecb.Abstract;
 
 public interface ICurrencyConverter
 {

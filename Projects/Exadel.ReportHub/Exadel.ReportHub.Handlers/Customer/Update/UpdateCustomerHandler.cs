@@ -23,6 +23,7 @@ public class UpdateCustomerHandler(ICustomerRepository customerRepository, ICoun
 
         customer.Id = request.Id;
         customer.Country = country.Name;
+        customer.CurrencyId = country.CurrencyId;
         customer.CurrencyCode = country.CurrencyCode;
 
         await customerRepository.UpdateAsync(customer, cancellationToken);

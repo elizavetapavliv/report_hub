@@ -10,6 +10,8 @@ public class Customer : IDocument, ISoftDeletable
 
     public string Country { get; set; }
 
+    public Guid CurrencyId { get; set; }
+
     public string CurrencyCode { get; set; }
 
     public string Email { get; set; }

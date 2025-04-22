@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using ErrorOr;
 using Exadel.ReportHub.Csv.Abstract;
-using Exadel.ReportHub.Handlers.Invoice.Import.CurrencyConverter_replace;
+using Exadel.ReportHub.Ecb.Abstract;
 using Exadel.ReportHub.RA.Abstract;
 using Exadel.ReportHub.SDK.DTOs.Import;
 using Exadel.ReportHub.SDK.DTOs.Invoice;
@@ -43,24 +43,36 @@ public class ImportInvoicesHandler(
 
         var invoices = mapper.Map<IList<Data.Models.Invoice>>(invoiceDtos);
 
+        var customerIds = invoices.Select(x => x.CustomerId).Distinct().ToList();
+        var itemIds = invoices.SelectMany(x => x.ItemIds).Distinct().ToList();
+
+        var customersTask = customerRepository.GetByIdsAsync(customerIds, cancellationToken);
+        var itemsTask = itemRepository.GetByIdsAsync(itemIds, cancellationToken);
+
+        await Task.WhenAll(customersTask, itemsTask);
+
+        var customers = customersTask.Result.ToDictionary(x => x.Id);
+        var items = itemsTask.Result.ToDictionary(x => x.Id);
+
         foreach (var invoice in invoices)
         {
-            var customer = await customerRepository.GetByIdAsync(invoice.CustomerId, cancellationToken);
-            decimal totalAmount = 0;
+            var containedItems = invoice.ItemIds.Where(itemId => items.ContainsKey(itemId)).Select(itemId => items[itemId]);
+            var currencyGroups = containedItems.GroupBy(x => x.CurrencyCode).ToList();
+            var conversions = new List<Task<decimal>>();
 
-            foreach (var itemId in invoice.ItemIds)
+            foreach (var group in currencyGroups)
             {
-                var item = await itemRepository.GetByIdAsync(itemId, cancellationToken);
-                totalAmount += await currencyConverter.ConvertAsync(item.Price, item.CurrencyCode, customer.CurrencyCode, cancellationToken);
+                conversions.Add(currencyConverter.ConvertAsync(group.Sum(x => x.Price), group.Key, customers[invoice.CustomerId].CurrencyCode, cancellationToken));
             }
 
             invoice.Id = Guid.NewGuid();
-            invoice.Amount = totalAmount;
-            invoice.Currency = customer.CurrencyCode;
+            invoice.Amount = (await Task.WhenAll(conversions)).Sum();
+            invoice.CurrencyId = customers[invoice.CustomerId].CurrencyId;
+            invoice.Currency = customers[invoice.CustomerId].CurrencyCode;
         }
 
         await invoiceRepository.AddManyAsync(invoices, cancellationToken);
 
-        return new ImportResultDTO { ImportedCount = invoices.Count() };
+        return new ImportResultDTO { ImportedCount = invoices.Count };
     }
 }

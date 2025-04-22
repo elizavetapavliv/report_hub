@@ -18,6 +18,7 @@ public class CreateCustomerHandler(ICustomerRepository customerRepository, ICoun
 
         customer.Id = Guid.NewGuid();
         customer.Country = country.Name;
+        customer.CurrencyId = country.CurrencyId;
         customer.CurrencyCode = country.CurrencyCode;
 
         await customerRepository.AddAsync(customer, cancellationToken);

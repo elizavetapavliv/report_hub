@@ -97,6 +97,11 @@ public static class Constants
         }
     }
 
+    public static class Currency
+    {
+        public const string DefalutCurrencyCode = "EUR";
+    }
+
     public static class Error
     {
         public static class ExchangeRate

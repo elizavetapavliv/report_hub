@@ -32,16 +32,22 @@ public class CustomerRepository : BaseRepository, ICustomerRepository
         return await ExistsAsync<Customer>(id, cancellationToken);
     }
 
-    public Task<IList<Customer>> GetAsync(CancellationToken cancellationToken)
+    public async Task<IList<Customer>> GetAsync(CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.Eq(x => x.IsDeleted, false);
 
-        return GetAsync(filter, cancellationToken);
+        return await GetAsync(filter, cancellationToken);
     }
 
-    public Task<Customer> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<Customer> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        return GetByIdAsync<Customer>(id, cancellationToken);
+        return await GetByIdAsync<Customer>(id, cancellationToken);
+    }
+
+    public async Task<IList<Customer>> GetByIdsAsync(IEnumerable<Guid> ids, CancellationToken cancellationToken)
+    {
+        var filter = _filterBuilder.In(x => x.Id, ids);
+        return await GetAsync(filter, cancellationToken);
     }
 
     public async Task SoftDeleteAsync(Guid id, CancellationToken cancellationToken)

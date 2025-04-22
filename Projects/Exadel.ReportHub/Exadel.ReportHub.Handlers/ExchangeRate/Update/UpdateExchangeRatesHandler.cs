@@ -1,4 +1,4 @@
-﻿using Exadel.ReportHub.Ecb;
+﻿using Exadel.ReportHub.Ecb.Abstract;
 using Exadel.ReportHub.RA.Abstract;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -8,7 +8,7 @@ namespace Exadel.ReportHub.Handlers.ExchangeRate.Update;
 public record UpdateExchangeRatesRequest : IRequest<Unit>;
 
 public class UpdateExchangeRatesHandler(
-    IExchangeRateProvider exchangeRateProvider,
+    IExchangeRateClient exchangeRateProvider,
     IExchangeRateRepository exchangeRepository,
     ILogger<UpdateExchangeRatesHandler> logger) : IRequestHandler<UpdateExchangeRatesRequest, Unit>
 {
