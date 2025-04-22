@@ -72,7 +72,7 @@ public class InvoicesService(ISender sender) : BaseService
 
     [Authorize(Policy = Constants.Authorization.Policy.Create)]
     [HttpGet("export")]
-    public async Task<FileStreamResult> ExportInvoiceAsync(Guid invoiceId)
+    public async Task<FileStreamResult> ExportInvoiceAsync(Guid invoiceId, Guid ClientId)
     {
         var stream = await sender.Send(new ExportInvoiceRequest(invoiceId));
         var result = new FileStreamResult(stream.Value.Stream, MediaTypeNames.Application.Pdf)
