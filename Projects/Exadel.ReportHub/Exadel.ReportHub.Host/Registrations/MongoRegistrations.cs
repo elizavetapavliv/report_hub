@@ -9,7 +9,7 @@ namespace Exadel.ReportHub.Host.Registrations;
 
 public static class MongoRegistrations
 {
-    public static IServiceCollection AddMongo(this IServiceCollection services)
+    public static void AddMongo(this IServiceCollection services)
     {
         services.AddSingleton<MongoDbContext>();
         ConventionRegistry.Register("EnumStringConvention", new ConventionPack
@@ -34,6 +34,5 @@ public static class MongoRegistrations
         services.AddSingleton<ICountryRepository, CountryRepository>();
 
         BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
-        return services;
     }
 }

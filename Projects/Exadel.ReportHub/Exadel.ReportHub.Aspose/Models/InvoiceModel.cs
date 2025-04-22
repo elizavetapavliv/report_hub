@@ -1,9 +1,9 @@
 ﻿using Exadel.ReportHub.SDK.DTOs.Item;
 using Exadel.ReportHub.SDK.Enums;
 
-namespace Exadel.ReportHub.SDK.DTOs.Invoice;
+namespace Exadel.ReportHub.Pdf.Models;
 
-public class GenerateInvoiceDTO
+public class InvoiceModel
 {
     public string ClientName { get; set; }
 

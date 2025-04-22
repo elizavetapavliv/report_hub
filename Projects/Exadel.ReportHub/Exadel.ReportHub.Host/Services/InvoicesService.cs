@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.IO;
+using System.Net.Mime;
 using Exadel.ReportHub.Handlers.Invoice.Export;
 using Exadel.ReportHub.Handlers.Invoice.Import;
 using Exadel.ReportHub.Host.Services.Abstract;
@@ -24,13 +24,14 @@ public class InvoicesService(ISender sender) : BaseService
         return FromResult(result);
     }
 
+    [Authorize(Policy = Constants.Authorization.Policy.Create)]
     [HttpGet("export")]
-    public async Task<ActionResult<Stream>> ExportInvoiceAsync(Guid invoiceId)
+    public async Task<FileStreamResult> ExportInvoiceAsync(Guid invoiceId)
     {
         var stream = await sender.Send(new ExportInvoiceRequest(invoiceId));
-        var result = new FileStreamResult(stream.MemoryStream, "application/pdf")
+        var result = new FileStreamResult(stream.Value.Stream, MediaTypeNames.Application.Pdf)
         {
-            FileDownloadName = stream.FileName
+            FileDownloadName = stream.Value.FileName
         };
 
         return result;

@@ -1,5 +1,5 @@
 ﻿const scriptName = "01_create_Invoice";
-const version = NumberInt(4);
+const version = NumberInt(5);
 
 if (db.MigrationHistory.findOne({ ScriptName: scriptName, Version: version })) {
     print(`${scriptName} v${version} is already applied`);
@@ -134,7 +134,7 @@ for (let i = 0; i < invoiceCount; i++) {
         DueDate: generateDueDate(issueDate),
         Amount: NumberDecimal((Math.random() * 4000 + 100).toFixed(2)),
         CurrencyId: currencyIds[index],
-        currencyCode: currencyCodes[index],
+        CurrencyCode: currencyCodes[index],
         PaymentStatus: paymentStatuses[getRandomInt(paymentStatuses.length)],
         BankAccountNumber: bankAccountNumbers[index],
         ItemIds: [itemIds[index * 2], itemIds[index * 2 + 1]]

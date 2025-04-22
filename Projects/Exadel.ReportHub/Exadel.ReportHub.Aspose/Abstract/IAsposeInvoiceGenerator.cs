@@ -1,8 +1,8 @@
-﻿using Exadel.ReportHub.SDK.DTOs.Invoice;
+﻿using Exadel.ReportHub.Pdf.Models;
 
-namespace Exadel.ReportHub.Aspose.Abstract;
+namespace Exadel.ReportHub.Pdf.Abstract;
 
 public interface IAsposeInvoiceGenerator
 {
-    MemoryStream Generate(GenerateInvoiceDTO invoiceDto);
+    Task<Stream> GenerateAsync(InvoiceModel invoice, CancellationToken cancellationToken);
 }
