@@ -6,5 +6,5 @@ public class CreateCustomerDTO
 
     public string Name { get; set; }
 
-    public string Country { get; set; }
+    public Guid CountryId { get; set; }
 }
