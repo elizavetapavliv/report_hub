@@ -1,13 +1,16 @@
-﻿using FluentValidation;
+﻿using Exadel.ReportHub.RA.Abstract;
+using FluentValidation;
 
 namespace Exadel.ReportHub.Handlers.Customer.Update;
 
 public class UpdateCustomerValidator : AbstractValidator<UpdateCustomerRequest>
 {
+    private readonly ICountryRepository _countryRepository;
     private readonly IValidator<string> _stringValidator;
 
-    public UpdateCustomerValidator(IValidator<string> stringValidator)
+    public UpdateCustomerValidator(ICountryRepository countryRepository, IValidator<string> stringValidator)
     {
+        _countryRepository = countryRepository;
         _stringValidator = stringValidator;
         ConfigureRules();
     }
@@ -22,8 +25,10 @@ public class UpdateCustomerValidator : AbstractValidator<UpdateCustomerRequest>
                child.RuleFor(x => x.Name)
                    .SetValidator(_stringValidator, Constants.Validation.RuleSet.Names);
 
-               child.RuleFor(x => x.Country)
-                   .SetValidator(_stringValidator, Constants.Validation.RuleSet.Countries);
+               child.RuleFor(x => x.CountryId)
+                   .NotEmpty()
+                   .MustAsync(_countryRepository.ExistsAsync)
+                   .WithMessage(Constants.Validation.Customer.CountryDoesNotExistMessage);
            });
     }
 }

@@ -42,6 +42,7 @@ public static class Constants
         {
             public const string EmailTakenMessage = "Email is already taken.";
             public const string EmailInvalidMessage = "Email is invalid.";
+            public const string CountryDoesNotExistMessage = "Country does not exist.";
         }
 
         public static class Client

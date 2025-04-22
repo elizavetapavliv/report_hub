@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using ErrorOr;
 using Exadel.ReportHub.Csv.Abstract;
-using Exadel.ReportHub.Handlers.Validators;
+using Exadel.ReportHub.Handlers.Invoice.Import.CurrencyConverter_replace;
 using Exadel.ReportHub.RA.Abstract;
 using Exadel.ReportHub.SDK.DTOs.Import;
 using Exadel.ReportHub.SDK.DTOs.Invoice;
@@ -15,6 +15,9 @@ public record ImportInvoicesRequest(ImportDTO ImportDTO) : IRequest<ErrorOr<Impo
 public class ImportInvoicesHandler(
     ICsvProcessor csvProcessor,
     IInvoiceRepository invoiceRepository,
+    ICustomerRepository customerRepository,
+    IItemRepository itemRepository,
+    ICurrencyConverter currencyConverter,
     IMapper mapper,
     IValidator<CreateInvoiceDTO> invoiceValidator) : IRequestHandler<ImportInvoicesRequest, ErrorOr<ImportResultDTO>>
 {
@@ -31,7 +34,7 @@ public class ImportInvoicesHandler(
             .OrderBy(x => x.RowIndex)
             .ToList();
 
-        if(validationErrors.Count > 0)
+        if (validationErrors.Count > 0)
         {
             return validationErrors
                 .Select(m => Error.Validation(description: $"Row {m.RowIndex + 1}: {m.Error}"))
@@ -39,6 +42,23 @@ public class ImportInvoicesHandler(
         }
 
         var invoices = mapper.Map<IList<Data.Models.Invoice>>(invoiceDtos);
+
+        foreach (var invoice in invoices)
+        {
+            var customer = await customerRepository.GetByIdAsync(invoice.CustomerId, cancellationToken);
+            decimal totalAmount = 0;
+
+            foreach (var itemId in invoice.ItemIds)
+            {
+                var item = await itemRepository.GetByIdAsync(itemId, cancellationToken);
+                totalAmount += await currencyConverter.ConvertAsync(item.Price, item.CurrencyCode, customer.CurrencyCode, cancellationToken);
+            }
+
+            invoice.Id = Guid.NewGuid();
+            invoice.Amount = totalAmount;
+            invoice.Currency = customer.CurrencyCode;
+        }
+
         await invoiceRepository.AddManyAsync(invoices, cancellationToken);
 
         return new ImportResultDTO { ImportedCount = invoices.Count() };
