@@ -1,9 +1,8 @@
-﻿using Exadel.ReportHub.Data.Abstract;
-using Exadel.ReportHub.Data.Enums;
+﻿using Exadel.ReportHub.SDK.Enums;
 
-namespace Exadel.ReportHub.Data.Models;
+namespace Exadel.ReportHub.SDK.DTOs.Invoice;
 
-public class Invoice : IDocument, ISoftDeletable
+public class InvoiceDTO
 {
     public Guid Id { get; set; }
 
@@ -19,15 +18,11 @@ public class Invoice : IDocument, ISoftDeletable
 
     public decimal Amount { get; set; }
 
-    public Guid CurrencyId { get; set; }
-
-    public string CurrencyCode { get; set; }
+    public decimal CurrencyCode { get; set; }
 
     public PaymentStatus PaymentStatus { get; set; }
 
     public string BankAccountNumber { get; set; }
 
     public IList<Guid> ItemIds { get; set; }
-
-    public bool IsDeleted { get; set; }
 }

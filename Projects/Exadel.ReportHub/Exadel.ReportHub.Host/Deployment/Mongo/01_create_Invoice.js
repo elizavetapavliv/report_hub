@@ -137,7 +137,8 @@ for (let i = 0; i < invoiceCount; i++) {
         CurrencyCode: currencyCodes[index],
         PaymentStatus: paymentStatuses[getRandomInt(paymentStatuses.length)],
         BankAccountNumber: bankAccountNumbers[index],
-        ItemIds: [itemIds[index * 2], itemIds[index * 2 + 1]]
+        ItemIds: [itemIds[index * 2], itemIds[index * 2 + 1]],
+        IsDeleted: false,
     });
 }
 
