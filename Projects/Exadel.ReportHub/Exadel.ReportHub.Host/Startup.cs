@@ -29,7 +29,6 @@ public class Startup(IConfiguration configuration)
             {
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
-
         services.AddSwaggerGen(c =>
         {
             const string apiVersion = "v1";
@@ -74,6 +73,8 @@ public class Startup(IConfiguration configuration)
                     new[] { Constants.Authorization.ScopeName }
                 }
             });
+            var xmlPath = Path.Combine(AppContext.BaseDirectory, Constants.Xml.XmlFileName);
+            c.IncludeXmlComments(xmlPath);
         });
 
         services.AddAuthentication(options =>

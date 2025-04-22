@@ -32,4 +32,9 @@ public static class Constants
             public static readonly Uri Ping = new Uri("/api/ping", UriKind.Relative);
         }
     }
+
+    public static class Xml
+    {
+        public const string XmlFileName = "ReportHub.xml";
+    }
 }
