@@ -27,7 +27,7 @@ public class AsposeInvoiceGenerator : IAsposeInvoiceGenerator
         page.Paragraphs.Add(new TextFragment($"{AddSpace(nameof(invoice.InvoiceNumber))}: {invoice.InvoiceNumber}"));
         page.Paragraphs.Add(new TextFragment($"{AddSpace(nameof(invoice.IssueDate))}: {invoice.IssueDate}"));
         page.Paragraphs.Add(new TextFragment($"{AddSpace(nameof(invoice.DueDate))}: {invoice.DueDate}"));
-        page.Paragraphs.Add(new TextFragment($"{AddSpace(nameof(invoice.DueDate))}: {invoice.ClientName}"));
+        page.Paragraphs.Add(new TextFragment($"{AddSpace(nameof(invoice.ClientName))}: {invoice.ClientName}"));
         page.Paragraphs.Add(new TextFragment($"{AddSpace(nameof(invoice.CustomerName))}: {invoice.CustomerName}"));
 
         page.Paragraphs.Add(new TextFragment("\n"));
@@ -58,7 +58,7 @@ public class AsposeInvoiceGenerator : IAsposeInvoiceGenerator
         var total = new TextFragment($"Total: {invoice.Amount} {invoice.CurrencyCode}")
         {
             TextState = { FontSize = 12, FontStyle = FontStyles.Bold },
-            HorizontalAlignment = HorizontalAlignment.Right
+            HorizontalAlignment = HorizontalAlignment.Left
         };
 
         page.Paragraphs.Add(total);
