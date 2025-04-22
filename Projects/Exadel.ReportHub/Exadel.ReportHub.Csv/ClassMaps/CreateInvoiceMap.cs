@@ -4,9 +4,9 @@ using Exadel.ReportHub.SDK.DTOs.Invoice;
 
 namespace Exadel.ReportHub.Csv.ClassMaps;
 
-public class CreateInvoiceDTOMap : ClassMap<CreateInvoiceDTO>
+public class CreateInvoiceMap : ClassMap<CreateInvoiceDTO>
 {
-    public CreateInvoiceDTOMap()
+    public CreateInvoiceMap()
     {
         AutoMap(CultureInfo.InvariantCulture);
 

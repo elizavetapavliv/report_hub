@@ -1,15 +1,14 @@
 ﻿using Exadel.ReportHub.Ecb.Abstract;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Exadel.ReportHub.Ecb.Helpers;
 
 public class CurrencyConverter : ICurrencyConverter
 {
-    private readonly IExchangeRateClient _exchangeRateService;
+    private readonly IExchangeRateClient _exchangeRateProvider;
 
-    public CurrencyConverter(IServiceProvider serviceProvider)
+    public CurrencyConverter(IExchangeRateClient exchangeRateProvider)
     {
-        _exchangeRateService = serviceProvider.GetRequiredService<ExchangeRateProvider>();
+        _exchangeRateProvider = exchangeRateProvider;
     }
 
     public async Task<decimal> ConvertAsync(decimal amount, string fromCurrency, string toCurrency, CancellationToken cancellationToken)
@@ -20,15 +19,15 @@ public class CurrencyConverter : ICurrencyConverter
         }
 
         decimal fromRate = 1;
-        if (!fromCurrency.Equals("EUR", StringComparison.Ordinal))
+        if (!fromCurrency.Equals(Constants.Currency.DefalutCurrencyCode, StringComparison.Ordinal))
         {
-            fromRate = (await _exchangeRateService.GetByCurrencyAsync(fromCurrency, cancellationToken)).Rate;
+            fromRate = (await _exchangeRateProvider.GetByCurrencyAsync(fromCurrency, cancellationToken)).Rate;
         }
 
         decimal toRate = 1;
-        if (!toCurrency.Equals("EUR", StringComparison.Ordinal))
+        if (!toCurrency.Equals(Constants.Currency.DefalutCurrencyCode, StringComparison.Ordinal))
         {
-            toRate = (await _exchangeRateService.GetByCurrencyAsync(toCurrency, cancellationToken)).Rate;
+            toRate = (await _exchangeRateProvider.GetByCurrencyAsync(toCurrency, cancellationToken)).Rate;
         }
 
         return amount * toRate / fromRate;

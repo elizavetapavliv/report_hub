@@ -64,6 +64,7 @@ public static class Constants
             public const string CustomerDoesntExistsErrorMessage = "Customer does not exist.";
             public const string ClientDoesntExistsErrorMessage = "Client does not exist.";
             public const string InvoiceNumberExistsMessage = "Invoice number already exists.";
+            public const string ItemDoesNotExistsErrorMessage = "Item does not exist.";
         }
 
         public static class Item
@@ -96,11 +97,6 @@ public static class Constants
             public const string PlandEndDateInThePastErrorMessage = "End date must be in the future";
             public const string PlanAlreadyExistsForItemAndClient = "Plan already exists for this item and client";
         }
-    }
-
-    public static class Currency
-    {
-        public const string DefalutCurrencyCode = "EUR";
     }
 
     public static class Error

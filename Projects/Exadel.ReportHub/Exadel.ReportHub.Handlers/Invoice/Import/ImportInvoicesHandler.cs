@@ -56,17 +56,11 @@ public class ImportInvoicesHandler(
 
         foreach (var invoice in invoices)
         {
-            var containedItems = invoice.ItemIds.Where(itemId => items.ContainsKey(itemId)).Select(itemId => items[itemId]);
-            var currencyGroups = containedItems.GroupBy(x => x.CurrencyCode).ToList();
-            var conversions = new List<Task<decimal>>();
-
-            foreach (var group in currencyGroups)
-            {
-                conversions.Add(currencyConverter.ConvertAsync(group.Sum(x => x.Price), group.Key, customers[invoice.CustomerId].CurrencyCode, cancellationToken));
-            }
+            var conversionTasks = invoice.ItemIds.Select(itemId => items[itemId]).GroupBy(x => x.CurrencyCode)
+                .Select(group => currencyConverter.ConvertAsync(group.Sum(x => x.Price), group.Key, customers[invoice.CustomerId].CurrencyCode, cancellationToken));
 
             invoice.Id = Guid.NewGuid();
-            invoice.Amount = (await Task.WhenAll(conversions)).Sum();
+            invoice.Amount = (await Task.WhenAll(conversionTasks)).Sum();
             invoice.CurrencyId = customers[invoice.CustomerId].CurrencyId;
             invoice.Currency = customers[invoice.CustomerId].CurrencyCode;
         }

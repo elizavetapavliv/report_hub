@@ -12,7 +12,7 @@ public class CsvProcessor : ICsvProcessor
     {
         using var reader = new StreamReader(csvStream);
         using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
-        csv.Context.RegisterClassMap<CreateInvoiceDTOMap>();
+        csv.Context.RegisterClassMap<CreateInvoiceMap>();
 
         return csv.GetRecords<CreateInvoiceDTO>().ToList();
     }

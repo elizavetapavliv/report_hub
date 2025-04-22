@@ -15,9 +15,9 @@ public class ExchangeRateRepository : BaseRepository, IExchangeRateRepository
     {
     }
 
-    public async Task AddManyAsync(IEnumerable<ExchangeRate> exchangeRates, CancellationToken cancellationToken)
+    public Task AddManyAsync(IEnumerable<ExchangeRate> exchangeRates, CancellationToken cancellationToken)
     {
-        await base.AddManyAsync(exchangeRates, cancellationToken);
+        return base.AddManyAsync(exchangeRates, cancellationToken);
     }
 
     public async Task<ExchangeRate> GetByCurrencyAsync(string currency, CancellationToken cancellationToken)
