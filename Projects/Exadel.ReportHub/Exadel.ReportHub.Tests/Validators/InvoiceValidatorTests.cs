@@ -21,10 +21,41 @@ public class InvoiceValidatorTests : BaseTestFixture
     [SetUp]
     public void Setup()
     {
+        var updateInvoiceValidator = new InlineValidator<UpdateInvoiceDTO>();
+        updateInvoiceValidator.RuleSet("Default", () =>
+        {
+            updateInvoiceValidator.RuleLevelCascadeMode = CascadeMode.Stop;
+
+            updateInvoiceValidator.RuleFor(x => x.IssueDate)
+                .NotEmpty()
+                .LessThan(DateTime.UtcNow)
+                .WithMessage(Constants.Validation.Invoice.IssueDateErrorMessage);
+            updateInvoiceValidator.RuleFor(x => x.IssueDate.TimeOfDay)
+                .Equal(TimeSpan.Zero)
+                .WithMessage(Constants.Validation.Invoice.TimeComponentErrorMassage);
+
+            updateInvoiceValidator.RuleFor(x => x.DueDate)
+                .NotEmpty()
+                .GreaterThan(x => x.IssueDate)
+                .WithMessage(Constants.Validation.Invoice.DueDateErrorMessage);
+            updateInvoiceValidator.RuleFor(x => x.DueDate.TimeOfDay)
+                .Equal(TimeSpan.Zero)
+                .WithMessage(Constants.Validation.Invoice.TimeComponentErrorMassage);
+
+            updateInvoiceValidator.RuleFor(x => x.PaymentStatus)
+                .IsInEnum();
+
+            updateInvoiceValidator.RuleFor(x => x.BankAccountNumber)
+                .NotEmpty()
+                .Length(Constants.Validation.Invoice.BankAccountNumberMinLength, Constants.Validation.Invoice.BankAccountNumberMaxLength)
+                .Matches(@"^[A-Z]{2}\d+$")
+                .WithMessage(Constants.Validation.Invoice.BankAccountNumberErrorMessage);
+        });
+
         _clientRepositoryMock = new Mock<IClientRepository>();
         _customerRepositoryMock = new Mock<ICustomerRepository>();
         _invoiceRepositoryMock = new Mock<IInvoiceRepository>();
-        _invoiceValidator = new InvoiceValidator(_customerRepositoryMock.Object, _clientRepositoryMock.Object, _invoiceRepositoryMock.Object);
+        _invoiceValidator = new CreateInvoiceDtoValidator(_customerRepositoryMock.Object, _clientRepositoryMock.Object, _invoiceRepositoryMock.Object, updateInvoiceValidator);
     }
 
     [Test]

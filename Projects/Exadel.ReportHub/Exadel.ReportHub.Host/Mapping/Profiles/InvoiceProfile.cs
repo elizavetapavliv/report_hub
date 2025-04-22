@@ -15,6 +15,7 @@ public class InvoiceProfile : Profile
         CreateMap<UpdateInvoiceDTO, Invoice>()
             .ForMember(x => x.Id, opt => opt.Ignore())
             .ForMember(x => x.InvoiceNumber, opt => opt.Ignore())
+            .ForMember(x => x.Amount, opt => opt.Ignore())
             .ForMember(x => x.ClientId, opt => opt.Ignore())
             .ForMember(x => x.CustomerId, opt => opt.Ignore())
             .ForMember(x => x.Currency, opt => opt.Ignore())
