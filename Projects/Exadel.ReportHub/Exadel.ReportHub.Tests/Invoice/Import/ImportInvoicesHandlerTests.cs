@@ -2,7 +2,9 @@
 using AutoFixture;
 using ErrorOr;
 using Exadel.ReportHub.Csv.Abstract;
+using Exadel.ReportHub.Data.Models;
 using Exadel.ReportHub.Handlers.Invoice.Import;
+using Exadel.ReportHub.Handlers.Invoice.Import.CurrencyConverter_replace;
 using Exadel.ReportHub.RA.Abstract;
 using Exadel.ReportHub.SDK.DTOs.Import;
 using Exadel.ReportHub.SDK.DTOs.Invoice;
@@ -18,18 +20,27 @@ public class ImportInvoicesHandlerTests : BaseTestFixture
 {
     private Mock<ICsvProcessor> _csvProcessorMock;
     private Mock<IInvoiceRepository> _invoiceRepositoryMock;
+    private Mock<ICustomerRepository> _customerRepositoryMock;
+    private Mock<IItemRepository> _itemRepositoryMock;
+    private Mock<ICurrencyConverter> _currencyConverterMock;
     private ImportInvoicesHandler _handler;
     private Mock<IValidator<CreateInvoiceDTO>> _invoiceValidatorMock;
 
     [SetUp]
     public void Setup()
     {
-        _invoiceRepositoryMock = new Mock<IInvoiceRepository>();
         _csvProcessorMock = new Mock<ICsvProcessor>();
+        _invoiceRepositoryMock = new Mock<IInvoiceRepository>();
+        _customerRepositoryMock = new Mock<ICustomerRepository>();
+        _itemRepositoryMock = new Mock<IItemRepository>();
+        _currencyConverterMock = new Mock<ICurrencyConverter>();
         _invoiceValidatorMock = new Mock<IValidator<CreateInvoiceDTO>>();
         _handler = new ImportInvoicesHandler(
             _csvProcessorMock.Object,
             _invoiceRepositoryMock.Object,
+            _customerRepositoryMock.Object,
+            _itemRepositoryMock.Object,
+            _currencyConverterMock.Object,
             Mapper,
             _invoiceValidatorMock.Object);
     }
@@ -39,12 +50,45 @@ public class ImportInvoicesHandlerTests : BaseTestFixture
     {
         // Arrange
         var invoiceDtos = Fixture.Build<CreateInvoiceDTO>().CreateMany(2).ToList();
+        var items = new Dictionary<Guid, Item>();
+        var customers = new Dictionary<Guid, Customer>();
+        var amounts = new List<decimal>();
+        foreach (var invoiceDto in invoiceDtos)
+        {
+            decimal amount = 0;
+            customers.Add(invoiceDto.CustomerId, Fixture.Build<Customer>().With(x => x.Id, invoiceDto.CustomerId).With(x => x.CurrencyCode, "EUR").Create());
+            foreach (var itemId in invoiceDto.ItemIds)
+            {
+                items.Add(itemId, Fixture.Build<Item>().With(x => x.Id, itemId).With(x => x.CurrencyCode, "EUR").Create());
+                amount += items[itemId].Price;
+            }
+
+            amounts.Add(amount);
+        }
 
         using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes("CSV content"));
 
         _csvProcessorMock
             .Setup(x => x.ReadInvoices(It.Is<Stream>(str => str.Length == memoryStream.Length)))
             .Returns(invoiceDtos);
+
+        foreach (var customer in customers)
+        {
+            _customerRepositoryMock
+                .Setup(x => x.GetByIdAsync(customer.Key, CancellationToken.None))
+                .ReturnsAsync(customer.Value);
+        }
+
+        foreach (var item in items)
+        {
+            _itemRepositoryMock
+                .Setup(x => x.GetByIdAsync(item.Key, CancellationToken.None))
+                .ReturnsAsync(item.Value);
+
+            _currencyConverterMock
+                .Setup(x => x.ConvertAsync(item.Value.Price, "EUR", "EUR", CancellationToken.None))
+                .ReturnsAsync(item.Value.Price);
+        }
 
         _invoiceValidatorMock
             .Setup(x => x.ValidateAsync(
@@ -81,8 +125,8 @@ public class ImportInvoicesHandlerTests : BaseTestFixture
                         x.InvoiceNumber == invoiceDtos[0].InvoiceNumber &&
                         x.IssueDate == invoiceDtos[0].IssueDate &&
                         x.DueDate == invoiceDtos[0].DueDate &&
-                        x.Amount == invoiceDtos[0].Amount &&
-                        x.Currency == invoiceDtos[0].Currency &&
+                        x.Amount == amounts[0] &&
+                        x.Currency == customers[invoiceDtos[0].CustomerId].CurrencyCode &&
                         (int)x.PaymentStatus == (int)invoiceDtos[0].PaymentStatus &&
                         x.BankAccountNumber == invoiceDtos[0].BankAccountNumber) &&
 
@@ -92,8 +136,8 @@ public class ImportInvoicesHandlerTests : BaseTestFixture
                         x.InvoiceNumber == invoiceDtos[1].InvoiceNumber &&
                         x.IssueDate == invoiceDtos[1].IssueDate &&
                         x.DueDate == invoiceDtos[1].DueDate &&
-                        x.Amount == invoiceDtos[1].Amount &&
-                        x.Currency == invoiceDtos[1].Currency &&
+                        x.Amount == amounts[1] &&
+                        x.Currency == customers[invoiceDtos[1].CustomerId].CurrencyCode &&
                         (int)x.PaymentStatus == (int)invoiceDtos[1].PaymentStatus &&
                         x.BankAccountNumber == invoiceDtos[1].BankAccountNumber)),
                     CancellationToken.None),
