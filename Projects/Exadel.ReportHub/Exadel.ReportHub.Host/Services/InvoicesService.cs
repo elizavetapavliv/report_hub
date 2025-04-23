@@ -68,6 +68,7 @@ public class InvoicesService(ISender sender) : BaseService
         return FromResult(result);
     }
 
+    [Authorize(Policy = Constants.Authorization.Policy.Read)]
     [HttpGet("pdf/export")]
     public async Task<ActionResult<ExportResult>> ExportInvoiceAsync(Guid invoiceId, Guid clientId)
     {

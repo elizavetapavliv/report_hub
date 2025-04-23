@@ -29,6 +29,7 @@ public class PdfInvoiceGenerator : IPdfInvoiceGenerator
         page.Paragraphs.Add(new TextFragment($"{Constants.Text.Label.ClientName}: {invoice.ClientName}"));
         page.Paragraphs.Add(new TextFragment($"{Constants.Text.Label.CustomerName}: {invoice.CustomerName}"));
         page.Paragraphs.Add(new TextFragment($"{Constants.Text.Label.BankAccountNumber}: {invoice.BankAccountNumber}"));
+        page.Paragraphs.Add(new TextFragment($"{Constants.Text.Label.PaymentStatus}: {invoice.PaymentStatus}"));
 
         page.Paragraphs.Add(new TextFragment("\n"));
 
