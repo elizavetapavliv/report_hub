@@ -1,15 +1,12 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿namespace Exadel.ReportHub.Ecb;
 
-namespace Exadel.ReportHub.Ecb;
-
-[ExcludeFromCodeCoverage]
 public static class Constants
 {
     public const string ClientName = "ExchangeRateClient";
 
     public static class Currency
     {
-        public const string DefalutCurrencyCode = "EUR";
+        public const string DefaultCurrencyCode = "EUR";
     }
 
     public static class Error

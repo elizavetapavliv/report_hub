@@ -1,11 +1,9 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using AutoMapper;
+﻿using AutoMapper;
 using Exadel.ReportHub.Data.Models;
 using Exadel.ReportHub.SDK.DTOs.User;
 
 namespace Exadel.ReportHub.Host.Mapping.Profiles;
 
-[ExcludeFromCodeCoverage]
 public class UserProfile : Profile
 {
     public UserProfile()

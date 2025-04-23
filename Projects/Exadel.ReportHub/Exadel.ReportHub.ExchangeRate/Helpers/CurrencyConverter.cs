@@ -19,13 +19,13 @@ public class CurrencyConverter : ICurrencyConverter
         }
 
         decimal fromRate = 1;
-        if (!fromCurrency.Equals(Constants.Currency.DefalutCurrencyCode, StringComparison.Ordinal))
+        if (!fromCurrency.Equals(Constants.Currency.DefaultCurrencyCode, StringComparison.Ordinal))
         {
             fromRate = (await _exchangeRateProvider.GetByCurrencyAsync(fromCurrency, cancellationToken)).Rate;
         }
 
         decimal toRate = 1;
-        if (!toCurrency.Equals(Constants.Currency.DefalutCurrencyCode, StringComparison.Ordinal))
+        if (!toCurrency.Equals(Constants.Currency.DefaultCurrencyCode, StringComparison.Ordinal))
         {
             toRate = (await _exchangeRateProvider.GetByCurrencyAsync(toCurrency, cancellationToken)).Rate;
         }

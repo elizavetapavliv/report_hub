@@ -1,11 +1,9 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using AutoMapper;
+﻿using AutoMapper;
 using Exadel.ReportHub.Data.Models;
 using Exadel.ReportHub.SDK.DTOs.Plan;
 
 namespace Exadel.ReportHub.Host.Mapping.Profiles;
 
-[ExcludeFromCodeCoverage]
 public class PlanProfile : Profile
 {
     public PlanProfile()

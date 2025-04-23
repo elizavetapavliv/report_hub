@@ -17,7 +17,7 @@ public class UpdateExchangeRatesHandler(IExchangeRateClient exchangeRateProvider
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, Constants.Error.ExchangeRate.RatesUpdateError);
+            logger.LogError(ex, "Daily Rates were not loaded successfully.");
         }
 
         return Unit.Value;

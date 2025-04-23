@@ -41,26 +41,26 @@ public class InvoiceManagerTests : BaseTestFixture
         var invoiceDto = Fixture.Create<CreateInvoiceDTO>();
         var customer = Fixture.Build<Customer>()
             .With(x => x.Id, invoiceDto.CustomerId)
-            .With(x => x.CurrencyCode, Constants.Currency.DefalutCurrencyCode)
+            .With(x => x.CurrencyCode, Constants.Currency.DefaultCurrencyCode)
             .Create();
         var items = invoiceDto.ItemIds.Select(id =>
             Fixture.Build<Item>()
             .With(x => x.Id, id)
-            .With(x => x.CurrencyCode, Constants.Currency.DefalutCurrencyCode)
+            .With(x => x.CurrencyCode, Constants.Currency.DefaultCurrencyCode)
             .Create()).ToList();
         var amount = items.Sum(x => x.Price);
 
         _customerRepositoryMock
-            .Setup(x => x.GetByIdAsync(customer.Id, CancellationToken.None))
-            .ReturnsAsync(customer);
+            .Setup(x => x.GetByIdsAsync(new[] { customer.Id }, CancellationToken.None))
+            .ReturnsAsync(new List<Customer> { customer });
 
         _itemRepositoryMock
             .Setup(x => x.GetByIdsAsync(invoiceDto.ItemIds, CancellationToken.None))
             .ReturnsAsync(items);
 
         _currencyConverterMock
-            .Setup(x => x.ConvertAsync(amount, Constants.Currency.DefalutCurrencyCode,
-                Constants.Currency.DefalutCurrencyCode, CancellationToken.None))
+            .Setup(x => x.ConvertAsync(amount, Constants.Currency.DefaultCurrencyCode,
+                Constants.Currency.DefaultCurrencyCode, CancellationToken.None))
             .ReturnsAsync(amount);
 
         // Act
@@ -84,30 +84,31 @@ public class InvoiceManagerTests : BaseTestFixture
     public async Task GenerateInvoicesAsync_ReturnsInvoices()
     {
         // Arrange
-        var customer = Fixture.Build<Customer>()
-            .With(x => x.CurrencyCode, Constants.Currency.DefalutCurrencyCode)
-            .Create();
+        var customers = Fixture.Build<Customer>()
+            .With(x => x.CurrencyCode, Constants.Currency.DefaultCurrencyCode)
+            .CreateMany(1).ToList();
+        var custimerId = customers[0].Id;
         var items = Fixture.Build<Item>()
-            .With(x => x.CurrencyCode, Constants.Currency.DefalutCurrencyCode)
+            .With(x => x.CurrencyCode, Constants.Currency.DefaultCurrencyCode)
             .CreateMany(3).ToList();
         var itemIds = items.Select(x => x.Id).ToList();
         var invoiceDtos = Fixture.Build<CreateInvoiceDTO>()
-            .With(x => x.CustomerId, customer.Id)
+            .With(x => x.CustomerId, customers[0].Id)
             .With(x => x.ItemIds, itemIds)
             .CreateMany(2).ToList();
         var amount = items.Sum(x => x.Price);
 
         _customerRepositoryMock
-            .Setup(x => x.GetByIdAsync(customer.Id, CancellationToken.None))
-            .ReturnsAsync(customer);
+            .Setup(x => x.GetByIdsAsync(new[] { custimerId }, CancellationToken.None))
+            .ReturnsAsync(customers);
 
         _itemRepositoryMock
             .Setup(x => x.GetByIdsAsync(itemIds, CancellationToken.None))
             .ReturnsAsync(items);
 
         _currencyConverterMock
-            .Setup(x => x.ConvertAsync(amount, Constants.Currency.DefalutCurrencyCode,
-                Constants.Currency.DefalutCurrencyCode, CancellationToken.None))
+            .Setup(x => x.ConvertAsync(amount, Constants.Currency.DefaultCurrencyCode,
+                Constants.Currency.DefaultCurrencyCode, CancellationToken.None))
             .ReturnsAsync(amount);
 
         // Act
@@ -118,24 +119,24 @@ public class InvoiceManagerTests : BaseTestFixture
         Assert.That(result.Count, Is.EqualTo(invoiceDtos.Count));
 
         Assert.That(result[0].ClientId, Is.EqualTo(invoiceDtos[0].ClientId));
-        Assert.That(result[0].CustomerId, Is.EqualTo(customer.Id));
+        Assert.That(result[0].CustomerId, Is.EqualTo(custimerId));
         Assert.That(result[0].InvoiceNumber, Is.EqualTo(invoiceDtos[0].InvoiceNumber));
         Assert.That(result[0].IssueDate, Is.EqualTo(invoiceDtos[0].IssueDate));
         Assert.That(result[0].DueDate, Is.EqualTo(invoiceDtos[0].DueDate));
         Assert.That(result[0].Amount, Is.EqualTo(amount));
-        Assert.That(result[0].CurrencyId, Is.EqualTo(customer.CurrencyId));
-        Assert.That(result[0].CurrencyCode, Is.EqualTo(customer.CurrencyCode));
+        Assert.That(result[0].CurrencyId, Is.EqualTo(customers[0].CurrencyId));
+        Assert.That(result[0].CurrencyCode, Is.EqualTo(customers[0].CurrencyCode));
         Assert.That(result[0].PaymentStatus, Is.EqualTo((PaymentStatus)invoiceDtos[0].PaymentStatus));
         Assert.That(result[0].ItemIds, Is.EqualTo(itemIds));
 
         Assert.That(result[1].ClientId, Is.EqualTo(invoiceDtos[1].ClientId));
-        Assert.That(result[1].CustomerId, Is.EqualTo(customer.Id));
+        Assert.That(result[1].CustomerId, Is.EqualTo(custimerId));
         Assert.That(result[1].InvoiceNumber, Is.EqualTo(invoiceDtos[1].InvoiceNumber));
         Assert.That(result[1].IssueDate, Is.EqualTo(invoiceDtos[1].IssueDate));
         Assert.That(result[1].DueDate, Is.EqualTo(invoiceDtos[1].DueDate));
         Assert.That(result[1].Amount, Is.EqualTo(amount));
-        Assert.That(result[1].CurrencyId, Is.EqualTo(customer.CurrencyId));
-        Assert.That(result[1].CurrencyCode, Is.EqualTo(customer.CurrencyCode));
+        Assert.That(result[1].CurrencyId, Is.EqualTo(customers[0].CurrencyId));
+        Assert.That(result[1].CurrencyCode, Is.EqualTo(customers[0].CurrencyCode));
         Assert.That(result[1].PaymentStatus, Is.EqualTo((PaymentStatus)invoiceDtos[1].PaymentStatus));
         Assert.That(result[1].ItemIds, Is.EqualTo(itemIds));
     }

@@ -1,8 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿namespace Exadel.ReportHub.Handlers;
 
-namespace Exadel.ReportHub.Handlers;
-
-[ExcludeFromCodeCoverage]
 public static class Constants
 {
     public static class Validation
@@ -55,7 +52,6 @@ public static class Constants
 
         public static class Invoice
         {
-            public const int CurrencyCodeLength = 3;
             public const int InvoiceMaximumNumberLength = 15;
             public const string InvoiceNumberErrorMessage = "Invoice number must start with 'INV' followed by digits.";
             public const string IssueDateErrorMessage = "Issue date cannot be in the future.";
@@ -100,14 +96,6 @@ public static class Constants
             public const string PlanStartDateErrorMessage = "Start date must be less than end date";
             public const string PlandEndDateInThePastErrorMessage = "End date must be in the future";
             public const string PlanAlreadyExistsForItemAndClient = "Plan already exists for this item and client";
-        }
-    }
-
-    public static class Error
-    {
-        public static class ExchangeRate
-        {
-            public const string RatesUpdateError = "Daily Rates were not loaded successfully.";
         }
     }
 

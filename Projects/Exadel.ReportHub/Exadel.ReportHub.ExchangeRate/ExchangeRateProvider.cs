@@ -16,9 +16,7 @@ public class ExchangeRateProvider(IExchangeRateRepository exhangeRateRepository,
         }
 
         var exchangeRates = await GetRatesAsync(cancellationToken);
-        return exchangeRates.Any() ?
-            exchangeRates.SingleOrDefault(x => x.Currency.Equals(currency, StringComparison.Ordinal)) :
-            null;
+        return exchangeRates.SingleOrDefault(x => x.Currency.Equals(currency, StringComparison.Ordinal));
     }
 
     public async Task<IList<Data.Models.ExchangeRate>> GetDailyRatesAsync(CancellationToken cancellationToken)
