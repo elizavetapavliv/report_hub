@@ -5,8 +5,10 @@ namespace Exadel.ReportHub.Host.Registrations;
 
 public static class PdfRegistrations
 {
-    public static void AddPdf(this IServiceCollection services)
+    public static IServiceCollection AddPdf(this IServiceCollection services)
     {
-        services.AddSingleton<IAsposeInvoiceGenerator, AsposeInvoiceGenerator>();
+        services.AddSingleton<IPdfInvoiceGenerator, PdfInvoiceGenerator>();
+
+        return services;
     }
 }

@@ -18,7 +18,7 @@ public class InvoiceDTO
 
     public decimal Amount { get; set; }
 
-    public decimal CurrencyCode { get; set; }
+    public string CurrencyCode { get; set; }
 
     public PaymentStatus PaymentStatus { get; set; }
 

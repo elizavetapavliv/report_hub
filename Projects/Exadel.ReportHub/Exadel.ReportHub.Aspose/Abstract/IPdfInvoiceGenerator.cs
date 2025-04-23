@@ -2,7 +2,7 @@
 
 namespace Exadel.ReportHub.Pdf.Abstract;
 
-public interface IAsposeInvoiceGenerator
+public interface IPdfInvoiceGenerator
 {
     Task<Stream> GenerateAsync(InvoiceModel invoice, CancellationToken cancellationToken);
 }

@@ -85,18 +85,19 @@ public class Startup(IConfiguration configuration)
 
         AuthorizationRegistrations.AddAuthorization(services);
 
-        services.AddIdentity();
-        services.AddMongo();
-        services.AddMediatR();
-        services.AddAutoMapper(typeof(Startup));
-        services.AddHttpContextAccessor();
-        services.AddCsv();
-        services.AddServices();
-        services.AddPdf();
-        services.AddExchangeRate(configuration);
-        services.AddPing(configuration);
-        services.AddJobs();
-        services.AddHangfire();
+        services
+            .AddIdentity()
+            .AddMongo()
+            .AddMediatR()
+            .AddAutoMapper(typeof(Startup))
+            .AddHttpContextAccessor()
+            .AddCsv()
+            .AddPdf()
+            .AddExchangeRate(configuration)
+            .AddPing(configuration)
+            .AddScheduler()
+            .AddJobs()
+            .AddHangfire();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)

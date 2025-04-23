@@ -23,5 +23,5 @@ public class InvoiceModel
 
     public string BankAccountNumber { get; set; }
 
-    public IList<ItemDTO> ItemDtos { get; set; }
+    public IList<ItemDTO> Items { get; set; }
 }

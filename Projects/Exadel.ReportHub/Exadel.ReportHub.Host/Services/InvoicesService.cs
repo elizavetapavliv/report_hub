@@ -1,9 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
-using System.Net.Mime;
 using Exadel.ReportHub.Handlers.Invoice.Create;
 using Exadel.ReportHub.Handlers.Invoice.Delete;
-using Exadel.ReportHub.Handlers.Invoice.Export;
+using Exadel.ReportHub.Handlers.Invoice.ExportPdf;
 using Exadel.ReportHub.Handlers.Invoice.GetByClientId;
 using Exadel.ReportHub.Handlers.Invoice.GetById;
 using Exadel.ReportHub.Handlers.Invoice.Import;
@@ -26,7 +25,6 @@ public class InvoicesService(ISender sender) : BaseService
     public async Task<ActionResult<ImportResultDTO>> ImportInvoicesAsync([FromForm] ImportDTO importDto)
     {
         var result = await sender.Send(new ImportInvoicesRequest(importDto));
-
         return FromResult(result);
     }
 
@@ -70,16 +68,10 @@ public class InvoicesService(ISender sender) : BaseService
         return FromResult(result);
     }
 
-    [Authorize(Policy = Constants.Authorization.Policy.Create)]
-    [HttpGet("export")]
-    public async Task<FileStreamResult> ExportInvoiceAsync(Guid invoiceId, Guid ClientId)
+    [HttpGet("pdf/export")]
+    public async Task<ActionResult<ExportResult>> ExportInvoiceAsync(Guid invoiceId, Guid clientId)
     {
-        var stream = await sender.Send(new ExportInvoiceRequest(invoiceId));
-        var result = new FileStreamResult(stream.Value.Stream, MediaTypeNames.Application.Pdf)
-        {
-            FileDownloadName = stream.Value.FileName
-        };
-
-        return result;
+        var result = await sender.Send(new ExportPdfInvoiceRequest(invoiceId));
+        return FromResult(result);
     }
 }

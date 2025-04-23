@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using Aspose.Pdf;
+﻿using Aspose.Pdf;
 using Aspose.Pdf.Text;
 using Exadel.ReportHub.Pdf.Abstract;
 using Exadel.ReportHub.Pdf.Models;
@@ -7,7 +6,7 @@ using Exadel.ReportHub.SDK.DTOs.Item;
 
 namespace Exadel.ReportHub.Pdf;
 
-public class AsposeInvoiceGenerator : IAsposeInvoiceGenerator
+public class PdfInvoiceGenerator : IPdfInvoiceGenerator
 {
     public async Task<Stream> GenerateAsync(InvoiceModel invoice, CancellationToken cancellationToken)
     {
@@ -17,18 +16,19 @@ public class AsposeInvoiceGenerator : IAsposeInvoiceGenerator
         var page = doc.Pages.Add();
         page.PageInfo.Margin = new MarginInfo(40, 40, 40, 40);
 
-        var title = new TextFragment($"Invoice")
+        var title = new TextFragment(Constants.Text.Label.Invoice)
         {
-            TextState = { FontSize = 18, FontStyle = FontStyles.Bold },
+            TextState = { FontSize = Constants.Text.TextStyle.FontSizeTitle, FontStyle = FontStyles.Bold },
             HorizontalAlignment = HorizontalAlignment.Center
         };
         page.Paragraphs.Add(title);
 
-        page.Paragraphs.Add(new TextFragment($"{AddSpace(nameof(invoice.InvoiceNumber))}: {invoice.InvoiceNumber}"));
-        page.Paragraphs.Add(new TextFragment($"{AddSpace(nameof(invoice.IssueDate))}: {invoice.IssueDate}"));
-        page.Paragraphs.Add(new TextFragment($"{AddSpace(nameof(invoice.DueDate))}: {invoice.DueDate}"));
-        page.Paragraphs.Add(new TextFragment($"{AddSpace(nameof(invoice.ClientName))}: {invoice.ClientName}"));
-        page.Paragraphs.Add(new TextFragment($"{AddSpace(nameof(invoice.CustomerName))}: {invoice.CustomerName}"));
+        page.Paragraphs.Add(new TextFragment($"{Constants.Text.Label.InvoiceNumber}: {invoice.InvoiceNumber}"));
+        page.Paragraphs.Add(new TextFragment($"{Constants.Text.Label.IssueDate}: {invoice.IssueDate}"));
+        page.Paragraphs.Add(new TextFragment($"{Constants.Text.Label.DueDate}: {invoice.DueDate}"));
+        page.Paragraphs.Add(new TextFragment($"{Constants.Text.Label.ClientName}: {invoice.ClientName}"));
+        page.Paragraphs.Add(new TextFragment($"{Constants.Text.Label.CustomerName}: {invoice.CustomerName}"));
+        page.Paragraphs.Add(new TextFragment($"{Constants.Text.Label.BankAccountNumber}: {invoice.BankAccountNumber}"));
 
         page.Paragraphs.Add(new TextFragment("\n"));
 
@@ -44,7 +44,7 @@ public class AsposeInvoiceGenerator : IAsposeInvoiceGenerator
         table.Rows[0].Cells.Add(nameof(ItemDTO.Description));
         table.Rows[0].Cells.Add(nameof(ItemDTO.Price));
 
-        foreach (var item in invoice.ItemDtos)
+        foreach (var item in invoice.Items)
         {
             var row = table.Rows.Add();
             row.Cells.Add(item.Name);
@@ -57,7 +57,7 @@ public class AsposeInvoiceGenerator : IAsposeInvoiceGenerator
         page.Paragraphs.Add(new TextFragment("\n"));
         var total = new TextFragment($"Total: {invoice.Amount} {invoice.CurrencyCode}")
         {
-            TextState = { FontSize = 12, FontStyle = FontStyles.Bold },
+            TextState = { FontSize = Constants.Text.TextStyle.FontSize, FontStyle = FontStyles.Bold },
             HorizontalAlignment = HorizontalAlignment.Left
         };
 
@@ -67,10 +67,5 @@ public class AsposeInvoiceGenerator : IAsposeInvoiceGenerator
         stream.Position = 0;
 
         return stream;
-    }
-
-    private string AddSpace(string text)
-    {
-        return Regex.Replace(text, "(?<!^)([A-Z])", " $1");
     }
 }
