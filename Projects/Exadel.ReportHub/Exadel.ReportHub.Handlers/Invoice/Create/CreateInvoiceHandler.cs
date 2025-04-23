@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using ErrorOr;
-using Exadel.ReportHub.Ecb.Abstract;
+using Exadel.ReportHub.Handlers.Managers;
 using Exadel.ReportHub.RA.Abstract;
 using Exadel.ReportHub.SDK.DTOs.Invoice;
 using MediatR;
@@ -11,27 +11,12 @@ public record CreateInvoiceRequest(CreateInvoiceDTO CreateInvoiceDto) : IRequest
 
 public class CreateInvoiceHandler(
     IInvoiceRepository invoiceRepository,
-    ICustomerRepository customerRepository,
-    IItemRepository itemRepository,
-    ICurrencyConverter currencyConverter,
+    IInvoiceManager invoiceManager,
     IMapper mapper) : IRequestHandler<CreateInvoiceRequest, ErrorOr<InvoiceDTO>>
 {
     public async Task<ErrorOr<InvoiceDTO>> Handle(CreateInvoiceRequest request, CancellationToken cancellationToken)
     {
-        var invoice = mapper.Map<Data.Models.Invoice>(request.CreateInvoiceDto);
-
-        var customerTask = customerRepository.GetByIdAsync(invoice.CustomerId, cancellationToken);
-        var itemsTask = itemRepository.GetByIdsAsync(invoice.ItemIds, cancellationToken);
-
-        await Task.WhenAll(customerTask, itemsTask);
-
-        var conversionTasks = itemsTask.Result.GroupBy(x => x.CurrencyCode)
-               .Select(group => currencyConverter.ConvertAsync(group.Sum(x => x.Price), group.Key, customerTask.Result.CurrencyCode, cancellationToken));
-
-        invoice.Id = Guid.NewGuid();
-        invoice.Amount = (await Task.WhenAll(conversionTasks)).Sum();
-        invoice.CurrencyId = customerTask.Result.CurrencyId;
-        invoice.Currency = customerTask.Result.CurrencyCode;
+        var invoice = (await invoiceManager.GenerateInvoicesAsync([request.CreateInvoiceDto], cancellationToken)).Single();
 
         await invoiceRepository.AddAsync(invoice, cancellationToken);
         return mapper.Map<InvoiceDTO>(invoice);

@@ -48,10 +48,10 @@ public class CreateInvoiceDtoValidator : AbstractValidator<CreateInvoiceDTO>
             .WithMessage(Constants.Validation.Invoice.InvoiceNumberExistsMessage);
 
         RuleFor(x => x.ItemIds)
-            .NotEmpty();
-
-        RuleForEach(x => x.ItemIds)
-            .MustAsync(_itemRepository.ExistsAsync)
+            .NotEmpty()
+            .Must(x => x.Count == x.Distinct().Count())
+            .WithMessage(Constants.Validation.Invoice.ItemsDuplicateErrorMessage)
+            .MustAsync(_itemRepository.AllExistAsync)
             .WithMessage(Constants.Validation.Invoice.ItemDoesNotExistsErrorMessage);
     }
 

@@ -20,6 +20,11 @@ public class ExchangeRateRepository : BaseRepository, IExchangeRateRepository
         return base.AddManyAsync(exchangeRates, cancellationToken);
     }
 
+    public Task<IList<ExchangeRate>> GetAllAsync(CancellationToken cancellationToken)
+    {
+        return GetAllAsync<ExchangeRate>(cancellationToken);
+    }
+
     public async Task<ExchangeRate> GetByCurrencyAsync(string currency, CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.Eq(x => x.Currency, currency);

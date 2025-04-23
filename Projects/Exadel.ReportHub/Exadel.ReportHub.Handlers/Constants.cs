@@ -64,6 +64,7 @@ public static class Constants
             public const string CustomerDoesntExistsErrorMessage = "Customer does not exist.";
             public const string ClientDoesntExistsErrorMessage = "Client does not exist.";
             public const string InvoiceNumberExistsMessage = "Invoice number already exists.";
+            public const string ItemsDuplicateErrorMessage = "Items must not be duplicated.";
             public const string ItemDoesNotExistsErrorMessage = "Item does not exist.";
         }
 
@@ -96,15 +97,6 @@ public static class Constants
             public const string PlanStartDateErrorMessage = "Start date must be less than end date";
             public const string PlandEndDateInThePastErrorMessage = "End date must be in the future";
             public const string PlanAlreadyExistsForItemAndClient = "Plan already exists for this item and client";
-        }
-    }
-
-    public static class Error
-    {
-        public static class ExchangeRate
-        {
-            public const string RatesUpdateError = "Rates update Error";
-            public const string EcbReturnsNothing = "ECB returns nothing";
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using Exadel.ReportHub.Handlers.Managers;
 using Exadel.ReportHub.Handlers.User.Create;
 using Exadel.ReportHub.Host.Mediatr;
 using FluentValidation;
@@ -14,11 +15,17 @@ public static class MediatRRegistrations
 
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(assembly));
         services.AddValidation(assembly);
+        services.AddManagers();
     }
 
     private static void AddValidation(this IServiceCollection services, Assembly assembly)
     {
         services.AddValidatorsFromAssembly(assembly);
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(RequestValidationBehavior<,>));
+    }
+
+    private static void AddManagers(this IServiceCollection services)
+    {
+        services.AddSingleton<IInvoiceManager, InvoiceManager>();
     }
 }

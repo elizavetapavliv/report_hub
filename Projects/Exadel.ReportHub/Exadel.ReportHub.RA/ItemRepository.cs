@@ -20,6 +20,13 @@ public class ItemRepository : BaseRepository, IItemRepository
         return base.AddAsync(item, cancellationToken);
     }
 
+    public async Task<bool> AllExistAsync(IEnumerable<Guid> ids, CancellationToken cancellationToken)
+    {
+        var filter = _filterBuilder.In(x => x.Id, ids);
+        var count = await GetCollection<Item>().CountDocumentsAsync(filter, cancellationToken: cancellationToken);
+        return count == ids.Count();
+    }
+
     public Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken)
     {
         return ExistsAsync<Item>(id, cancellationToken);
