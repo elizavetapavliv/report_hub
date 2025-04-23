@@ -14,9 +14,9 @@ public class PdfInvoiceGenerator : IPdfInvoiceGenerator
 
         var doc = new Document();
         var page = doc.Pages.Add();
-        page.PageInfo.Margin = new MarginInfo(40, 40, 40, 40);
+        page.PageInfo.Margin = new MarginInfo(Constants.MarginInfo.Page.Left, Constants.MarginInfo.Page.Bottom, Constants.MarginInfo.Page.Right, Constants.MarginInfo.Page.Top);
 
-        var title = new TextFragment(Constants.Text.Label.Invoice)
+        var title = new TextFragment($"{Constants.Text.Label.Invoice}: {invoice.PaymentStatus}")
         {
             TextState = { FontSize = Constants.Text.TextStyle.FontSizeTitle, FontStyle = FontStyles.Bold },
             HorizontalAlignment = HorizontalAlignment.Center
@@ -29,15 +29,18 @@ public class PdfInvoiceGenerator : IPdfInvoiceGenerator
         page.Paragraphs.Add(new TextFragment($"{Constants.Text.Label.ClientName}: {invoice.ClientName}"));
         page.Paragraphs.Add(new TextFragment($"{Constants.Text.Label.CustomerName}: {invoice.CustomerName}"));
         page.Paragraphs.Add(new TextFragment($"{Constants.Text.Label.BankAccountNumber}: {invoice.BankAccountNumber}"));
-        page.Paragraphs.Add(new TextFragment($"{Constants.Text.Label.PaymentStatus}: {invoice.PaymentStatus}"));
 
-        page.Paragraphs.Add(new TextFragment("\n"));
+        page.Paragraphs.Add(Constants.Text.NewLine);
 
         var table = new Table
         {
-            DefaultCellPadding = new MarginInfo(5, 5, 5, 5),
-            Border = new BorderInfo(BorderSide.All, 0.5f),
-            DefaultCellBorder = new BorderInfo(BorderSide.All, 0.5f),
+            DefaultCellPadding = new MarginInfo(
+                Constants.MarginInfo.InvoiceTable.Left,
+                Constants.MarginInfo.InvoiceTable.Bottom,
+                Constants.MarginInfo.InvoiceTable.Right,
+                Constants.MarginInfo.InvoiceTable.Top),
+            Border = new BorderInfo(BorderSide.All, Constants.BorderInfo.IvoiceTable.Border),
+            DefaultCellBorder = new BorderInfo(BorderSide.All, Constants.BorderInfo.IvoiceTable.CellBorder),
             ColumnAdjustment = ColumnAdjustment.AutoFitToWindow
         };
 
@@ -55,8 +58,8 @@ public class PdfInvoiceGenerator : IPdfInvoiceGenerator
 
         page.Paragraphs.Add(table);
 
-        page.Paragraphs.Add(new TextFragment("\n"));
-        var total = new TextFragment($"Total: {invoice.Amount} {invoice.CurrencyCode}")
+        page.Paragraphs.Add(Constants.Text.NewLine);
+        var total = new TextFragment($"{Constants.Text.Label.Total}: {invoice.Amount} {invoice.CurrencyCode}")
         {
             TextState = { FontSize = Constants.Text.TextStyle.FontSize, FontStyle = FontStyles.Bold },
             HorizontalAlignment = HorizontalAlignment.Left
