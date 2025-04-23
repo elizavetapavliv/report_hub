@@ -363,4 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 
 # Ignore keys folder and its contents (temporary key storage)
-keys/
+Projects/Exadel.ReportHub/Exadel.ReportHub.Host/keys/
