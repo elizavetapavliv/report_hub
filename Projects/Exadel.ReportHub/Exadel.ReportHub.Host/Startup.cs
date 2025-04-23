@@ -73,8 +73,7 @@ public class Startup(IConfiguration configuration)
                     new[] { Constants.Authorization.ScopeName }
                 }
             });
-            var xmlPath = Path.Combine(AppContext.BaseDirectory, Constants.Xml.XmlFileName);
-            c.IncludeXmlComments(xmlPath);
+            c.EnableAnnotations();
         });
 
         services.AddAuthentication(options =>

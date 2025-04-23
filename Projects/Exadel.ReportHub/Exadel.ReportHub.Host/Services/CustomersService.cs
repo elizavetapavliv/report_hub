@@ -10,6 +10,7 @@ using Exadel.ReportHub.SDK.DTOs.Customer;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Exadel.ReportHub.Host.Services;
 
@@ -17,106 +18,71 @@ namespace Exadel.ReportHub.Host.Services;
 [Route("api/customers")]
 public class CustomersService(ISender sender) : BaseService
 {
-    /// <summary>
-    /// Creates a new customer.
-    /// </summary>
-    /// <param name="createCustomerDto"></param>
-    /// <returns>The newly created customer details.</returns>
-    /// <response code="200">Customer created successfully.</response>
-    /// <response code="400">Invalid input provided.</response>
-    /// <response code="401">Unauthorized access.</response>
-    /// <response code="403">Forbidden. Users who do not have permission to perform this action.</response>
     [Authorize(Policy = Constants.Authorization.Policy.Create)]
     [HttpPost]
-    [ProducesResponseType(typeof(CustomerDTO), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
+    [SwaggerOperation(Summary = "Add a new customer", Description = "Creates a new customer and returns its details.")]
+    [SwaggerResponse(StatusCodes.Status201Created, "Customer created successfully")]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid input data", typeof(ErrorResponse))]
+    [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required")]
+    [SwaggerResponse(StatusCodes.Status403Forbidden, "User doesnt have permission to add a Customer")]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<CustomerDTO>> AddCustomer([FromBody] CreateCustomerDTO createCustomerDto)
     {
         var result = await sender.Send(new CreateCustomerRequest(createCustomerDto));
 
-        return FromResult(result);
+        return FromResult(result, StatusCodes.Status201Created);
     }
 
-    /// <summary>
-    /// Retrieves the list of all customers.
-    /// </summary>
-    /// <returns>A list of customers.</returns>
-    /// <response code="200">List of Customers returned successfully.</response>
-    /// <response code="401">Unauthorized access.</response>
-    /// <response code="403">Forbidden. Users who not have permission to perform this action.</response>
     [Authorize(Policy = Constants.Authorization.Policy.Read)]
     [HttpGet]
-    [ProducesResponseType(typeof(IList<CustomerDTO>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
+    [SwaggerOperation(Summary = "Get all customers", Description = "Returns a list of all available customers.")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Customers retrieved successfully")]
+    [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required")]
+    [SwaggerResponse(StatusCodes.Status403Forbidden, "User doesnt have permission to access a Customers")]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<IList<CustomerDTO>>> GetCustomers()
     {
         var result = await sender.Send(new GetCustomersRequest());
         return FromResult(result);
     }
 
-    /// <summary>
-    /// Retrieves a customer by their unique identifier.
-    /// </summary>
-    /// <param name="id"></param>
-    /// <returns>The customer details if found.</returns>
-    /// <response code="200">Customer found and returned successfully.</response>
-    /// <response code="401">Unauthorized access.</response>
-    /// <response code="403">Forbidden. Users who do not have permission to perform this action.</response>
-    /// <response code="404">Customer with the given ID was not found.</response>
     [Authorize(Policy = Constants.Authorization.Policy.Read)]
     [HttpGet("{id:guid}")]
-    [ProducesResponseType(typeof(CustomerDTO), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+    [SwaggerOperation(Summary = "Get customer by ID", Description = "Returns the customer details for the specified ID.")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Customer retrieved successfully")]
+    [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required")]
+    [SwaggerResponse(StatusCodes.Status403Forbidden, "User doesnt have permission to access a Customer")]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "Customer not found", typeof(ErrorResponse))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<CustomerDTO>> GetCustomerById([FromRoute] Guid id)
     {
         var result = await sender.Send(new GetCustomerByIdRequest(id));
         return FromResult(result);
     }
 
-    /// <summary>
-    /// Updates the details of an existing customer.
-    /// </summary>
-    /// <param name="id"></param>
-    /// <param name="updateCustomerDTO"></param>
-    /// <returns>No content</returns>
-    /// <response code="204">Customer name updated successfully.</response>
-    /// <response code="400">Invalid name provided.</response>
-    /// <response code="401">Unauthorized access.</response>
-    /// <response code="403">Forbidden. Users who do not have permission to perform this action.</response>
-    /// <response code="404">Customer with the given ID was not found.</response>
     [Authorize(Policy = Constants.Authorization.Policy.Update)]
     [HttpPut("{id:guid}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+    [SwaggerOperation(Summary = "Update customer", Description = "Updates the customer information with the specified ID.")]
+    [SwaggerResponse(StatusCodes.Status204NoContent, "Customer updated successfully")]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid request data", typeof(ErrorResponse))]
+    [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required")]
+    [SwaggerResponse(StatusCodes.Status403Forbidden, "User doesnt have permission to update a Customer")]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "Customer not found", typeof(ErrorResponse))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> UpdateCustomer([FromRoute] Guid id, [FromBody] UpdateCustomerDTO updateCustomerDTO)
     {
         var result = await sender.Send(new UpdateCustomerRequest(id, updateCustomerDTO));
         return FromResult(result);
     }
 
-    /// <summary>
-    /// Deletes an existing customer by their unique identifier.
-    /// </summary>
-    /// <param name="id"></param>
-    /// <returns>No content</returns>
-    /// <response code="204">Customer deleted successfully.</response>
-    /// <response code="401">Unauthorized access.</response>
-    /// <response code="403">Forbidden. Users who do not have permission to perform this action.</response>
-    /// <response code="404">Customer with the given ID was not found.</response>
     [Authorize(Policy = Constants.Authorization.Policy.Delete)]
     [HttpDelete("{id:guid}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+    [SwaggerOperation(Summary = "Delete customer", Description = "Deletes the customer with the specified ID.")]
+    [SwaggerResponse(StatusCodes.Status204NoContent, "Customer deleted successfully")]
+    [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required")]
+    [SwaggerResponse(StatusCodes.Status403Forbidden, "User doesnt have permission to delete a Customer")]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "Customer not found", typeof(ErrorResponse))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> DeleteCustomer([FromRoute] Guid id)
     {
         var result = await sender.Send(new DeleteCustomerRequest(id));

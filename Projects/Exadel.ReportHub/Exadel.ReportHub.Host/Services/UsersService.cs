@@ -12,6 +12,7 @@ using Exadel.ReportHub.SDK.DTOs.User;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Exadel.ReportHub.Host.Services;
 
@@ -19,21 +20,14 @@ namespace Exadel.ReportHub.Host.Services;
 [Route("api/users")]
 public class UsersService(ISender sender) : BaseService
 {
-    /// <summary>
-    /// Creates a new user.
-    /// </summary>
-    /// <param name="createUserDto"></param>
-    /// <returns>The created user details.</returns>
-    /// <response code="201">User created successfully.</response>
-    /// <response code="400">Invalid user data provided.</response>
-    /// <response code="401">Unauthorized access.</response>
-    /// <response code="403">Forbidden. User does not have permission to create users.</response>
     [Authorize(Policy = Constants.Authorization.Policy.Create)]
     [HttpPost]
-    [ProducesResponseType(typeof(UserDTO), StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
+    [SwaggerOperation(Summary = "Create a new user", Description = "Creates a new user with the provided details.")]
+    [SwaggerResponse(StatusCodes.Status201Created, "User created successfully")]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid user data", typeof(ErrorResponse))]
+    [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required to access this endpoint")]
+    [SwaggerResponse(StatusCodes.Status403Forbidden, "this User does not have permission to create a user")]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<UserDTO>> AddUser([FromBody] CreateUserDTO createUserDto)
     {
         var result = await sender.Send(new CreateUserRequest(createUserDto));
@@ -41,21 +35,14 @@ public class UsersService(ISender sender) : BaseService
         return FromResult(result, StatusCodes.Status201Created);
     }
 
-    /// <summary>
-    /// Retrieves a user by their unique identifier.
-    /// </summary>
-    /// <param name="id"></param>
-    /// <returns>The user details.</returns>
-    /// <response code="200">User retrieved successfully.</response>
-    /// <response code="401">Unauthorized access.</response>
-    /// <response code="403">Forbidden. User does not have permission to access this resource.</response>
-    /// <response code="404">User not found.</response>
     [Authorize(Policy = Constants.Authorization.Policy.Read)]
     [HttpGet("{id:guid}")]
-    [ProducesResponseType(typeof(UserDTO), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+    [SwaggerOperation(Summary = "Get user details", Description = "Retrieves the details of a user by their unique ID.")]
+    [SwaggerResponse(StatusCodes.Status200OK, "User details retrieved successfully")]
+    [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required to access this endpoint")]
+    [SwaggerResponse(StatusCodes.Status403Forbidden, "this User does not have permission to access the user")]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "User not found", typeof(ErrorResponse))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<UserDTO>> GetUserById([FromRoute] Guid id)
     {
         var result = await sender.Send(new GetUserByIdRequest(id));
@@ -63,19 +50,13 @@ public class UsersService(ISender sender) : BaseService
         return FromResult(result);
     }
 
-    /// <summary>
-    /// Retrieves a list of users with optional filtering by activity status.
-    /// </summary>
-    /// <param name="isActive">Optional filter by active status.</param>
-    /// <returns>A list of users.</returns>
-    /// <response code="200">Users retrieved successfully.</response>
-    /// <response code="401">Unauthorized access.</response>
-    /// <response code="403">Forbidden. User does not have permission to access this resource.</response>
     [Authorize(Policy = Constants.Authorization.Policy.Read)]
     [HttpGet]
-    [ProducesResponseType(typeof(IList<UserDTO>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
+    [SwaggerOperation(Summary = "Get list of users", Description = "Retrieves a list of users, optionally filtered by their active status.")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Users retrieved successfully")]
+    [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required to access this endpoint")]
+    [SwaggerResponse(StatusCodes.Status403Forbidden, "this User does not have permission to access the users")]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<IList<UserDTO>>> GetUsers([FromQuery] bool? isActive)
     {
         var result = await sender.Send(new GetUsersRequest(isActive));
@@ -83,24 +64,15 @@ public class UsersService(ISender sender) : BaseService
         return FromResult(result);
     }
 
-    /// <summary>
-    /// Updates the activity status of a user.
-    /// </summary>
-    /// <param name="id"></param>
-    /// <param name="isActive">The new activity status.</param>
-    /// <returns>No content</returns>
-    /// <response code="204">User activity updated successfully.</response>
-    /// <response code="400">Invalid data provided.</response>
-    /// <response code="401">Unauthorized access.</response>
-    /// <response code="403">Forbidden. User does not have permission to perform this action.</response>
-    /// <response code="404">User not found.</response>
     [Authorize(Policy = Constants.Authorization.Policy.Update)]
     [HttpPatch("{id:guid}/activity")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+    [SwaggerOperation(Summary = "Update user activity status", Description = "Updates the activity status of a user.")]
+    [SwaggerResponse(StatusCodes.Status204NoContent, "User activity status changed successfully")]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid data provided", typeof(ErrorResponse))]
+    [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required to access this endpoint")]
+    [SwaggerResponse(StatusCodes.Status403Forbidden, "this User does not have permission to update the activity status")]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "User not found", typeof(ErrorResponse))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> UpdateUserActivity([FromRoute] Guid id, [FromBody] bool isActive)
     {
         var result = await sender.Send(new UpdateUserActivityRequest(id, isActive));
@@ -108,64 +80,42 @@ public class UsersService(ISender sender) : BaseService
         return FromResult(result);
     }
 
-    /// <summary>
-    /// Updates the password of the currently authenticated user.
-    /// </summary>
-    /// <param name="password"></param>
-    /// <returns>No content</returns>
-    /// <response code="204">Password updated successfully.</response>
-    /// <response code="400">Invalid password provided.</response>
-    /// <response code="401">Unauthorized access.</response>
     [Authorize]
     [HttpPatch("password")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+    [SwaggerOperation(Summary = "Update user password", Description = "Updates the password of the currently authenticated user.")]
+    [SwaggerResponse(StatusCodes.Status204NoContent, "User password changed successfully")]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid password data", typeof(ErrorResponse))]
+    [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required to access this endpoint")]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> UpdateUserPassword([FromBody] string password)
     {
         var result = await sender.Send(new UpdateUserPasswordRequest(password));
         return FromResult(result);
     }
 
-    /// <summary>
-    /// Updates the full name of a user.
-    /// </summary>
-    /// <param name="id"></param>
-    /// <param name="fullName"></param>
-    /// <returns>No content</returns>
-    /// <response code="204">User name updated successfully.</response>
-    /// <response code="400">Invalid name provided.</response>
-    /// <response code="401">Unauthorized access.</response>
-    /// <response code="403">Forbidden. User does not have permission to perform this action.</response>
-    /// <response code="404">User not found.</response>
     [Authorize(Policy = Constants.Authorization.Policy.Update)]
     [HttpPatch("{id:guid}/fullname")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+    [SwaggerOperation(Summary = "Update user full name", Description = "Updates the full name of the user specified by ID.")]
+    [SwaggerResponse(StatusCodes.Status204NoContent, "User full name changed successfully")]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid name data", typeof(ErrorResponse))]
+    [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required to access this endpoint")]
+    [SwaggerResponse(StatusCodes.Status403Forbidden, "this User does not have permission to update the full name")]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "User not found", typeof(ErrorResponse))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> UpdateUserFullName([FromRoute] Guid id, [FromBody] string fullName)
     {
         var result = await sender.Send(new UpdateUserNameRequest(id, fullName));
         return FromResult(result);
     }
 
-    /// <summary>
-    /// Deletes a user by their unique identifier.
-    /// </summary>
-    /// <param name="id"></param>
-    /// <returns>No content</returns>
-    /// <response code="204">User deleted successfully.</response>
-    /// <response code="401">Unauthorized access.</response>
-    /// <response code="403">Forbidden. User does not have permission to delete users.</response>
-    /// <response code="404">User not found.</response>
     [Authorize(Policy = Constants.Authorization.Policy.Delete)]
     [HttpDelete("{id:guid}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+    [SwaggerOperation(Summary = "Delete user", Description = "Deletes a user by their unique ID.")]
+    [SwaggerResponse(StatusCodes.Status204NoContent, "User deleted successfully")]
+    [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required to access this endpoint")]
+    [SwaggerResponse(StatusCodes.Status403Forbidden, "this User does not have permission to delete the user")]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "User not found", typeof(ErrorResponse))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> DeleteUser([FromRoute] Guid id)
     {
         var result = await sender.Send(new DeleteUserRequest(id));
