@@ -41,7 +41,6 @@ public class ExportPdfInvoiceHandler(
             DueDate = invoice.DueDate,
             Amount = invoice.Amount,
             CurrencyCode = invoice.CurrencyCode,
-            PaymentStatus = (SDK.Enums.PaymentStatus)invoice.PaymentStatus,
             BankAccountNumber = invoice.BankAccountNumber,
             Items = mapper.Map<IList<ItemDTO>>(itemsTask.Result)
         };

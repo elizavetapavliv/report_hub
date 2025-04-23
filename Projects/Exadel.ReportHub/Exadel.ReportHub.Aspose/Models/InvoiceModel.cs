@@ -1,5 +1,4 @@
 ﻿using Exadel.ReportHub.SDK.DTOs.Item;
-using Exadel.ReportHub.SDK.Enums;
 
 namespace Exadel.ReportHub.Pdf.Models;
 
@@ -18,8 +17,6 @@ public class InvoiceModel
     public decimal Amount { get; set; }
 
     public string CurrencyCode { get; set; }
-
-    public PaymentStatus PaymentStatus { get; set; }
 
     public string BankAccountNumber { get; set; }
 
