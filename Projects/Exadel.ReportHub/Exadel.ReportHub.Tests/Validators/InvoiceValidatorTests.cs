@@ -245,9 +245,7 @@ public class InvoiceValidatorTests : BaseTestFixture
     {
         // Arrange
         var invoice = GetValidInvoice();
-        var itemId = Guid.NewGuid();
-        invoice.ItemIds.Add(itemId);
-        _itemRepositoryMock.Setup(x => x.ExistsAsync(itemId, CancellationToken.None))
+        _itemRepositoryMock.Setup(x => x.AllExistAsync(invoice.ItemIds, CancellationToken.None))
             .ReturnsAsync(false);
 
         // Act
@@ -256,7 +254,7 @@ public class InvoiceValidatorTests : BaseTestFixture
         // Assert
         Assert.That(result.IsValid, Is.False);
         Assert.That(result.Errors.Count, Is.EqualTo(1));
-        Assert.That(result.Errors[0].PropertyName, Is.EqualTo($"{nameof(CreateInvoiceDTO.ItemIds)}[{invoice.ItemIds.IndexOf(itemId)}]"));
+        Assert.That(result.Errors[0].PropertyName, Is.EqualTo(nameof(CreateInvoiceDTO.ItemIds)));
         Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo(Constants.Validation.Invoice.ItemDoesNotExistsErrorMessage));
     }
 
@@ -423,11 +421,8 @@ public class InvoiceValidatorTests : BaseTestFixture
             .ReturnsAsync(true);
         _invoiceRepositoryMock.Setup(x => x.ExistsAsync(invoiceNumber, CancellationToken.None))
             .ReturnsAsync(false);
-        foreach (var itemId in itemIds)
-        {
-            _itemRepositoryMock.Setup(x => x.ExistsAsync(itemId, CancellationToken.None))
-                .ReturnsAsync(true);
-        }
+        _itemRepositoryMock.Setup(x => x.AllExistAsync(itemIds, CancellationToken.None))
+            .ReturnsAsync(true);
 
         return Fixture.Build<CreateInvoiceDTO>()
                 .With(x => x.ClientId, clientId)

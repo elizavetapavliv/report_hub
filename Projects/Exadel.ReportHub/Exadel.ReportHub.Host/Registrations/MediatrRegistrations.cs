@@ -9,13 +9,15 @@ namespace Exadel.ReportHub.Host.Registrations;
 
 public static class MediatRRegistrations
 {
-    public static void AddMediatR(this IServiceCollection services)
+    public static IServiceCollection AddMediatR(this IServiceCollection services)
     {
         var assembly = typeof(CreateUserHandler).Assembly;
 
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(assembly));
         services.AddValidation(assembly);
         services.AddManagers();
+
+        return services;
     }
 
     private static void AddValidation(this IServiceCollection services, Assembly assembly)

@@ -11,7 +11,7 @@ namespace Exadel.ReportHub.Host.Registrations;
 
 public static class ExchangeRateRegistrations
 {
-    public static void AddExchangeRate(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddExchangeRate(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<EcbConfig>(configuration.GetSection(nameof(EcbConfig)));
 
@@ -26,10 +26,13 @@ public static class ExchangeRateRegistrations
         {
             var exchangeRateRepository = provider.GetRequiredService<IExchangeRateRepository>();
             var exchangeRateService = provider.GetRequiredService<ExchangeRateClient>();
+            var logger = provider.GetRequiredService<ILogger<ExchangeRateProvider>>();
 
-            return new ExchangeRateProvider(exchangeRateRepository, exchangeRateService);
+            return new ExchangeRateProvider(exchangeRateRepository, exchangeRateService, logger);
         });
         services.AddSingleton<IExchangeRateService, ExchangeRateService>();
         services.AddSingleton<ICurrencyConverter, CurrencyConverter>();
+
+        return services;
     }
 }

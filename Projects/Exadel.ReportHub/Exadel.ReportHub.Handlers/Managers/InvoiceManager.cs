@@ -34,7 +34,7 @@ public class InvoiceManager(
             invoice.Id = Guid.NewGuid();
             invoice.Amount = (await Task.WhenAll(conversionTasks)).Sum();
             invoice.CurrencyId = customers[invoice.CustomerId].CurrencyId;
-            invoice.Currency = customers[invoice.CustomerId].CurrencyCode;
+            invoice.CurrencyCode = customers[invoice.CustomerId].CurrencyCode;
         }
 
         return invoices;

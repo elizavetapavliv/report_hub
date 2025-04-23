@@ -20,11 +20,11 @@ public class ItemRepository : BaseRepository, IItemRepository
         return base.AddAsync(item, cancellationToken);
     }
 
-    public async Task<bool> AllExistAsync(IEnumerable<Guid> ids, CancellationToken cancellationToken)
+    public async Task<bool> AllExistAsync(IList<Guid> ids, CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.In(x => x.Id, ids);
         var count = await GetCollection<Item>().CountDocumentsAsync(filter, cancellationToken: cancellationToken);
-        return count == ids.Count();
+        return count == ids.Count;
     }
 
     public Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken)
@@ -43,10 +43,10 @@ public class ItemRepository : BaseRepository, IItemRepository
         return GetByIdAsync<Item>(id, cancellationToken);
     }
 
-    public Task<IList<Item>> GetByIdsAsync(IEnumerable<Guid> ids, CancellationToken cancellationToken)
+    public async Task<IList<Item>> GetByIdsAsync(IList<Guid> ids, CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.In(x => x.Id, ids);
-        return GetAsync(filter, cancellationToken);
+        return await GetAsync(filter, cancellationToken);
     }
 
     public async Task<Guid?> GetClientIdAsync(Guid id, CancellationToken cancellationToken)

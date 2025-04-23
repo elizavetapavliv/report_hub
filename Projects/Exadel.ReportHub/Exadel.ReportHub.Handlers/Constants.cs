@@ -99,4 +99,17 @@ public static class Constants
             public const string PlanAlreadyExistsForItemAndClient = "Plan already exists for this item and client";
         }
     }
+
+    public static class File
+    {
+        public static class Extension
+        {
+            public const string Pdf = ".pdf";
+        }
+
+        public static class Name
+        {
+            public const string Invoice = "Invoice_";
+        }
+    }
 }
