@@ -1,5 +1,8 @@
-﻿namespace Exadel.ReportHub.Host;
+﻿using System.Diagnostics.CodeAnalysis;
 
+namespace Exadel.ReportHub.Host;
+
+[ExcludeFromCodeCoverage]
 public static class Constants
 {
     public static class Authorization

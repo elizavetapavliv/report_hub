@@ -1,4 +1,5 @@
-﻿using Exadel.ReportHub.Ecb;
+﻿using System.Diagnostics.CodeAnalysis;
+using Exadel.ReportHub.Ecb;
 using Exadel.ReportHub.Ecb.Abstract;
 using Exadel.ReportHub.Ecb.Helpers;
 using Exadel.ReportHub.Host.Configs;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.Options;
 
 namespace Exadel.ReportHub.Host.Registrations;
 
+[ExcludeFromCodeCoverage]
 public static class ExchangeRateRegistrations
 {
     public static IServiceCollection AddExchangeRate(this IServiceCollection services, IConfiguration configuration)

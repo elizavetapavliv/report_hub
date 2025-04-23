@@ -1,5 +1,8 @@
-﻿namespace Exadel.ReportHub.Ecb;
+﻿using System.Diagnostics.CodeAnalysis;
 
+namespace Exadel.ReportHub.Ecb;
+
+[ExcludeFromCodeCoverage]
 public static class Constants
 {
     public const string ClientName = "ExchangeRateClient";

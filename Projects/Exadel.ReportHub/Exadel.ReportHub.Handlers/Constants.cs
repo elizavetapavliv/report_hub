@@ -1,5 +1,8 @@
-﻿namespace Exadel.ReportHub.Handlers;
+﻿using System.Diagnostics.CodeAnalysis;
 
+namespace Exadel.ReportHub.Handlers;
+
+[ExcludeFromCodeCoverage]
 public static class Constants
 {
     public static class Validation
