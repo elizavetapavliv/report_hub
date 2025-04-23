@@ -11,31 +11,31 @@ public class InvoiceManager(
     ICurrencyConverter currencyConverter,
     IMapper mapper) : IInvoiceManager
 {
+    public async Task<Data.Models.Invoice> GenerateInvoiceAsync(CreateInvoiceDTO invoiceDto, CancellationToken cancellationToken)
+    {
+        var invoice = mapper.Map<Data.Models.Invoice>(invoiceDto);
+
+        var customerTask = customerRepository.GetByIdAsync(invoice.CustomerId, cancellationToken);
+        var itemsTask = itemRepository.GetByIdsAsync(invoice.ItemIds, cancellationToken);
+
+        await Task.WhenAll(customerTask, itemsTask);
+
+        var currencyCode = customerTask.Result.CurrencyCode;
+        var conversionTasks = itemsTask.Result.GroupBy(x => x.CurrencyCode)
+            .Select(group => currencyConverter.ConvertAsync(group.Sum(x => x.Price), group.Key, currencyCode, cancellationToken));
+
+        invoice.Id = Guid.NewGuid();
+        invoice.Amount = (await Task.WhenAll(conversionTasks)).Sum();
+        invoice.CurrencyId = customerTask.Result.CurrencyId;
+        invoice.CurrencyCode = currencyCode;
+
+        return invoice;
+    }
+
     public async Task<IList<Data.Models.Invoice>> GenerateInvoicesAsync(IEnumerable<CreateInvoiceDTO> invoiceDtos, CancellationToken cancellationToken)
     {
-        var invoices = mapper.Map<IList<Data.Models.Invoice>>(invoiceDtos);
-
-        var customerIds = invoices.Select(x => x.CustomerId).Distinct().ToList();
-        var itemIds = invoices.SelectMany(x => x.ItemIds).Distinct().ToList();
-
-        var customersTask = customerRepository.GetByIdsAsync(customerIds, cancellationToken);
-        var itemsTask = itemRepository.GetByIdsAsync(itemIds, cancellationToken);
-
-        await Task.WhenAll(customersTask, itemsTask);
-
-        var customers = customersTask.Result.ToDictionary(x => x.Id);
-        var items = itemsTask.Result.ToDictionary(x => x.Id);
-
-        foreach (var invoice in invoices)
-        {
-            var conversionTasks = invoice.ItemIds.Select(itemId => items[itemId]).GroupBy(x => x.CurrencyCode)
-                .Select(group => currencyConverter.ConvertAsync(group.Sum(x => x.Price), group.Key, customers[invoice.CustomerId].CurrencyCode, cancellationToken));
-
-            invoice.Id = Guid.NewGuid();
-            invoice.Amount = (await Task.WhenAll(conversionTasks)).Sum();
-            invoice.CurrencyId = customers[invoice.CustomerId].CurrencyId;
-            invoice.CurrencyCode = customers[invoice.CustomerId].CurrencyCode;
-        }
+        var invoiceTasks = invoiceDtos.Select(dto => GenerateInvoiceAsync(dto, cancellationToken));
+        var invoices = await Task.WhenAll(invoiceTasks);
 
         return invoices;
     }

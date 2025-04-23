@@ -1,12 +1,10 @@
 ﻿using Exadel.ReportHub.Ecb.Abstract;
 using Exadel.ReportHub.RA.Abstract;
-using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 
 namespace Exadel.ReportHub.Ecb;
 
-public class ExchangeRateProvider(IExchangeRateRepository exhangeRateRepository, IExchangeRateClient exchangeRateClient,
-    ILogger<ExchangeRateProvider> logger) : IExchangeRateClient
+public class ExchangeRateProvider(IExchangeRateRepository exhangeRateRepository, IExchangeRateClient exchangeRateClient) : IExchangeRateClient
 {
     public async Task<Data.Models.ExchangeRate> GetByCurrencyAsync(string currency, CancellationToken cancellationToken)
     {
@@ -17,8 +15,10 @@ public class ExchangeRateProvider(IExchangeRateRepository exhangeRateRepository,
             return exchangeRate;
         }
 
-        var exchangeRates = await TryGetRatesAsync(cancellationToken);
-        return exchangeRates?.SingleOrDefault(x => x.Currency.Equals(currency, StringComparison.Ordinal));
+        var exchangeRates = await GetRatesAsync(cancellationToken);
+        return exchangeRates.Any() ?
+            exchangeRates.SingleOrDefault(x => x.Currency.Equals(currency, StringComparison.Ordinal)) :
+            null;
     }
 
     public async Task<IList<Data.Models.ExchangeRate>> GetDailyRatesAsync(CancellationToken cancellationToken)
@@ -30,29 +30,18 @@ public class ExchangeRateProvider(IExchangeRateRepository exhangeRateRepository,
             return exchangeRates;
         }
 
-        return await TryGetRatesAsync(cancellationToken);
+        return await GetRatesAsync(cancellationToken);
     }
 
-    private async Task<IList<Data.Models.ExchangeRate>> TryGetRatesAsync(CancellationToken cancellationToken)
+    private async Task<IList<Data.Models.ExchangeRate>> GetRatesAsync(CancellationToken cancellationToken)
     {
-        try
+        var exchangeRates = await exchangeRateClient.GetDailyRatesAsync(cancellationToken);
+
+        if (exchangeRates.Any())
         {
-            var exchangeRates = await exchangeRateClient.GetDailyRatesAsync(cancellationToken);
-            if (!exchangeRates.Any())
-            {
-                logger.LogError(Constants.Error.ExchangeRate.EcbReturnsNothing);
-            }
-            else
-            {
-                await exhangeRateRepository.AddManyAsync(exchangeRates, cancellationToken);
-                return exchangeRates;
-            }
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, Constants.Error.ExchangeRate.RatesUpdateError);
+            await exhangeRateRepository.AddManyAsync(exchangeRates, cancellationToken);
         }
 
-        return null;
+        return exchangeRates;
     }
 }

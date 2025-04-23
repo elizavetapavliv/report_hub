@@ -14,12 +14,6 @@ public static class Constants
         public const string HttpFetchError = "HTTP error fetching ECB rates";
         public const string TimeoutError = "Timeout fetching ECB rates";
         public const string ParseError = "Failed to parse ECB xml";
-
-        public static class ExchangeRate
-        {
-            public const string RatesUpdateError = "Rates update Error";
-            public const string EcbReturnsNothing = "ECB returns nothing";
-        }
     }
 
     public static class Path

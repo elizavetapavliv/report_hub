@@ -15,7 +15,6 @@ public static class MediatRRegistrations
 
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(assembly));
         services.AddValidation(assembly);
-        services.AddManagers();
 
         return services;
     }
@@ -24,10 +23,5 @@ public static class MediatRRegistrations
     {
         services.AddValidatorsFromAssembly(assembly);
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(RequestValidationBehavior<,>));
-    }
-
-    private static void AddManagers(this IServiceCollection services)
-    {
-        services.AddSingleton<IInvoiceManager, InvoiceManager>();
     }
 }

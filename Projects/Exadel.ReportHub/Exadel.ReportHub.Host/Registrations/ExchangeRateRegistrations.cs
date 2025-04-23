@@ -26,9 +26,8 @@ public static class ExchangeRateRegistrations
         {
             var exchangeRateRepository = provider.GetRequiredService<IExchangeRateRepository>();
             var exchangeRateService = provider.GetRequiredService<ExchangeRateClient>();
-            var logger = provider.GetRequiredService<ILogger<ExchangeRateProvider>>();
 
-            return new ExchangeRateProvider(exchangeRateRepository, exchangeRateService, logger);
+            return new ExchangeRateProvider(exchangeRateRepository, exchangeRateService);
         });
         services.AddSingleton<IExchangeRateService, ExchangeRateService>();
         services.AddSingleton<ICurrencyConverter, CurrencyConverter>();

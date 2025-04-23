@@ -100,6 +100,14 @@ public static class Constants
         }
     }
 
+    public static class Error
+    {
+        public static class ExchangeRate
+        {
+            public const string RatesUpdateError = "Daily Rates were not loaded successfully.";
+        }
+    }
+
     public static class File
     {
         public static class Extension

@@ -2,9 +2,6 @@
 using AutoFixture;
 using ErrorOr;
 using Exadel.ReportHub.Csv.Abstract;
-using Exadel.ReportHub.Data.Models;
-using Exadel.ReportHub.Ecb;
-using Exadel.ReportHub.Ecb.Abstract;
 using Exadel.ReportHub.Handlers.Invoice.Import;
 using Exadel.ReportHub.Handlers.Managers;
 using Exadel.ReportHub.RA.Abstract;
@@ -22,9 +19,9 @@ public class ImportInvoicesHandlerTests : BaseTestFixture
     private Mock<ICsvProcessor> _csvProcessorMock;
     private Mock<IInvoiceRepository> _invoiceRepositoryMock;
     private Mock<IInvoiceManager> _invoiceManagerMock;
+    private Mock<IValidator<CreateInvoiceDTO>> _invoiceValidatorMock;
 
     private ImportInvoicesHandler _handler;
-    private Mock<IValidator<CreateInvoiceDTO>> _invoiceValidatorMock;
 
     [SetUp]
     public void Setup()

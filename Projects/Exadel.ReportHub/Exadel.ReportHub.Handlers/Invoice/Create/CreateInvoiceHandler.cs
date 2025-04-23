@@ -16,7 +16,7 @@ public class CreateInvoiceHandler(
 {
     public async Task<ErrorOr<InvoiceDTO>> Handle(CreateInvoiceRequest request, CancellationToken cancellationToken)
     {
-        var invoice = (await invoiceManager.GenerateInvoicesAsync([request.CreateInvoiceDto], cancellationToken)).Single();
+        var invoice = await invoiceManager.GenerateInvoiceAsync(request.CreateInvoiceDto, cancellationToken);
 
         await invoiceRepository.AddAsync(invoice, cancellationToken);
         return mapper.Map<InvoiceDTO>(invoice);
