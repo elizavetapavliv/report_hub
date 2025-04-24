@@ -1,5 +1,6 @@
 ﻿using AutoFixture;
 using Exadel.ReportHub.Handlers.Invoice.Create;
+using Exadel.ReportHub.Handlers.Managers;
 using Exadel.ReportHub.RA.Abstract;
 using Exadel.ReportHub.SDK.DTOs.Invoice;
 using Exadel.ReportHub.Tests.Abstracts;
@@ -11,13 +12,15 @@ namespace Exadel.ReportHub.Tests.Invoice.Create;
 public class CreateInvoiceHandlerTests : BaseTestFixture
 {
     private Mock<IInvoiceRepository> _invoiceRepositoryMock;
+    private Mock<IInvoiceManager> _invoiceManagerMock;
     private CreateInvoiceHandler _handler;
 
     [SetUp]
     public void Setup()
     {
         _invoiceRepositoryMock = new Mock<IInvoiceRepository>();
-        _handler = new CreateInvoiceHandler(_invoiceRepositoryMock.Object, Mapper);
+        _invoiceManagerMock = new Mock<IInvoiceManager>();
+        _handler = new CreateInvoiceHandler(_invoiceRepositoryMock.Object, _invoiceManagerMock.Object, Mapper);
     }
 
     [Test]
@@ -25,6 +28,22 @@ public class CreateInvoiceHandlerTests : BaseTestFixture
     {
         // Arrange
         var createInvoiceDto = Fixture.Create<CreateInvoiceDTO>();
+        var generatedInvoice = Fixture
+                .Build<Data.Models.Invoice>()
+                .With(x => x.Id, Guid.NewGuid())
+                .With(x => x.ClientId, createInvoiceDto.ClientId)
+                .With(x => x.CustomerId, createInvoiceDto.CustomerId)
+                .With(x => x.InvoiceNumber, createInvoiceDto.InvoiceNumber)
+                .With(x => x.IssueDate, createInvoiceDto.IssueDate)
+                .With(x => x.DueDate, createInvoiceDto.DueDate)
+                .With(x => x.BankAccountNumber, createInvoiceDto.BankAccountNumber)
+                .With(x => x.PaymentStatus, (Data.Enums.PaymentStatus)createInvoiceDto.PaymentStatus)
+                .With(x => x.ItemIds, createInvoiceDto.ItemIds.ToList())
+                .Create();
+
+        _invoiceManagerMock
+                .Setup(m => m.GenerateInvoiceAsync(createInvoiceDto, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(generatedInvoice);
 
         // Act
         var result = await _handler.Handle(new CreateInvoiceRequest(createInvoiceDto), CancellationToken.None);
