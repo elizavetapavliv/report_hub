@@ -41,7 +41,7 @@ public class InvoiceValidatorTests : BaseTestFixture
                 .WithMessage(Constants.Validation.Invoice.DueDateBeforeIssueDate);
             updateInvoiceValidator.RuleFor(x => x.DueDate.TimeOfDay)
                 .Equal(TimeSpan.Zero)
-                .WithMessage(Constants.Validation.Invoice.TimeComponentErrorMassage);
+                .WithMessage(Constants.Validation.Invoice.TimeComponentNotAllowed);
         });
 
         _invoiceRepositoryMock = new Mock<IInvoiceRepository>();
