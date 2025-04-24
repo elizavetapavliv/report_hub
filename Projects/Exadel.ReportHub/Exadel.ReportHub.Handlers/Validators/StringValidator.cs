@@ -19,7 +19,7 @@ public class StringValidator : AbstractValidator<string>
                 .NotEmpty()
                 .MaximumLength(Constants.Validation.Name.MaxLength)
                 .Matches("^[A-Z]")
-                .WithMessage(Constants.Validation.Name.NameMustStartWithCapital)
+                .WithMessage(Constants.Validation.Name.MustStartWithCapital)
                 .WithName(nameof(Constants.Validation.Name));
         });
 
@@ -49,7 +49,7 @@ public class StringValidator : AbstractValidator<string>
                 .NotEmpty()
                 .MaximumLength(Constants.Validation.Country.MaxLength)
                 .Matches("^[A-Z]")
-                .WithMessage(Constants.Validation.Country.CountryMustStartWithCapital)
+                .WithMessage(Constants.Validation.Country.MustStartWithCapital)
                 .WithName(nameof(Constants.Validation.Country));
         });
     }

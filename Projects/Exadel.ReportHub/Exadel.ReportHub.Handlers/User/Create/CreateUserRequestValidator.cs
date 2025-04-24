@@ -25,9 +25,9 @@ public class CreateUserRequestValidator : AbstractValidator<CreateUserRequest>
                 child.RuleFor(x => x.Email)
                     .NotEmpty()
                     .EmailAddress()
-                    .WithMessage(Constants.Validation.Common.EmailIsInvalid)
+                    .WithMessage(Constants.Validation.Email.IsInvalid)
                     .MustAsync(EmailMustNotExistAsync)
-                    .WithMessage(Constants.Validation.Common.EmailIsTaken);
+                    .WithMessage(Constants.Validation.Email.IsTaken);
 
                 child.RuleFor(x => x.FullName)
                     .SetValidator(_stringValidator, Constants.Validation.RuleSet.Names);

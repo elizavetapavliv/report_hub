@@ -25,12 +25,12 @@ public class ItemValidator : AbstractValidator<CreateUpdateItemDTO>
             RuleFor(x => x.ClientId)
                 .NotEmpty()
                 .MustAsync(_clientRepository.ExistsAsync)
-                .WithMessage(Constants.Validation.Common.ClientDoesNotExist);
+                .WithMessage(Constants.Validation.Client.DoesNotExist);
 
             RuleFor(x => x.CurrencyId)
                 .NotEmpty()
                 .MustAsync(_currencyRepository.ExistsAsync)
-                .WithMessage(Constants.Validation.Common.CurrencyDoesNotExist);
+                .WithMessage(Constants.Validation.Currency.DoesNotExist);
 
             RuleFor(x => x.Name)
                 .SetValidator(_stringValidator, Constants.Validation.RuleSet.Names);

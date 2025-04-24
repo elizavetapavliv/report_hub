@@ -32,12 +32,12 @@ public class CreatePlanRequestValidator : AbstractValidator<CreatePlanRequest>
                 child.RuleFor(x => x.ItemId)
                     .NotEmpty()
                     .MustAsync(_itemRepository.ExistsAsync)
-                    .WithMessage(Constants.Validation.Common.ItemDoesNotExist);
+                    .WithMessage(Constants.Validation.Item.DoesNotExist);
 
                 child.RuleFor(x => x.ClientId)
                     .NotEmpty()
                     .MustAsync(_clientRepository.ExistsAsync)
-                    .WithMessage(Constants.Validation.Common.ClientDoesNotExist);
+                    .WithMessage(Constants.Validation.Client.DoesNotExist);
 
                 child.RuleFor(x => x.Amount)
                     .GreaterThan(0);

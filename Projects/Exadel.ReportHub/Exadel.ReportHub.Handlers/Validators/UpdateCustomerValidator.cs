@@ -26,6 +26,6 @@ public class UpdateCustomerValidator : AbstractValidator<UpdateCustomerDTO>
         RuleFor(x => x.CountryId)
             .NotEmpty()
             .MustAsync(_countryRepository.ExistsAsync)
-            .WithMessage(Constants.Validation.Common.CountryDoesNotExist);
+            .WithMessage(Constants.Validation.Country.DoesNotExist);
     }
 }

@@ -11,23 +11,37 @@ public static class Constants
             public const string Countries = nameof(Countries);
         }
 
-        public static class Common
+        public static class Email
         {
-            public const string EmailIsTaken = "Email is already taken.";
-            public const string EmailIsInvalid = "Email is invalid.";
-            public const string NameIsTaken = "Name is already taken";
-            public const string CustomerDoesNotExist = "Customer does not exist.";
-            public const string ClientDoesNotExist = "Client does not exist.";
-            public const string ItemDoesNotExist = "Item does not exist.";
-            public const string UserDoesNotExist = "User does not exist.";
-            public const string CurrencyDoesNotExist = "Currency does not exist.";
-            public const string CountryDoesNotExist = "Country does not exist.";
+            public const string IsTaken = "Email is already taken.";
+            public const string IsInvalid = "Email is invalid.";
+        }
+
+        public static class Client
+        {
+            public const string DoesNotExist = "Client does not exist.";
+        }
+
+        public static class Customer
+        {
+            public const string DoesNotExist = "Customer does not exist.";
+        }
+
+        public static class User
+        {
+            public const string DoesNotExist = "User does not exist.";
+        }
+
+        public static class Currency
+        {
+            public const string DoesNotExist = "Currency does not exist.";
         }
 
         public static class Name
         {
             public const int MaxLength = 100;
-            public const string NameMustStartWithCapital = "Name must begin with a capital letter.";
+            public const string MustStartWithCapital = "Name must begin with a capital letter.";
+            public const string IsTaken = "Name is already taken";
         }
 
         public static class Password
@@ -42,13 +56,14 @@ public static class Constants
         public static class Country
         {
             public const int MaxLength = 56;
-            public const string CountryMustStartWithCapital = "Country must begin with a capital letter.";
+            public const string MustStartWithCapital = "Country must begin with a capital letter.";
+            public const string DoesNotExist = "Country does not exist.";
         }
 
         public static class Invoice
         {
             public const int InvoiceNumberMaxLength = 15;
-            public const string InvalidInvoiceFormat = "Invoice number must start with 'INV' followed by digits.";
+            public const string InvalidInvoiceNumberFormat = "Invoice number must start with 'INV' followed by digits.";
             public const string IssueDateInFuture = "Issue date cannot be in the future.";
             public const string DueDateBeforeIssueDate = "Due date must be greater than issue date.";
             public const string TimeComponentNotAllowed = "Date cannot have a time component.";
@@ -65,6 +80,7 @@ public static class Constants
             public const string DescriptionShouldStartWithCapital = "Description must begin with a capital letter.";
             public const string PriceMustBePositive = "Price must be positive";
             public const string ClientIdImmutable = "Client Id cannot be changed.";
+            public const string DoesNotExist = "Item does not exist.";
         }
 
         public static class Import

@@ -107,7 +107,7 @@ public class UpsertUserAssignmentValidatorTests : BaseTestFixture
 
         // Assert
         result.ShouldHaveValidationErrorFor(x => x.SetUserAssignmentDTO.UserId)
-            .WithErrorMessage(Constants.Validation.Common.UserDoesNotExist);
+            .WithErrorMessage(Constants.Validation.User.DoesNotExist);
         Assert.That(result.Errors, Has.Exactly(1).Items);
 
         _userRepositoryMock.Verify(
@@ -169,7 +169,7 @@ public class UpsertUserAssignmentValidatorTests : BaseTestFixture
 
         // Assert
         result.ShouldHaveValidationErrorFor(x => x.SetUserAssignmentDTO.ClientId)
-            .WithErrorMessage(Constants.Validation.Common.ClientDoesNotExist);
+            .WithErrorMessage(Constants.Validation.Client.DoesNotExist);
         Assert.That(result.Errors, Has.Exactly(1).Items);
 
         _userRepositoryMock.Verify(

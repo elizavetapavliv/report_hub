@@ -85,7 +85,7 @@ public class CreateUserValidatorTests
         var createUserRequest = new CreateUserRequest(new CreateUserDTO { FullName = "Test User", Email = "invalid-email", Password = "Testpassword123!" });
         var result = await _validator.TestValidateAsync(createUserRequest);
         result.ShouldHaveValidationErrorFor(x => x.CreateUserDto.Email)
-            .WithErrorMessage(Constants.Validation.Common.EmailIsInvalid);
+            .WithErrorMessage(Constants.Validation.Email.IsInvalid);
         Assert.That(result.Errors.Count, Is.EqualTo(1));
     }
 
@@ -99,7 +99,7 @@ public class CreateUserValidatorTests
 
         var result = await _validator.TestValidateAsync(createUserRequest);
         result.ShouldHaveValidationErrorFor(x => x.CreateUserDto.Email)
-            .WithErrorMessage(Constants.Validation.Common.EmailIsTaken);
+            .WithErrorMessage(Constants.Validation.Email.IsTaken);
         Assert.That(result.Errors.Count, Is.EqualTo(1));
     }
 
