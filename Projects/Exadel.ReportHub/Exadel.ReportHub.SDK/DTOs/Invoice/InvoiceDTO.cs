@@ -16,7 +16,7 @@ public class InvoiceDTO
 
     public DateTime DueDate { get; set; }
 
-    public string BankAccountNumber { get; set; }
+    public string ClientBankAccountNumber { get; set; }
 
     public decimal Amount { get; set; }
 

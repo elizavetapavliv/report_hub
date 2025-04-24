@@ -43,7 +43,7 @@ const customerIds = [
     UUID("1f59b609-adf5-4fd0-94f7-b9c74e6e9572"),
 ]
 
-const bankAccountNumbers = [
+const clientBankAccountNumbers = [
     "PL359459402653871205990733",
     "DE197389122734561028993857",
     "BY849012345678901234567890",
@@ -95,7 +95,7 @@ for (let i = 0; i < clientCount; i++) {
     clients.push({
         _id: clientIds[i],
         Name: clientNames[i],
-        bankAccountNumber: bankAccountNumbers[i],
+        ClientBankAccountNumber: clientBankAccountNumbers[i],
         CustomerIds: randomCustomerIds(i),
         IsDeleted: false
     });

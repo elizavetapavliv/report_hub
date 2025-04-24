@@ -25,7 +25,7 @@ public class CreateClientRequestValidator : AbstractValidator<CreateClientReques
                     .SetValidator(_stringValidator, Constants.Validation.RuleSet.Names)
                     .MustAsync(NameMustNotExistsAsync)
                     .WithMessage(Constants.Validation.Client.NameTakenMessage);
-                child.RuleFor(x => x.BankAccountNumber)
+                child.RuleFor(x => x.ClientBankAccountNumber)
                     .NotEmpty()
                     .Length(Constants.Validation.Client.BankAccountNumberMinLength, Constants.Validation.Client.BankAccountNumberMaxLength)
                     .Matches(@"^[A-Z]{2}\d+$")

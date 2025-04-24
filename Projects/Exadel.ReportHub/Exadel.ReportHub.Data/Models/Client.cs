@@ -8,7 +8,7 @@ public class Client : IDocument, ISoftDeletable
 
     public string Name { get; set; }
 
-    public string BankAccountNumber { get; set; }
+    public string ClientBankAccountNumber { get; set; }
 
     public IList<Guid> CustomerIds { get; set; }
 

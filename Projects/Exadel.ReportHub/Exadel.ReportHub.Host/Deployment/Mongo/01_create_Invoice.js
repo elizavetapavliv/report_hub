@@ -80,7 +80,7 @@ const currencyCodes = [
     "RON"
 ]
 
-const bankAccountNumbers = [
+const clientBankAccountNumbers = [
     "PL359459402653871205990733",
     "DE197389122734561028993857",
     "BY849012345678901234567890",
@@ -134,7 +134,7 @@ for (let i = 0; i < invoiceCount; i++) {
         CurrencyId: currencyIds[index],
         CurrencyCode: currencyCodes[index],
         PaymentStatus: paymentStatuses[getRandomInt(paymentStatuses.length)],
-        BankAccountNumber: bankAccountNumbers[index],
+        ClientBankAccountNumber: clientBankAccountNumbers[index],
         ItemIds: [itemIds[index * 2], itemIds[index * 2 + 1]],
         IsDeleted: false,
     });
