@@ -81,6 +81,8 @@ public static class Constants
         {
             public const string UserDoesNotExistMessage = "User does not exist.";
             public const string ClientDoesNotExistMessage = "Client does not exist.";
+            public const string GlobalRoleAssignmentErrorMessage = "Global roles must be assigned to the Global Client";
+            public const string ClientRoleAssignmentErrorMessage = "Client roles cannot be assigned to the Global Client";
         }
 
         public static class Import
@@ -97,6 +99,11 @@ public static class Constants
             public const string PlandEndDateInThePastErrorMessage = "End date must be in the future";
             public const string PlanAlreadyExistsForItemAndClient = "Plan already exists for this item and client";
         }
+    }
+
+    public static class Client
+    {
+        public static readonly Guid GlobalId = Guid.Parse("e47501a8-547b-4dc4-ba97-e65ccfc39477");
     }
 
     public static class File

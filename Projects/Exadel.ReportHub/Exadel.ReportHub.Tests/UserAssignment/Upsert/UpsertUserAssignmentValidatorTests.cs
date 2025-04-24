@@ -32,7 +32,9 @@ public class UpsertUserAssignmentValidatorTests : BaseTestFixture
     public async Task ValidateAsync_ValidRequest_NoErrorReturned(UserRole role)
     {
         // Arrange
-        var upsertUserAssignmentDto = Fixture.Build<UpsertUserAssignmentDTO>().With(x => x.Role, role).Create();
+        var clientId = role == UserRole.SuperAdmin ? Constants.Client.GlobalId : Guid.NewGuid();
+        var upsertUserAssignmentDto = Fixture.Build<UpsertUserAssignmentDTO>()
+            .With(x => x.Role, role).With(x => x.ClientId, clientId).Create();
         _userRepositoryMock
             .Setup(x => x.ExistsAsync(upsertUserAssignmentDto.UserId, CancellationToken.None))
             .ReturnsAsync(true);
@@ -63,8 +65,10 @@ public class UpsertUserAssignmentValidatorTests : BaseTestFixture
     public async Task ValidateAsync_UserIdIsEmpty_ErrorReturned(UserRole role)
     {
         // Arrange
+        var clientId = role == UserRole.SuperAdmin ? Constants.Client.GlobalId : Guid.NewGuid();
         var upsertUserAssignmentDto = Fixture.Build<UpsertUserAssignmentDTO>()
-            .With(x => x.UserId, Guid.Empty).With(x => x.Role, role).Create();
+            .With(x => x.UserId, Guid.Empty).With(x => x.Role, role)
+            .With(x => x.ClientId, clientId).Create();
         _clientRepositoryMock
             .Setup(x => x.ExistsAsync(upsertUserAssignmentDto.ClientId, CancellationToken.None))
             .ReturnsAsync(true);
@@ -74,7 +78,7 @@ public class UpsertUserAssignmentValidatorTests : BaseTestFixture
         var result = await _validator.TestValidateAsync(upsertUserAssignmentRequest);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.SetUserAssignmentDTO.UserId)
+        result.ShouldHaveValidationErrorFor(x => x.UpsertUserAssignmentDto.UserId)
             .WithErrorMessage("'User Id' must not be empty.");
         Assert.That(result.Errors, Has.Exactly(1).Items);
 
@@ -93,7 +97,9 @@ public class UpsertUserAssignmentValidatorTests : BaseTestFixture
     public async Task ValidateAsync_UserNotExist_ErrorReturned(UserRole role)
     {
         // Arrange
-        var upsertUserAssignmentDto = Fixture.Build<UpsertUserAssignmentDTO>().With(x => x.Role, role).Create();
+        var clientId = role == UserRole.SuperAdmin ? Constants.Client.GlobalId : Guid.NewGuid();
+        var upsertUserAssignmentDto = Fixture.Build<UpsertUserAssignmentDTO>()
+            .With(x => x.Role, role).With(x => x.ClientId, clientId).Create();
         _userRepositoryMock
             .Setup(x => x.ExistsAsync(upsertUserAssignmentDto.UserId, CancellationToken.None))
             .ReturnsAsync(false);
@@ -106,7 +112,7 @@ public class UpsertUserAssignmentValidatorTests : BaseTestFixture
         var result = await _validator.TestValidateAsync(upsertUserAssignmentRequest);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.SetUserAssignmentDTO.UserId)
+        result.ShouldHaveValidationErrorFor(x => x.UpsertUserAssignmentDto.UserId)
             .WithErrorMessage(Constants.Validation.UserAssignment.UserDoesNotExistMessage);
         Assert.That(result.Errors, Has.Exactly(1).Items);
 
@@ -136,7 +142,7 @@ public class UpsertUserAssignmentValidatorTests : BaseTestFixture
         var result = await _validator.TestValidateAsync(upsertUserAssignmentRequest);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.SetUserAssignmentDTO.ClientId)
+        result.ShouldHaveValidationErrorFor(x => x.UpsertUserAssignmentDto.ClientId)
             .WithErrorMessage("'Client Id' must not be empty.");
         Assert.That(result.Errors, Has.Exactly(1).Items);
 
@@ -155,7 +161,9 @@ public class UpsertUserAssignmentValidatorTests : BaseTestFixture
     public async Task ValidateAsync_ClientNotExist_ErrorReturned(UserRole role)
     {
         // Arrange
-        var upsertUserAssignmentDto = Fixture.Build<UpsertUserAssignmentDTO>().With(x => x.Role, role).Create();
+        var clientId = role == UserRole.SuperAdmin ? Constants.Client.GlobalId : Guid.NewGuid();
+        var upsertUserAssignmentDto = Fixture.Build<UpsertUserAssignmentDTO>()
+            .With(x => x.Role, role).With(x => x.ClientId, clientId).Create();
         _userRepositoryMock
             .Setup(x => x.ExistsAsync(upsertUserAssignmentDto.UserId, CancellationToken.None))
             .ReturnsAsync(true);
@@ -168,7 +176,7 @@ public class UpsertUserAssignmentValidatorTests : BaseTestFixture
         var result = await _validator.TestValidateAsync(upsertUserAssignmentRequest);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.SetUserAssignmentDTO.ClientId)
+        result.ShouldHaveValidationErrorFor(x => x.UpsertUserAssignmentDto.ClientId)
             .WithErrorMessage(Constants.Validation.UserAssignment.ClientDoesNotExistMessage);
         Assert.That(result.Errors, Has.Exactly(1).Items);
 
@@ -198,8 +206,69 @@ public class UpsertUserAssignmentValidatorTests : BaseTestFixture
         var result = await _validator.TestValidateAsync(upsertUserAssignmentRequest);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.SetUserAssignmentDTO.Role)
+        result.ShouldHaveValidationErrorFor(x => x.UpsertUserAssignmentDto.Role)
             .WithErrorMessage($"'Role' has a range of values which does not include '{role}'.");
+        Assert.That(result.Errors, Has.Exactly(1).Items);
+
+        _userRepositoryMock.Verify(
+            x => x.ExistsAsync(upsertUserAssignmentDto.UserId, CancellationToken.None),
+            Times.Once);
+        _clientRepositoryMock.Verify(
+            x => x.ExistsAsync(upsertUserAssignmentDto.ClientId, CancellationToken.None),
+            Times.Once);
+    }
+
+    [TestCase(UserRole.Operator)]
+    [TestCase(UserRole.ClientAdmin)]
+    [TestCase(UserRole.Owner)]
+    public async Task ValidateAsync_ClientRoleAndGlobalId_ErrorReturned(UserRole role)
+    {
+        // Arrange
+        var upsertUserAssignmentDto = Fixture.Build<UpsertUserAssignmentDTO>()
+            .With(x => x.Role, role).With(x => x.ClientId, Constants.Client.GlobalId).Create();
+        _userRepositoryMock
+            .Setup(x => x.ExistsAsync(upsertUserAssignmentDto.UserId, CancellationToken.None))
+            .ReturnsAsync(true);
+        _clientRepositoryMock
+            .Setup(x => x.ExistsAsync(upsertUserAssignmentDto.ClientId, CancellationToken.None))
+            .ReturnsAsync(true);
+
+        // Act
+        var upsertUserAssignmentRequest = new UpsertUserAssignmentRequest(upsertUserAssignmentDto);
+        var result = await _validator.TestValidateAsync(upsertUserAssignmentRequest);
+
+        // Assert
+        result.ShouldHaveValidationErrorFor(x => x.UpsertUserAssignmentDto)
+            .WithErrorMessage(Constants.Validation.UserAssignment.ClientRoleAssignmentErrorMessage);
+        Assert.That(result.Errors, Has.Exactly(1).Items);
+
+        _userRepositoryMock.Verify(
+            x => x.ExistsAsync(upsertUserAssignmentDto.UserId, CancellationToken.None),
+            Times.Once);
+        _clientRepositoryMock.Verify(
+            x => x.ExistsAsync(upsertUserAssignmentDto.ClientId, CancellationToken.None),
+            Times.Once);
+    }
+
+    [TestCase(UserRole.SuperAdmin)]
+    public async Task ValidateAsync_GlobalRoleAndNonGlobalId_ErrorReturned(UserRole role)
+    {
+        // Arrange
+        var upsertUserAssignmentDto = Fixture.Build<UpsertUserAssignmentDTO>().With(x => x.Role, role).Create();
+        _userRepositoryMock
+            .Setup(x => x.ExistsAsync(upsertUserAssignmentDto.UserId, CancellationToken.None))
+            .ReturnsAsync(true);
+        _clientRepositoryMock
+            .Setup(x => x.ExistsAsync(upsertUserAssignmentDto.ClientId, CancellationToken.None))
+            .ReturnsAsync(true);
+
+        // Act
+        var upsertUserAssignmentRequest = new UpsertUserAssignmentRequest(upsertUserAssignmentDto);
+        var result = await _validator.TestValidateAsync(upsertUserAssignmentRequest);
+
+        // Assert
+        result.ShouldHaveValidationErrorFor(x => x.UpsertUserAssignmentDto)
+            .WithErrorMessage(Constants.Validation.UserAssignment.GlobalRoleAssignmentErrorMessage);
         Assert.That(result.Errors, Has.Exactly(1).Items);
 
         _userRepositoryMock.Verify(

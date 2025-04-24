@@ -1,4 +1,5 @@
 ﻿using Exadel.ReportHub.RA.Abstract;
+using Exadel.ReportHub.SDK.Enums;
 using FluentValidation;
 
 namespace Exadel.ReportHub.Handlers.UserAssignment.Upsert;
@@ -17,7 +18,7 @@ public class UpsertUserAssignmentRequestValidator : AbstractValidator<UpsertUser
 
     private void ConfigureRules()
     {
-        RuleFor(x => x.SetUserAssignmentDTO)
+        RuleFor(x => x.UpsertUserAssignmentDto)
             .ChildRules(child =>
             {
                 child.RuleLevelCascadeMode = CascadeMode.Stop;
@@ -35,5 +36,13 @@ public class UpsertUserAssignmentRequestValidator : AbstractValidator<UpsertUser
                 child.RuleFor(x => x.Role)
                     .IsInEnum();
             });
+
+        RuleFor(x => x.UpsertUserAssignmentDto)
+            .Must(dto => !(dto.Role == UserRole.SuperAdmin && dto.ClientId != Constants.Client.GlobalId))
+            .WithMessage(Constants.Validation.UserAssignment.GlobalRoleAssignmentErrorMessage)
+            .Must(dto => !(dto.Role != UserRole.SuperAdmin && dto.ClientId == Constants.Client.GlobalId))
+            .WithMessage(Constants.Validation.UserAssignment.ClientRoleAssignmentErrorMessage)
+            .When(x => x.UpsertUserAssignmentDto.ClientId != Guid.Empty)
+            .When(x => Enum.IsDefined(typeof(UserRole), x.UpsertUserAssignmentDto.Role));
     }
 }
