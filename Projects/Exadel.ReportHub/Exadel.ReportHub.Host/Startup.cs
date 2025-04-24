@@ -1,12 +1,10 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 using AutoMapper;
-using Exadel.ReportHub.Common.Providers;
-using Exadel.ReportHub.Csv;
-using Exadel.ReportHub.Csv.Abstract;
 using Exadel.ReportHub.Host.Infrastructure.Filters;
 using Exadel.ReportHub.Host.Registrations;
-using Exadel.ReportHub.RA;
+using Exadel.ReportHub.SDK.Abstract;
+using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.OpenApi.Models;
@@ -87,13 +85,20 @@ public class Startup(IConfiguration configuration)
 
         AuthorizationRegistrations.AddAuthorization(services);
 
-        services.AddIdentity();
-        services.AddMongo();
-        services.AddMediatR();
-        services.AddAutoMapper(typeof(Startup));
-        services.AddHttpContextAccessor();
-        services.AddScoped<IUserProvider, UserProvider>();
-        services.AddSingleton<ICsvProcessor, CsvProcessor>();
+        services
+            .AddIdentity()
+            .AddMongo()
+            .AddMediatR()
+            .AddAutoMapper(typeof(Startup))
+            .AddHttpContextAccessor()
+            .AddCsv()
+            .AddPdf()
+            .AddExchangeRate(configuration)
+            .AddPing(configuration)
+            .AddScheduler()
+            .AddJobs()
+            .AddHangfire()
+            .AddManagers();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)
@@ -119,5 +124,8 @@ public class Startup(IConfiguration configuration)
         {
             endpoints.MapControllers();
         });
+
+        app.UseHangfireDashboard();
+        app.ApplicationServices.GetRequiredService<ISchedulerService>().StartJobs();
     }
 }

@@ -42,6 +42,7 @@ public static class Constants
         {
             public const string EmailTakenMessage = "Email is already taken.";
             public const string EmailInvalidMessage = "Email is invalid.";
+            public const string CountryDoesNotExistMessage = "Country does not exist.";
         }
 
         public static class Client
@@ -51,7 +52,6 @@ public static class Constants
 
         public static class Invoice
         {
-            public const int CurrencyCodeLength = 3;
             public const int InvoiceMaximumNumberLength = 15;
             public const string InvoiceNumberErrorMessage = "Invoice number must start with 'INV' followed by digits.";
             public const string IssueDateErrorMessage = "Issue date cannot be in the future.";
@@ -59,9 +59,12 @@ public static class Constants
             public const string TimeComponentErrorMassage = "Date cannot have a time component.";
             public const int BankAccountNumberMinLength = 8;
             public const int BankAccountNumberMaxLength = 28;
-            public const string BankAccountNumberErrorMessage = "Bank account number must only contain digits and dashes.";
+            public const string BankAccountNumberErrorMessage = "Bank account number must start with two uppercase letters followed by digits.";
             public const string CustomerDoesntExistsErrorMessage = "Customer does not exist.";
             public const string ClientDoesntExistsErrorMessage = "Client does not exist.";
+            public const string InvoiceNumberExistsMessage = "Invoice number already exists.";
+            public const string ItemsDuplicateErrorMessage = "Items must not be duplicated.";
+            public const string ItemDoesNotExistsErrorMessage = "Item does not exist.";
             public const string CurrencyExistsErrorMessage = "Currency does not exist.";
         }
 
@@ -94,6 +97,19 @@ public static class Constants
             public const string PlanStartDateErrorMessage = "Start date must be less than end date";
             public const string PlandEndDateInThePastErrorMessage = "End date must be in the future";
             public const string PlanAlreadyExistsForItemAndClient = "Plan already exists for this item and client";
+        }
+    }
+
+    public static class File
+    {
+        public static class Extension
+        {
+            public const string Pdf = ".pdf";
+        }
+
+        public static class Name
+        {
+            public const string Invoice = "Invoice_";
         }
     }
 }

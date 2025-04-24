@@ -1,4 +1,5 @@
-﻿using Exadel.ReportHub.RA;
+﻿using System.Diagnostics.CodeAnalysis;
+using Exadel.ReportHub.RA;
 using Exadel.ReportHub.RA.Abstract;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
@@ -7,6 +8,7 @@ using MongoDB.Bson.Serialization.Serializers;
 
 namespace Exadel.ReportHub.Host.Registrations;
 
+[ExcludeFromCodeCoverage]
 public static class MongoRegistrations
 {
     public static IServiceCollection AddMongo(this IServiceCollection services)
@@ -27,10 +29,14 @@ public static class MongoRegistrations
         services.AddSingleton<IClientRepository, ClientRepository>();
         services.AddSingleton<ICustomerRepository, CustomerRepository>();
         services.AddSingleton<IInvoiceRepository, InvoiceRepository>();
+        services.AddSingleton<IExchangeRateRepository, ExchangeRateRepository>();
         services.AddSingleton<IItemRepository, ItemRepository>();
         services.AddSingleton<ICurrencyRepository, CurrencyRepository>();
         services.AddSingleton<IPlanRepository, PlanRepository>();
+        services.AddSingleton<ICountryRepository, CountryRepository>();
+
         BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
+
         return services;
     }
 }

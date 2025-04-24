@@ -3,7 +3,7 @@ using Exadel.ReportHub.Data.Enums;
 
 namespace Exadel.ReportHub.Data.Models;
 
-public class Invoice : IDocument
+public class Invoice : IDocument, ISoftDeletable
 {
     public Guid Id { get; set; }
 
@@ -28,4 +28,6 @@ public class Invoice : IDocument
     public string BankAccountNumber { get; set; }
 
     public IList<Guid> ItemIds { get; set; }
+
+    public bool IsDeleted { get; set; }
 }

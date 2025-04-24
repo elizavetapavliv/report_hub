@@ -1,13 +1,18 @@
-﻿using Exadel.ReportHub.Host.Infrastructure.Authorization;
+﻿using System.Diagnostics.CodeAnalysis;
+using Exadel.ReportHub.Common.Providers;
+using Exadel.ReportHub.Host.Infrastructure.Authorization;
 using Exadel.ReportHub.Host.PolicyHandlers;
+using Exadel.ReportHub.RA;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Exadel.ReportHub.Host.Registrations;
 
+[ExcludeFromCodeCoverage]
 public static class AuthorizationRegistrations
 {
     public static void AddAuthorization(this IServiceCollection services)
     {
+        services.AddScoped<IUserProvider, UserProvider>();
         services.AddAuthorizationPolicy();
         services.AddAuthorizationHandlers();
     }
