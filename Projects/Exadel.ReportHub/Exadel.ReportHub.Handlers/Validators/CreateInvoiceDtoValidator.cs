@@ -32,12 +32,12 @@ public class CreateInvoiceDtoValidator : AbstractValidator<CreateInvoiceDTO>
         RuleFor(x => x.ClientId)
             .NotEmpty()
             .MustAsync(_clientRepository.ExistsAsync)
-            .WithMessage(Constants.Validation.Invoice.ClientDoesntExistsErrorMessage);
+            .WithMessage(Constants.Validation.Invoice.ClientDoesNotExistsErrorMessage);
 
         RuleFor(x => x.CustomerId)
             .NotEmpty()
             .MustAsync(_customerRepository.ExistsAsync)
-            .WithMessage(Constants.Validation.Invoice.CustomerDoesntExistsErrorMessage);
+            .WithMessage(Constants.Validation.Invoice.CustomerDoesNotExistsErrorMessage);
 
         RuleFor(x => x.InvoiceNumber)
             .NotEmpty()

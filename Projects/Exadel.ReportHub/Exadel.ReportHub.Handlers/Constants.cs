@@ -60,12 +60,12 @@ public static class Constants
             public const string IssueDateErrorMessage = "Issue date cannot be in the future.";
             public const string DueDateErrorMessage = "Due date must be greater than issue date.";
             public const string TimeComponentErrorMassage = "Date cannot have a time component.";
-            public const string CustomerDoesntExistsErrorMessage = "Customer does not exist.";
-            public const string ClientDoesntExistsErrorMessage = "Client does not exist.";
+            public const string CustomerDoesNotExistsErrorMessage = "Customer does not exist.";
+            public const string ClientDoesNotExistsErrorMessage = "Client does not exist.";
             public const string InvoiceNumberExistsMessage = "Invoice number already exists.";
             public const string ItemsDuplicateErrorMessage = "Items must not be duplicated.";
             public const string ItemDoesNotExistsErrorMessage = "Item does not exist.";
-            public const string CurrencyExistsErrorMessage = "Currency does not exist.";
+            public const string CurrencyDoesNotExistErrorMessage = "Currency does not exist.";
         }
 
         public static class Item
