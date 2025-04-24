@@ -24,9 +24,9 @@ public class CreateCustomerValidator : AbstractValidator<CreateCustomerDTO>
         RuleFor(x => x.Email)
             .NotEmpty()
             .EmailAddress()
-            .WithMessage(Constants.Validation.Customer.EmailInvalidMessage)
+            .WithMessage(Constants.Validation.Common.EmailIsInvalid)
             .MustAsync(EmailMustNotExistsAsync)
-            .WithMessage(Constants.Validation.Customer.EmailTakenMessage);
+            .WithMessage(Constants.Validation.Common.EmailIsTaken);
     }
 
     private async Task<bool> EmailMustNotExistsAsync(string email, CancellationToken cancellationToken)
