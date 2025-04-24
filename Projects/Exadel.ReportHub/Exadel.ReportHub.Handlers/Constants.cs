@@ -48,6 +48,9 @@ public static class Constants
         public static class Client
         {
             public const string NameTakenMessage = "Name is already taken";
+            public const int BankAccountNumberMinLength = 8;
+            public const int BankAccountNumberMaxLength = 28;
+            public const string BankAccountNumberErrorMessage = "Bank account number must start with two uppercase letters followed by digits.";
         }
 
         public static class Invoice
@@ -57,9 +60,6 @@ public static class Constants
             public const string IssueDateErrorMessage = "Issue date cannot be in the future.";
             public const string DueDateErrorMessage = "Due date must be greater than issue date.";
             public const string TimeComponentErrorMassage = "Date cannot have a time component.";
-            public const int BankAccountNumberMinLength = 8;
-            public const int BankAccountNumberMaxLength = 28;
-            public const string BankAccountNumberErrorMessage = "Bank account number must start with two uppercase letters followed by digits.";
             public const string CustomerDoesntExistsErrorMessage = "Customer does not exist.";
             public const string ClientDoesntExistsErrorMessage = "Client does not exist.";
             public const string InvoiceNumberExistsMessage = "Invoice number already exists.";

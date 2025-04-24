@@ -1,5 +1,5 @@
 ﻿const scriptName = "01_create_Invoice";
-const version = NumberInt(3);
+const version = NumberInt(4);
 
 if (db.MigrationHistory.findOne({ ScriptName: scriptName, Version: version })) {
     print(`${scriptName} v${version} is already applied`);
@@ -90,9 +90,7 @@ const bankAccountNumbers = [
 
 const paymentStatuses = [
     "Unpaid",
-    "Pending",
     "Overdue",
-    "PartiallyPaid",
     "Paid"
 ]
 
