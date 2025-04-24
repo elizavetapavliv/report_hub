@@ -239,7 +239,7 @@ public class UpsertUserAssignmentValidatorTests : BaseTestFixture
 
         // Assert
         result.ShouldHaveValidationErrorFor(x => x.UpsertUserAssignmentDto)
-            .WithErrorMessage(Constants.Validation.UserAssignment.ClientRoleAssignmentErrorMessage);
+            .WithErrorMessage(Constants.Validation.UserAssignment.ClientRoleAssignment);
         Assert.That(result.Errors, Has.Exactly(1).Items);
 
         _userRepositoryMock.Verify(
@@ -268,7 +268,7 @@ public class UpsertUserAssignmentValidatorTests : BaseTestFixture
 
         // Assert
         result.ShouldHaveValidationErrorFor(x => x.UpsertUserAssignmentDto)
-            .WithErrorMessage(Constants.Validation.UserAssignment.GlobalRoleAssignmentErrorMessage);
+            .WithErrorMessage(Constants.Validation.UserAssignment.GlobalRoleAssignment);
         Assert.That(result.Errors, Has.Exactly(1).Items);
 
         _userRepositoryMock.Verify(
