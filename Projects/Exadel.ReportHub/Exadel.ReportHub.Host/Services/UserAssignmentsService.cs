@@ -21,7 +21,7 @@ public class UserAssignmentsService(ISender sender) : BaseService
     [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid user assignment data", typeof(ErrorResponse))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required to access this endpoint")]
     [SwaggerResponse(StatusCodes.Status403Forbidden, "User does not have permission to perform this action")]
-    [SwaggerResponse(StatusCodes.Status500InternalServerError)]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorResponse))]
     public async Task<ActionResult> UpsertUserAssignment([FromBody] UpsertUserAssignmentDTO upsertUserAssignmentDto)
     {
         var result = await sender.Send(new UpsertUserAssignmentRequest(upsertUserAssignmentDto));
