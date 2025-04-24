@@ -34,6 +34,7 @@ public static class MongoRegistrations
         services.AddSingleton<ICurrencyRepository, CurrencyRepository>();
         services.AddSingleton<IPlanRepository, PlanRepository>();
         services.AddSingleton<ICountryRepository, CountryRepository>();
+        services.AddSingleton<IAuditReportRepository, AuditReportRepository>();
 
         BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
 

@@ -1,6 +1,9 @@
 ﻿using System.Net.Mime;
 using AutoMapper;
 using ErrorOr;
+using Exadel.ReportHub.Audit;
+using Exadel.ReportHub.Common.Providers;
+using Exadel.ReportHub.Data.Enums;
 using Exadel.ReportHub.Pdf.Abstract;
 using Exadel.ReportHub.Pdf.Models;
 using Exadel.ReportHub.RA.Abstract;
@@ -17,13 +20,17 @@ public class ExportPdfInvoiceHandler(
     IItemRepository itemRepostitory,
     IClientRepository clientRepostitory,
     ICustomerRepository customerRepository,
+    IAuditManager auditManager,
+    IUserProvider userProvider,
     IMapper mapper) : IRequestHandler<ExportPdfInvoiceRequest, ErrorOr<ExportResult>>
 {
     public async Task<ErrorOr<ExportResult>> Handle(ExportPdfInvoiceRequest request, CancellationToken cancellationToken)
     {
         var invoice = await invoiceRepository.GetByIdAsync(request.InvoiceId, cancellationToken);
+        var userId = userProvider.GetUserId();
         if (invoice is null)
         {
+            await auditManager.LogExportAsync(userId, request.InvoiceId, Status.Failure, cancellationToken);
             return Error.NotFound();
         }
 
@@ -53,6 +60,7 @@ public class ExportPdfInvoiceHandler(
             FileName = $"{Constants.File.Name.Invoice}{invoice.InvoiceNumber}{Constants.File.Extension.Pdf}",
             ContentType = MediaTypeNames.Application.Pdf
         };
+        await auditManager.LogExportAsync(userId, request.InvoiceId, Status.Success, cancellationToken);
         return exportDto;
     }
 }
