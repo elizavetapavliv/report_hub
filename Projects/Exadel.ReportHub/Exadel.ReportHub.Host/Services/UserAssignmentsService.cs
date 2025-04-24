@@ -17,7 +17,7 @@ public class UserAssignmentsService(ISender sender) : BaseService
     [Authorize(Policy = Constants.Authorization.Policy.Update)]
     [HttpPost]
     [SwaggerOperation(Summary = "Upsert user assignment", Description = "Creates or updates the user assignment based on the provided data.")]
-    [SwaggerResponse(StatusCodes.Status204NoContent, "User assignment upserted successfully")]
+    [SwaggerResponse(StatusCodes.Status204NoContent, "User assignment was upserted successfully")]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid user assignment data", typeof(ErrorResponse))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required to access this endpoint")]
     [SwaggerResponse(StatusCodes.Status403Forbidden, "User does not have permission to perform this action")]

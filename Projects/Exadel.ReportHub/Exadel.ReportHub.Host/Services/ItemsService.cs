@@ -22,7 +22,7 @@ public class ItemsService(ISender sender) : BaseService
     [Authorize(Policy = Constants.Authorization.Policy.Create)]
     [HttpPost]
     [SwaggerOperation(Summary = "Add a new item", Description = "Creates a new item and returns its details.")]
-    [SwaggerResponse(StatusCodes.Status201Created, "Item created successfully", typeof(ActionResult<ItemDTO>))]
+    [SwaggerResponse(StatusCodes.Status201Created, "Item was created successfully", typeof(ActionResult<ItemDTO>))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid input data", typeof(ErrorResponse))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required to access this endpoint")]
     [SwaggerResponse(StatusCodes.Status403Forbidden, "User doesnt have permission to create an item")]
@@ -37,7 +37,7 @@ public class ItemsService(ISender sender) : BaseService
     [Authorize(Policy = Constants.Authorization.Policy.Read)]
     [HttpGet]
     [SwaggerOperation(Summary = "Get items by client id", Description = "Returns a list of items for the specified client.")]
-    [SwaggerResponse(StatusCodes.Status200OK, "Items retrieved successfully", typeof(ActionResult<IList<ItemDTO>>))]
+    [SwaggerResponse(StatusCodes.Status200OK, "Items were retrieved successfully", typeof(ActionResult<IList<ItemDTO>>))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required to access this endpoint")]
     [SwaggerResponse(StatusCodes.Status403Forbidden, "User doesnt have permission to access the items")]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorResponse))]
@@ -51,10 +51,10 @@ public class ItemsService(ISender sender) : BaseService
     [Authorize(Policy = Constants.Authorization.Policy.Read)]
     [HttpGet("{id:guid}")]
     [SwaggerOperation(Summary = "Get item by id", Description = "Returns the details of the specified item for the given client.")]
-    [SwaggerResponse(StatusCodes.Status200OK, "Item retrieved successfully", typeof(ActionResult<ItemDTO>))]
+    [SwaggerResponse(StatusCodes.Status200OK, "Item was retrieved successfully", typeof(ActionResult<ItemDTO>))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required to access this endpoint")]
     [SwaggerResponse(StatusCodes.Status403Forbidden, "User doesnt have permission to access this item")]
-    [SwaggerResponse(StatusCodes.Status404NotFound, "Item not found", typeof(ErrorResponse))]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "Item was not found", typeof(ErrorResponse))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorResponse))]
     public async Task<ActionResult<ItemDTO>> GetItemById([FromRoute] Guid id, [FromQuery][Required] Guid clientId)
     {
@@ -66,11 +66,11 @@ public class ItemsService(ISender sender) : BaseService
     [Authorize(Policy = Constants.Authorization.Policy.Update)]
     [HttpPut("{id:guid}")]
     [SwaggerOperation(Summary = "Update item", Description = "Updates the item with the specified id.")]
-    [SwaggerResponse(StatusCodes.Status204NoContent, "Item updated successfully")]
+    [SwaggerResponse(StatusCodes.Status204NoContent, "Item was updated successfully")]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid request data", typeof(ErrorResponse))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required to access this endpoint")]
     [SwaggerResponse(StatusCodes.Status403Forbidden, "Users doesnt have permission to update this item")]
-    [SwaggerResponse(StatusCodes.Status404NotFound, "Item not found", typeof(ErrorResponse))]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "Item was not found", typeof(ErrorResponse))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorResponse))]
     public async Task<ActionResult> UpdateItem([FromRoute] Guid id, [FromBody] CreateUpdateItemDTO updateItemDTO)
     {
@@ -82,10 +82,10 @@ public class ItemsService(ISender sender) : BaseService
     [Authorize(Policy = Constants.Authorization.Policy.Delete)]
     [HttpDelete("{id:guid}")]
     [SwaggerOperation(Summary = "Delete item", Description = "Deletes the item with the specified id and client.")]
-    [SwaggerResponse(StatusCodes.Status204NoContent, "Item deleted successfully")]
+    [SwaggerResponse(StatusCodes.Status204NoContent, "Item was deleted successfully")]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required to access this endpoint")]
     [SwaggerResponse(StatusCodes.Status403Forbidden, "Users doesnt have permission to delete this item")]
-    [SwaggerResponse(StatusCodes.Status404NotFound, "Item not found", typeof(ErrorResponse))]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "Item was not found", typeof(ErrorResponse))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorResponse))]
     public async Task<ActionResult> DeleteItem([FromRoute] Guid id, [FromQuery][Required] Guid clientId)
     {

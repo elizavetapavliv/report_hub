@@ -52,7 +52,7 @@ public class PlansService(ISender sender) : BaseService
     [SwaggerResponse(StatusCodes.Status200OK, "Plan details retrieved successfully", typeof(ActionResult<PlanDTO>))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required to access this endpoint")]
     [SwaggerResponse(StatusCodes.Status403Forbidden, "User does not have permission to view the plan")]
-    [SwaggerResponse(StatusCodes.Status404NotFound, "Plan not found for the given id", typeof(ErrorResponse))]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "Plan was not found for the given id", typeof(ErrorResponse))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorResponse))]
     public async Task<ActionResult<PlanDTO>> GetPlanById([FromRoute] Guid id, [FromQuery][Required] Guid clientId)
     {
@@ -67,7 +67,7 @@ public class PlansService(ISender sender) : BaseService
     [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid plan data", typeof(ErrorResponse))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required to access this endpoint")]
     [SwaggerResponse(StatusCodes.Status403Forbidden, "User does not have permission to update the plan")]
-    [SwaggerResponse(StatusCodes.Status404NotFound, "Plan not found for the specified id", typeof(ErrorResponse))]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "Plan was not found for the specified id", typeof(ErrorResponse))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorResponse))]
     public async Task<ActionResult> UpdatePlan([FromRoute] Guid id, [FromBody] UpdatePlanDTO updatePlanDateDto)
     {
@@ -78,11 +78,11 @@ public class PlansService(ISender sender) : BaseService
     [Authorize(Policy = Constants.Authorization.Policy.Delete)]
     [HttpDelete("{id:guid}")]
     [SwaggerOperation(Summary = "Delete plan", Description = "Deletes the plan with the specified id and client.")]
-    [SwaggerResponse(StatusCodes.Status204NoContent, "Plan deleted successfully")]
+    [SwaggerResponse(StatusCodes.Status204NoContent, "Plan was deleted successfully")]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid plan data", typeof(ErrorResponse))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required to access this endpoint")]
     [SwaggerResponse(StatusCodes.Status403Forbidden, "User does not have permission to delete the plan")]
-    [SwaggerResponse(StatusCodes.Status404NotFound, "Plan not found for the specified id", typeof(ErrorResponse))]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "Plan was not found for the specified id", typeof(ErrorResponse))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorResponse))]
     public async Task<ActionResult> DeletePlan([FromRoute] Guid id, [FromQuery][Required] Guid clientId)
     {
