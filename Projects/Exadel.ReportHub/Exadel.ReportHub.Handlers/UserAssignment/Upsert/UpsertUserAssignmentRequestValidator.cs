@@ -35,14 +35,18 @@ public class UpsertUserAssignmentRequestValidator : AbstractValidator<UpsertUser
 
                 child.RuleFor(x => x.Role)
                     .IsInEnum();
-            });
 
-        RuleFor(x => x.UpsertUserAssignmentDto)
-            .Must(dto => !(dto.Role == UserRole.SuperAdmin && dto.ClientId != Constants.Client.GlobalId))
-            .WithMessage(Constants.Validation.UserAssignment.GlobalRoleAssignment)
-            .Must(dto => !(dto.Role != UserRole.SuperAdmin && dto.ClientId == Constants.Client.GlobalId))
-            .WithMessage(Constants.Validation.UserAssignment.ClientRoleAssignment)
-            .When(x => x.UpsertUserAssignmentDto.ClientId != Guid.Empty)
-            .When(x => Enum.IsDefined(typeof(UserRole), x.UpsertUserAssignmentDto.Role));
+                child.When(x => x.Role == UserRole.SuperAdmin, () =>
+                {
+                    child.RuleFor(x => x.ClientId)
+                        .Must(id => id == Constants.ClientData.GlobalId)
+                        .WithMessage(Constants.Validation.UserAssignment.GlobalRoleAssignment);
+                }).Otherwise(() =>
+                {
+                    child.RuleFor(x => x.ClientId)
+                        .Must(id => id != Constants.ClientData.GlobalId)
+                        .WithMessage(Constants.Validation.UserAssignment.ClientRoleAssignment);
+                });
+            });
     }
 }

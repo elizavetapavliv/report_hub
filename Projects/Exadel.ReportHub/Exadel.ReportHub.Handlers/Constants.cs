@@ -103,7 +103,7 @@ public static class Constants
         }
     }
 
-    public static class Client
+    public static class ClientData
     {
         public static readonly Guid GlobalId = Guid.Parse("e47501a8-547b-4dc4-ba97-e65ccfc39477");
     }

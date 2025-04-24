@@ -52,12 +52,12 @@ public class PermissionHandler(
 
         if (matchingRoles.Contains(UserRole.SuperAdmin))
         {
-            clientIds.Add(Handlers.Constants.Client.GlobalId);
+            clientIds.Add(Handlers.Constants.ClientData.GlobalId);
         }
 
         if (matchingRoles.Any(x => !x.Equals(UserRole.SuperAdmin)))
         {
-            var requestClientId = await GetClientIdFromRequestAsync(httpContextAccessor.HttpContext.Request);
+            var requestClientId = await GetClientIdFromRequestAsync(httpContextAccessor.HttpContext.Request, serviceName.ToString());
 
             if (requestClientId.HasValue)
             {
@@ -65,17 +65,16 @@ public class PermissionHandler(
             }
         }
 
-        if (clientIds.Count == 0 &&
+        if (clientIds.Count > 0 &&
             await userAssignmentRepository.ExistAnyAsync(userId, clientIds, matchingRoles, CancellationToken.None))
         {
             context.Succeed(requirement);
         }
     }
 
-    private async Task<Guid?> GetClientIdFromRequestAsync(HttpRequest request)
+    private async Task<Guid?> GetClientIdFromRequestAsync(HttpRequest request, string serviceName)
     {
-        if (request.RouteValues.TryGetValue("controller", out var serviceName) &&
-            serviceName.ToString().Equals(nameof(ClientsService), StringComparison.Ordinal) &&
+        if (serviceName.Equals(nameof(ClientsService), StringComparison.Ordinal) &&
             request.RouteValues.TryGetValue("id", out var routeClientIdObj) &&
             Guid.TryParse(routeClientIdObj.ToString(), out var routeClientId))
         {
