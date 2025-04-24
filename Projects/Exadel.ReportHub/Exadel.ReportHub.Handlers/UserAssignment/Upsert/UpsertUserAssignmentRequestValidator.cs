@@ -26,12 +26,12 @@ public class UpsertUserAssignmentRequestValidator : AbstractValidator<UpsertUser
                 child.RuleFor(x => x.UserId)
                     .NotEmpty()
                     .MustAsync(_userRepository.ExistsAsync)
-                    .WithMessage(Constants.Validation.UserAssignment.UserDoesNotExistMessage);
+                    .WithMessage(Constants.Validation.User.DoesNotExist);
 
                 child.RuleFor(x => x.ClientId)
                     .NotEmpty()
                     .MustAsync(_clientRepository.ExistsAsync)
-                    .WithMessage(Constants.Validation.UserAssignment.ClientDoesNotExistMessage);
+                    .WithMessage(Constants.Validation.Client.DoesNotExist);
 
                 child.RuleFor(x => x.Role)
                     .IsInEnum();
@@ -39,9 +39,9 @@ public class UpsertUserAssignmentRequestValidator : AbstractValidator<UpsertUser
 
         RuleFor(x => x.UpsertUserAssignmentDto)
             .Must(dto => !(dto.Role == UserRole.SuperAdmin && dto.ClientId != Constants.Client.GlobalId))
-            .WithMessage(Constants.Validation.UserAssignment.GlobalRoleAssignmentErrorMessage)
+            .WithMessage(Constants.Validation.UserAssignment.GlobalRoleAssignment)
             .Must(dto => !(dto.Role != UserRole.SuperAdmin && dto.ClientId == Constants.Client.GlobalId))
-            .WithMessage(Constants.Validation.UserAssignment.ClientRoleAssignmentErrorMessage)
+            .WithMessage(Constants.Validation.UserAssignment.ClientRoleAssignment)
             .When(x => x.UpsertUserAssignmentDto.ClientId != Guid.Empty)
             .When(x => Enum.IsDefined(typeof(UserRole), x.UpsertUserAssignmentDto.Role));
     }
