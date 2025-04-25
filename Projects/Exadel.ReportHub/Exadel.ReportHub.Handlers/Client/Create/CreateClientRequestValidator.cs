@@ -24,12 +24,12 @@ public class CreateClientRequestValidator : AbstractValidator<CreateClientReques
                 child.RuleFor(x => x.Name)
                     .SetValidator(_stringValidator, Constants.Validation.RuleSet.Names)
                     .MustAsync(NameMustNotExistsAsync)
-                    .WithMessage(Constants.Validation.Name.NameTakenMessage);
+                    .WithMessage(Constants.Validation.Name.AlreadyTaken);
                 child.RuleFor(x => x.BankAccountNumber)
                     .NotEmpty()
-                    .Length(Constants.Validation.BankAccount.MinLength, Constants.Validation.BankAccount.MaxLength)
+                    .Length(Constants.Validation.BankAccountNumber.MinLength, Constants.Validation.BankAccountNumber.MaxLength)
                     .Matches(@"^[A-Z]{2}\d+$")
-                    .WithMessage(Constants.Validation.BankAccount.InvalidFormat);
+                    .WithMessage(Constants.Validation.BankAccountNumber.InvalidFormat);
             });
     }
 

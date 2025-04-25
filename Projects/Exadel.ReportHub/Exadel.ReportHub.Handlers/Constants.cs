@@ -22,7 +22,7 @@ public static class Constants
             public const string DoesNotExist = "Client does not exist.";
         }
 
-        public static class BankAccount
+        public static class BankAccountNumber
         {
             public const int MinLength = 8;
             public const int MaxLength = 28;
@@ -46,7 +46,7 @@ public static class Constants
 
         public static class Name
         {
-            public const string NameTakenMessage = "Name is already taken";
+            public const string AlreadyTaken = "Name is already taken";
             public const int MaxLength = 100;
             public const string MustStartWithCapital = "Name must begin with a capital letter.";
             public const string IsTaken = "Name is already taken";
