@@ -90,7 +90,6 @@ const clientBankAccountNumbers = [
 
 const paymentStatuses = [
     "Unpaid",
-    "Overdue",
     "Paid"
 ]
 
