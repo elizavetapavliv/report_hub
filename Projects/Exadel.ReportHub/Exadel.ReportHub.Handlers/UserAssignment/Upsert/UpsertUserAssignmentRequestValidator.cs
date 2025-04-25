@@ -31,22 +31,24 @@ public class UpsertUserAssignmentRequestValidator : AbstractValidator<UpsertUser
                 child.RuleFor(x => x.ClientId)
                     .NotEmpty()
                     .MustAsync(_clientRepository.ExistsAsync)
-                    .WithMessage(Constants.Validation.Client.DoesNotExist);
+                    .WithMessage(Constants.Validation.Client.DoesNotExist)
+                    .DependentRules(() =>
+                    {
+                        child.When(x => x.Role == UserRole.SuperAdmin, () =>
+                        {
+                            child.RuleFor(x => x.ClientId)
+                                .Must(id => id == Constants.ClientData.GlobalId)
+                                .WithMessage(Constants.Validation.UserAssignment.GlobalRoleAssignment);
+                        }).Otherwise(() =>
+                        {
+                            child.RuleFor(x => x.ClientId)
+                                .Must(id => id != Constants.ClientData.GlobalId)
+                                .WithMessage(Constants.Validation.UserAssignment.ClientRoleAssignment);
+                        });
+                    });
 
                 child.RuleFor(x => x.Role)
                     .IsInEnum();
-
-                child.When(x => x.Role == UserRole.SuperAdmin, () =>
-                {
-                    child.RuleFor(x => x.ClientId)
-                        .Must(id => id == Constants.ClientData.GlobalId)
-                        .WithMessage(Constants.Validation.UserAssignment.GlobalRoleAssignment);
-                }).Otherwise(() =>
-                {
-                    child.RuleFor(x => x.ClientId)
-                        .Must(id => id != Constants.ClientData.GlobalId)
-                        .WithMessage(Constants.Validation.UserAssignment.ClientRoleAssignment);
-                });
             });
     }
 }

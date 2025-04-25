@@ -127,7 +127,8 @@ public class UpsertUserAssignmentValidatorTests : BaseTestFixture
     [TestCase(UserRole.Operator)]
     [TestCase(UserRole.ClientAdmin)]
     [TestCase(UserRole.Owner)]
-    public async Task ValidateAsync_ClientIdIsEmptyClientRoles_ErrorReturned(UserRole role)
+    [TestCase(UserRole.SuperAdmin)]
+    public async Task ValidateAsync_ClientIdIsEmpty_ErrorReturned(UserRole role)
     {
         // Arrange
         var upsertUserAssignmentDto = Fixture.Build<UpsertUserAssignmentDTO>()
@@ -144,34 +145,6 @@ public class UpsertUserAssignmentValidatorTests : BaseTestFixture
         result.ShouldHaveValidationErrorFor(x => x.UpsertUserAssignmentDto.ClientId);
         Assert.That(result.Errors, Has.Exactly(1).Items);
         Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo("'Client Id' must not be empty."));
-
-        _userRepositoryMock.Verify(
-            x => x.ExistsAsync(upsertUserAssignmentDto.UserId, CancellationToken.None),
-            Times.Once);
-        _clientRepositoryMock.Verify(
-            x => x.ExistsAsync(It.IsAny<Guid>(), CancellationToken.None),
-            Times.Never);
-    }
-
-    [TestCase(UserRole.SuperAdmin)]
-    public async Task ValidateAsync_ClientIdIsEmptyGlobalRoles_ErrorReturned(UserRole role)
-    {
-        // Arrange
-        var upsertUserAssignmentDto = Fixture.Build<UpsertUserAssignmentDTO>()
-            .With(x => x.ClientId, Guid.Empty).With(x => x.Role, role).Create();
-        _userRepositoryMock
-            .Setup(x => x.ExistsAsync(upsertUserAssignmentDto.UserId, CancellationToken.None))
-            .ReturnsAsync(true);
-
-        // Act
-        var upsertUserAssignmentRequest = new UpsertUserAssignmentRequest(upsertUserAssignmentDto);
-        var result = await _validator.TestValidateAsync(upsertUserAssignmentRequest);
-
-        // Assert
-        result.ShouldHaveValidationErrorFor(x => x.UpsertUserAssignmentDto.ClientId);
-        Assert.That(result.Errors, Has.Exactly(2).Items);
-        Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo("'Client Id' must not be empty."));
-        Assert.That(result.Errors[1].ErrorMessage, Is.EqualTo(Constants.Validation.UserAssignment.GlobalRoleAssignment));
 
         _userRepositoryMock.Verify(
             x => x.ExistsAsync(upsertUserAssignmentDto.UserId, CancellationToken.None),
