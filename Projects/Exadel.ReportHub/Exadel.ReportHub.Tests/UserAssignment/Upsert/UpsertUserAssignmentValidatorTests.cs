@@ -86,8 +86,8 @@ public class UpsertUserAssignmentValidatorTests : BaseTestFixture
             x => x.ExistsAsync(It.IsAny<Guid>(), CancellationToken.None),
             Times.Never);
         _clientRepositoryMock.Verify(
-            x => x.ExistsAsync(upsertUserAssignmentDto.ClientId, CancellationToken.None),
-            Times.Once);
+            x => x.ExistsAsync(It.IsAny<Guid>(), CancellationToken.None),
+            Times.Never);
     }
 
     [TestCase(UserRole.Operator)]
@@ -120,8 +120,8 @@ public class UpsertUserAssignmentValidatorTests : BaseTestFixture
             x => x.ExistsAsync(upsertUserAssignmentDto.UserId, CancellationToken.None),
             Times.Once);
         _clientRepositoryMock.Verify(
-            x => x.ExistsAsync(upsertUserAssignmentDto.ClientId, CancellationToken.None),
-            Times.Once);
+            x => x.ExistsAsync(It.IsAny<Guid>(), CancellationToken.None),
+            Times.Never);
     }
 
     [TestCase(UserRole.Operator)]
