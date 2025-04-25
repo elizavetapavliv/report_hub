@@ -20,9 +20,13 @@ public static class Constants
         public static class Client
         {
             public const string DoesNotExist = "Client does not exist.";
-            public const int BankAccountNumberMinLength = 8;
-            public const int BankAccountNumberMaxLength = 28;
-            public const string InvalidBankAccountFormat = "Bank account number must start with two uppercase letters followed by digits.";
+        }
+
+        public static class BankAccount
+        {
+            public const int MinLength = 8;
+            public const int MaxLength = 28;
+            public const string InvalidFormat = "Bank account number must start with two uppercase letters followed by digits.";
         }
 
         public static class Customer

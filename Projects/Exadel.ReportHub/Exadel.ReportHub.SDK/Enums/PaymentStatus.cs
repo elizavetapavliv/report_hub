@@ -3,6 +3,5 @@
 public enum PaymentStatus
 {
     Unpaid,
-    Overdue,
     Paid
 }

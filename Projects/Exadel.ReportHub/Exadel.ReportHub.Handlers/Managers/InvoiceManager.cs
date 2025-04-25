@@ -43,7 +43,7 @@ public class InvoiceManager(
             invoice.Amount = (await Task.WhenAll(conversionTasks)).Sum();
             invoice.CurrencyId = customers[invoice.CustomerId].CurrencyId;
             invoice.CurrencyCode = currencyCode;
-            invoice.ClientBankAccountNumber = clients[invoice.ClientId].ClientBankAccountNumber;
+            invoice.ClientBankAccountNumber = clients[invoice.ClientId].BankAccountNumber;
         }
 
         return invoices;

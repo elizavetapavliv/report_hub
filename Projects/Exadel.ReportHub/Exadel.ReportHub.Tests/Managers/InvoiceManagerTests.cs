@@ -82,7 +82,7 @@ public class InvoiceManagerTests : BaseTestFixture
         Assert.That(result.InvoiceNumber, Is.EqualTo(invoiceDto.InvoiceNumber));
         Assert.That(result.IssueDate, Is.EqualTo(invoiceDto.IssueDate));
         Assert.That(result.DueDate, Is.EqualTo(invoiceDto.DueDate));
-        Assert.That(result.ClientBankAccountNumber, Is.EqualTo(client.ClientBankAccountNumber));
+        Assert.That(result.ClientBankAccountNumber, Is.EqualTo(client.BankAccountNumber));
         Assert.That(result.Amount, Is.EqualTo(amount));
         Assert.That(result.CurrencyId, Is.EqualTo(customer.CurrencyId));
         Assert.That(result.CurrencyCode, Is.EqualTo(customer.CurrencyCode));
@@ -139,7 +139,7 @@ public class InvoiceManagerTests : BaseTestFixture
         Assert.That(result[0].InvoiceNumber, Is.EqualTo(invoiceDtos[0].InvoiceNumber));
         Assert.That(result[0].IssueDate, Is.EqualTo(invoiceDtos[0].IssueDate));
         Assert.That(result[0].DueDate, Is.EqualTo(invoiceDtos[0].DueDate));
-        Assert.That(result[0].ClientBankAccountNumber, Is.EqualTo(client.ClientBankAccountNumber));
+        Assert.That(result[0].ClientBankAccountNumber, Is.EqualTo(client.BankAccountNumber));
         Assert.That(result[0].Amount, Is.EqualTo(amount));
         Assert.That(result[0].CurrencyId, Is.EqualTo(customers[0].CurrencyId));
         Assert.That(result[0].CurrencyCode, Is.EqualTo(customers[0].CurrencyCode));
@@ -151,7 +151,7 @@ public class InvoiceManagerTests : BaseTestFixture
         Assert.That(result[1].InvoiceNumber, Is.EqualTo(invoiceDtos[1].InvoiceNumber));
         Assert.That(result[1].IssueDate, Is.EqualTo(invoiceDtos[1].IssueDate));
         Assert.That(result[1].DueDate, Is.EqualTo(invoiceDtos[1].DueDate));
-        Assert.That(result[1].ClientBankAccountNumber, Is.EqualTo(client.ClientBankAccountNumber));
+        Assert.That(result[1].ClientBankAccountNumber, Is.EqualTo(client.BankAccountNumber));
         Assert.That(result[1].Amount, Is.EqualTo(amount));
         Assert.That(result[1].CurrencyId, Is.EqualTo(customers[0].CurrencyId));
         Assert.That(result[1].CurrencyCode, Is.EqualTo(customers[0].CurrencyCode));
