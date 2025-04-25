@@ -8,7 +8,5 @@ public class Client : IDocument, ISoftDeletable
 
     public string Name { get; set; }
 
-    public IList<Guid> CustomerIds { get; set; }
-
     public bool IsDeleted { get; set; }
 }

@@ -25,6 +25,7 @@ public static class Constants
         public static class Customer
         {
             public const string DoesNotExist = "Customer does not exist.";
+            public const string DoesNotConnectedToClient = "Customer does not connected to the Client.";
         }
 
         public static class User
