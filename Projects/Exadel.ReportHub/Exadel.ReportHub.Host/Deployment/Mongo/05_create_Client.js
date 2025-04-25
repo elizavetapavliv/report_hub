@@ -1,5 +1,5 @@
 ﻿const scriptName = "05_create_Client";
-const version = NumberInt(4);
+const version = NumberInt(5);
 
 if (db.MigrationHistory.findOne({ ScriptName: scriptName, Version: version })) {
     print(`${scriptName} v${version} is already applied`);
@@ -24,6 +24,19 @@ const clientIds = [
     UUID("b40ef306-6ac2-4fa8-b703-df291799feef"),
     UUID("00c1df50-320e-447b-8b94-7b2fab0fcf58"),
     UUID("31e52122-ea93-448a-8827-fb5f079cbd1a")
+]
+
+const clientBankAccountNumbers = [
+    "PL359459402653871205990733",
+    "DE197389122734561028993857",
+    "BY849012345678901234567890",
+    "GE021987654321098765432109",
+    "PL546781234098765432107654",
+    "PL653974772949245406736697",
+    "DE903166400596904725592333",
+    "BY021561708549229773409827",
+    "GE844186878313204245392322",
+    "PL949738633056449681183536"
 ]
 
 const clientNames = [
@@ -66,6 +79,7 @@ for (let i = 0; i < clientCount; i++) {
     clients.push({
         _id: clientIds[i],
         Name: clientNames[i],
+        ClientBankAccountNumber: clientBankAccountNumbers[i],
         IsDeleted: false
     });
 }

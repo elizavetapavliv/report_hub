@@ -45,7 +45,7 @@ const invoiceIds = [
     UUID("5827a66e-b7f5-4490-b2eb-cc4719bb462c"),
     UUID("6d0658bd-f2b6-44cd-ad95-49fe8d5d811f"),
     UUID("b639fc00-1337-4159-8c76-5c9494643633"),
-    UUID("971b2e38-cd50-412b-a570-bbdb94bb6736"),
+    UUID("971b2e38-cd50-412b-a570-bbdb94bb6736")
 ]
 
 const itemIds = [
@@ -87,7 +87,7 @@ const currencyCodes = [
     "RON"
 ]
 
-const bankAccountNumbers = [
+const clientBankAccountNumbers = [
     "PL359459402653871205990733",
     "DE197389122734561028993857",
     "BY849012345678901234567890",
@@ -97,9 +97,6 @@ const bankAccountNumbers = [
 
 const paymentStatuses = [
     "Unpaid",
-    "Pending",
-    "Overdue",
-    "PartiallyPaid",
     "Paid"
 ]
 
@@ -143,7 +140,7 @@ for (let i = 0; i < invoiceCount; i++) {
         CurrencyId: currencyIds[index],
         CurrencyCode: currencyCodes[index],
         PaymentStatus: paymentStatuses[getRandomInt(paymentStatuses.length)],
-        BankAccountNumber: bankAccountNumbers[index],
+        ClientBankAccountNumber: clientBankAccountNumbers[index],
         ItemIds: [itemIds[index * 2], itemIds[index * 2 + 1]],
         IsDeleted: false,
     });
