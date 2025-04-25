@@ -56,8 +56,8 @@ public class CreateInvoiceDtoValidator : AbstractValidator<CreateInvoiceDTO>
             .MustAsync(_itemRepository.AllExistAsync)
             .WithMessage(Constants.Validation.Item.DoesNotExist);
 
-        RuleFor(x => x)
-            .MustAsync(async (x, cancellationToken) => x.ClientId == await _customerRepository.GetClientIdAsync(x.CustomerId, cancellationToken))
-            .WithMessage(Constants.Validation.Customer.DoesNotConnectedToClient);
+        RuleFor(x => x.ClientId)
+            .MustAsync(async (dto, clientId, cancellationToken) => clientId == await _customerRepository.GetClientIdAsync(dto.CustomerId, cancellationToken))
+            .WithMessage(Constants.Validation.Customer.WrongClient);
     }
 }
