@@ -8,9 +8,11 @@ public class AuditReportDTO
 
     public Guid UserId { get; set; }
 
-    public Guid InvoiceId { get; set; }
+    public Dictionary<string, Guid> Properties { get; set; }
+
+    public string Action { get; set; }
 
     public DateTime TimeStamp { get; set; }
 
-    public Status Status { get; set; }
+    public bool IsSuccess { get; set; }
 }

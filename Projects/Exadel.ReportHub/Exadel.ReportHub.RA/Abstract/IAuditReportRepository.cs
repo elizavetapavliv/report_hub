@@ -4,9 +4,7 @@ namespace Exadel.ReportHub.RA.Abstract;
 
 public interface IAuditReportRepository
 {
-    Task LogAsync(AuditReport auditReport, CancellationToken cancellationToken);
-
-    Task<IList<AuditReport>> GetAllAsync(CancellationToken cancellationToken);
+    Task AddAsync(AuditReport auditReport, CancellationToken cancellationToken);
 
     Task<AuditReport> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 

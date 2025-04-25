@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Exadel.ReportHub.Audit;
+using Exadel.ReportHub.Audit.Abstract;
 using Exadel.ReportHub.Handlers.Managers;
 
 namespace Exadel.ReportHub.Host.Registrations;

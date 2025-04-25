@@ -8,6 +8,12 @@ public static class Permissions
     private static Dictionary<string, Dictionary<Permission, List<UserRole>>> permissions = new()
     {
         {
+            nameof(AuditReport), new()
+            {
+                { Permission.Read, new() { UserRole.SuperAdmin, UserRole.Owner, UserRole.ClientAdmin, UserRole.Operator } },
+            }
+        },
+        {
             nameof(Client), new()
             {
                 { Permission.Create, new() { UserRole.SuperAdmin } },

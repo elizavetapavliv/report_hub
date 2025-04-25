@@ -13,11 +13,6 @@ public class AuditReportRepository : BaseRepository, IAuditReportRepository
     {
     }
 
-    public async Task<IList<AuditReport>> GetAllAsync(CancellationToken cancellationToken)
-    {
-        return await GetAllAsync<AuditReport>(cancellationToken);
-    }
-
     public async Task<AuditReport> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return await GetByIdAsync<AuditReport>(id, cancellationToken);
@@ -29,8 +24,8 @@ public class AuditReportRepository : BaseRepository, IAuditReportRepository
         return await GetAsync(filter, cancellationToken);
     }
 
-    public async Task LogAsync(AuditReport auditReport, CancellationToken cancellationToken)
+    public async Task AddAsync(AuditReport auditReport, CancellationToken cancellationToken)
     {
-        await AddAsync(auditReport, cancellationToken);
+        await base.AddAsync(auditReport, cancellationToken);
     }
 }

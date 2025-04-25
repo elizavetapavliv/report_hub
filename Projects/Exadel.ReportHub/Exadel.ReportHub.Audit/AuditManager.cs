@@ -1,25 +1,21 @@
-﻿using Exadel.ReportHub.Data.Enums;
+﻿using Exadel.ReportHub.Audit.Abstract;
 using Exadel.ReportHub.Data.Models;
 using Exadel.ReportHub.RA.Abstract;
 
 namespace Exadel.ReportHub.Audit;
 
-public class AuditManager : IAuditManager
+public class AuditManager(IAuditReportRepository auditReportRepository) : IAuditManager
 {
-    private readonly IAuditReportRepository _auditRepository;
-    public AuditManager(IAuditReportRepository auditRepository)
-    {
-        _auditRepository = auditRepository;
-    }
-
-    public Task LogExportAsync(Guid userId, Guid invoiceId, Status status, CancellationToken cancellationToken)
+    public Task AuditAsync(IAuditAction auditAction, CancellationToken cancellationToken)
     {
         var auditReport = new AuditReport
         {
-            UserId = userId,
-            InvoiceId = invoiceId,
-            Status = status
+            UserId = auditAction.UserId,
+            Properties = auditAction.Properties,
+            TimeStamp = auditAction.TimeStamp,
+            Action = auditAction.Action,
+            IsSuccess = auditAction.IsSuccess,
         };
-        return _auditRepository.LogAsync(auditReport, cancellationToken);
+        return auditReportRepository.AddAsync(auditReport, cancellationToken);
     }
 }
