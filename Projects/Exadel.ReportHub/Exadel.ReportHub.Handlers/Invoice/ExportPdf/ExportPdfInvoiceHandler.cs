@@ -1,6 +1,8 @@
 ﻿using System.Net.Mime;
 using AutoMapper;
 using ErrorOr;
+using Exadel.ReportHub.Common.Providers;
+using Exadel.ReportHub.Handlers.Notifications;
 using Exadel.ReportHub.Pdf.Abstract;
 using Exadel.ReportHub.Pdf.Models;
 using Exadel.ReportHub.RA.Abstract;
@@ -14,9 +16,11 @@ public record ExportPdfInvoiceRequest(Guid InvoiceId) : IRequest<ErrorOr<ExportR
 public class ExportPdfInvoiceHandler(
     IPdfInvoiceGenerator pdfInvoiceGenerator,
     IInvoiceRepository invoiceRepository,
-    IItemRepository itemRepostitory,
-    IClientRepository clientRepostitory,
+    IItemRepository itemRepository,
+    IClientRepository clientRepository,
     ICustomerRepository customerRepository,
+    IUserProvider userProvider,
+    IPublisher publisher,
     IMapper mapper) : IRequestHandler<ExportPdfInvoiceRequest, ErrorOr<ExportResult>>
 {
     public async Task<ErrorOr<ExportResult>> Handle(ExportPdfInvoiceRequest request, CancellationToken cancellationToken)
@@ -27,8 +31,8 @@ public class ExportPdfInvoiceHandler(
             return Error.NotFound();
         }
 
-        var itemsTask = itemRepostitory.GetByIdsAsync(invoice.ItemIds, cancellationToken);
-        var clientTask = clientRepostitory.GetByIdAsync(invoice.ClientId, cancellationToken);
+        var itemsTask = itemRepository.GetByIdsAsync(invoice.ItemIds, cancellationToken);
+        var clientTask = clientRepository.GetByIdAsync(invoice.ClientId, cancellationToken);
         var customerTask = customerRepository.GetByIdAsync(invoice.CustomerId, cancellationToken);
         await Task.WhenAll(itemsTask, clientTask, customerTask);
 
@@ -53,6 +57,11 @@ public class ExportPdfInvoiceHandler(
             FileName = $"{Constants.File.Name.Invoice}{invoice.InvoiceNumber}{Constants.File.Extension.Pdf}",
             ContentType = MediaTypeNames.Application.Pdf
         };
+
+        var userId = userProvider.GetUserId();
+        var notification = new InvoiceExportedNotification(userId, request.InvoiceId);
+        await publisher.Publish(notification);
+
         return exportDto;
     }
 }
