@@ -1,5 +1,4 @@
 ﻿using Exadel.ReportHub.Data.Enums;
-using Exadel.ReportHub.Data.Models;
 
 namespace Exadel.ReportHub.Host.Infrastructure.Authorization;
 

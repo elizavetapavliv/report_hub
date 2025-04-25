@@ -14,15 +14,15 @@ public class ExportInvoicesAuditAction : IAuditAction
 
     public bool IsSuccess { get; }
 
-    public ExportInvoicesAuditAction(Guid userId, Guid invoiceId, string action, bool isSuccess)
+    public ExportInvoicesAuditAction(Guid userId, Guid invoiceId, DateTime timeStamp, bool isSuccess)
     {
         UserId = userId;
         Properties = new Dictionary<string, Guid>
         {
             { "InvoiceId", invoiceId }
         };
-        TimeStamp = DateTime.UtcNow;
-        Action = action;
+        TimeStamp = timeStamp;
+        Action = nameof(ExportInvoicesAuditAction);
         IsSuccess = isSuccess;
     }
 }

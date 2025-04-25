@@ -10,7 +10,7 @@ public class AuditReport : IDocument
 
     public Dictionary<string, Guid> Properties { get; set; }
 
-    public DateTime TimeStamp { get; set; } = DateTime.UtcNow;
+    public DateTime TimeStamp { get; set; }
 
     public string Action { get; set; }
 

@@ -1,8 +1,6 @@
 ﻿using System.Net.Mime;
 using AutoMapper;
 using ErrorOr;
-using Exadel.ReportHub.Audit.Abstract;
-using Exadel.ReportHub.Common.Providers;
 using Exadel.ReportHub.Pdf.Abstract;
 using Exadel.ReportHub.Pdf.Models;
 using Exadel.ReportHub.RA.Abstract;
