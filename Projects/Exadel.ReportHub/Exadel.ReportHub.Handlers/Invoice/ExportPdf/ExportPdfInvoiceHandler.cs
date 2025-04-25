@@ -60,7 +60,7 @@ public class ExportPdfInvoiceHandler(
 
         var userId = userProvider.GetUserId();
         var notification = new InvoiceExportedNotification(userId, request.InvoiceId);
-        await publisher.Publish(notification);
+        await publisher.Publish(notification, cancellationToken);
 
         return exportDto;
     }
