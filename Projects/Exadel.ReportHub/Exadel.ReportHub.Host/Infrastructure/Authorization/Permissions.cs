@@ -1,5 +1,4 @@
 ﻿using Exadel.ReportHub.Data.Enums;
-using Exadel.ReportHub.Data.Models;
 
 namespace Exadel.ReportHub.Host.Infrastructure.Authorization;
 
@@ -15,6 +14,7 @@ public static class Permissions
         },
         {
             nameof(Client), new()
+            Constants.Authorization.Resource.Clients, new()
             {
                 { Permission.Create, new() { UserRole.SuperAdmin } },
                 { Permission.Read, new() { UserRole.SuperAdmin, UserRole.Owner, UserRole.ClientAdmin, UserRole.Operator } },
@@ -23,7 +23,7 @@ public static class Permissions
             }
         },
         {
-            nameof(User), new()
+            Constants.Authorization.Resource.Users, new()
             {
                 { Permission.Create, new() { UserRole.SuperAdmin, UserRole.Owner, UserRole.ClientAdmin } },
                 { Permission.Read, new() { UserRole.SuperAdmin, UserRole.Owner, UserRole.ClientAdmin, UserRole.Operator } },
@@ -32,7 +32,7 @@ public static class Permissions
             }
         },
         {
-            nameof(UserAssignment), new()
+            Constants.Authorization.Resource.UserAssignments, new()
             {
                 { Permission.Create, new() { UserRole.SuperAdmin } },
                 { Permission.Read, new() { UserRole.SuperAdmin, UserRole.Owner, UserRole.ClientAdmin, UserRole.Operator } },
@@ -41,7 +41,7 @@ public static class Permissions
             }
         },
         {
-            nameof(Item), new()
+            Constants.Authorization.Resource.Items, new()
             {
                 { Permission.Create, new() { UserRole.Owner, UserRole.ClientAdmin } },
                 { Permission.Read, new() { UserRole.Owner, UserRole.ClientAdmin, UserRole.Operator } },
@@ -50,7 +50,17 @@ public static class Permissions
             }
         },
         {
-            nameof(Invoice), new()
+            Constants.Authorization.Resource.Invoices, new()
+            {
+                { Permission.Create, new() { UserRole.Owner, UserRole.ClientAdmin, UserRole.Operator } },
+                { Permission.Read, new() { UserRole.Owner, UserRole.ClientAdmin, UserRole.Operator } },
+                { Permission.Update, new() { UserRole.Owner, UserRole.ClientAdmin } },
+                { Permission.Delete, new() { UserRole.Owner } },
+                { Permission.Export, new() { UserRole.Owner, UserRole.ClientAdmin, UserRole.Operator } }
+            }
+        },
+        {
+            Constants.Authorization.Resource.Customers, new()
             {
                 { Permission.Create, new() { UserRole.Owner, UserRole.ClientAdmin, UserRole.Operator } },
                 { Permission.Read, new() { UserRole.Owner, UserRole.ClientAdmin, UserRole.Operator } },
@@ -59,16 +69,7 @@ public static class Permissions
             }
         },
         {
-            nameof(Customer), new()
-            {
-                { Permission.Create, new() { UserRole.SuperAdmin, UserRole.Owner, UserRole.ClientAdmin, UserRole.Operator } },
-                { Permission.Read, new() { UserRole.SuperAdmin, UserRole.Owner, UserRole.ClientAdmin, UserRole.Operator } },
-                { Permission.Update, new() { UserRole.SuperAdmin, UserRole.Owner, UserRole.ClientAdmin } },
-                { Permission.Delete, new() { UserRole.SuperAdmin, UserRole.Owner } },
-            }
-        },
-        {
-            nameof(Plan), new()
+            Constants.Authorization.Resource.Plans, new()
             {
                 { Permission.Create, new() { UserRole.Owner, UserRole.ClientAdmin } },
                 { Permission.Read, new() { UserRole.Owner, UserRole.ClientAdmin } },
@@ -77,7 +78,7 @@ public static class Permissions
             }
         },
         {
-            nameof(Report), new()
+            Constants.Authorization.Resource.Reports, new()
             {
                 { Permission.Create, new() { UserRole.Owner, UserRole.ClientAdmin } },
                 { Permission.Read, new() { UserRole.Owner, UserRole.ClientAdmin } },
@@ -85,10 +86,16 @@ public static class Permissions
                 { Permission.Delete, new() { UserRole.Owner } },
             }
         },
+        {
+            Constants.Authorization.Resource.Logs, new()
+            {
+                { Permission.Read, new() { UserRole.SuperAdmin, UserRole.Owner, UserRole.ClientAdmin, UserRole.Operator } },
+            }
+        }
     };
 
     public static IList<UserRole> GetAllowedRoles(string resource, Permission permission)
     {
-        return permissions.GetValueOrDefault(resource)?.GetValueOrDefault(permission) ?? new List<UserRole>();
+        return permissions.GetValueOrDefault(resource)?.GetValueOrDefault(permission) ?? new();
     }
 }
