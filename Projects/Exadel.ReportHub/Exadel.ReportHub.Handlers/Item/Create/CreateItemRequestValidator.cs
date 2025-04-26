@@ -18,6 +18,7 @@ public class CreateItemRequestValidator : AbstractValidator<CreateItemRequest>
         RuleLevelCascadeMode = CascadeMode.Stop;
 
         RuleFor(x => x.CreateItemDto)
+            .NotEmpty()
             .SetValidator(_itemValidator);
     }
 }
