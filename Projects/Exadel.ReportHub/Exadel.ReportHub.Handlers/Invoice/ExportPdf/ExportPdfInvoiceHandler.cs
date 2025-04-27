@@ -41,25 +41,17 @@ public class ExportPdfInvoiceHandler(
             var customerTask = customerRepository.GetByIdAsync(invoice.CustomerId, cancellationToken);
             await Task.WhenAll(itemsTask, clientTask, customerTask);
 
-            var invoiceModel = new InvoiceModel
-            {
-                ClientName = clientTask.Result.Name,
-                CustomerName = customerTask.Result.Name,
-                InvoiceNumber = invoice.InvoiceNumber,
-                IssueDate = invoice.IssueDate,
-                DueDate = invoice.DueDate,
-                Amount = invoice.Amount,
-                CurrencyCode = invoice.CurrencyCode,
-                PaymentStatus = (SDK.Enums.PaymentStatus)invoice.PaymentStatus,
-                ClientBankAccountNumber = invoice.ClientBankAccountNumber,
-                Items = mapper.Map<IList<ItemDTO>>(itemsTask.Result)
-            };
+            var invoiceModel = mapper.Map<InvoiceModel>(invoice);
+            invoiceModel.ClientName = clientTask.Result.Name;
+            invoiceModel.CustomerName = customerTask.Result.Name;
+            invoiceModel.Items = mapper.Map<IList<ItemDTO>>(itemsTask.Result);
+
             var stream = await pdfInvoiceGenerator.GenerateAsync(invoiceModel, cancellationToken);
 
             var exportDto = new ExportResult
             {
                 Stream = stream,
-                FileName = $"{Constants.File.Name.Invoice}{invoice.InvoiceNumber}{Constants.File.Extension.Pdf}",
+                FileName = $"{invoice.InvoiceNumber}{Constants.File.Extension.Pdf}",
                 ContentType = MediaTypeNames.Application.Pdf
             };
             isSuccess = true;

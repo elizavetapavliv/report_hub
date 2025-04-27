@@ -4,8 +4,6 @@ using MediatR;
 
 namespace Exadel.ReportHub.Handlers.Notifications.Invoice.Export;
 
-public record InvoiceExportedNotification(Guid UserId, Guid InvoiceId, DateTime TimeStamp, bool IsSuccess) : INotification;
-
 public class AuditInvoiceExportedNotificationHandler(IAuditManager auditManager) : INotificationHandler<InvoiceExportedNotification>
 {
     public async Task Handle(InvoiceExportedNotification notification, CancellationToken cancellationToken)
@@ -14,8 +12,7 @@ public class AuditInvoiceExportedNotificationHandler(IAuditManager auditManager)
             userId: notification.UserId,
             invoiceId: notification.InvoiceId,
             timeStamp: notification.TimeStamp,
-            isSuccess: notification.IsSuccess
-        );
+            isSuccess: notification.IsSuccess);
 
         await auditManager.AuditAsync(action, cancellationToken);
     }
