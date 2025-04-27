@@ -8,5 +8,7 @@ public interface IExchangeRateRepository
 
     Task AddManyAsync(IEnumerable<ExchangeRate> exchangeRates, CancellationToken cancellationToken);
 
+    Task UpsertAsync(IEnumerable<ExchangeRate> exchangeRates, CancellationToken cancellationToken);
+
     Task<ExchangeRate> GetByCurrencyAsync(string currency, CancellationToken cancellationToken);
 }

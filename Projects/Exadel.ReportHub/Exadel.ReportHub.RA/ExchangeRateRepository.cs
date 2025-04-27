@@ -6,18 +6,28 @@ using MongoDB.Driver;
 namespace Exadel.ReportHub.RA;
 
 [ExcludeFromCodeCoverage]
-public class ExchangeRateRepository : BaseRepository, IExchangeRateRepository
+public class ExchangeRateRepository(MongoDbContext context) : BaseRepository(context), IExchangeRateRepository
 {
     private static readonly FilterDefinitionBuilder<ExchangeRate> _filterBuilder = Builders<ExchangeRate>.Filter;
-
-    public ExchangeRateRepository(MongoDbContext context)
-        : base(context)
-    {
-    }
 
     public Task AddManyAsync(IEnumerable<ExchangeRate> exchangeRates, CancellationToken cancellationToken)
     {
         return base.AddManyAsync(exchangeRates, cancellationToken);
+    }
+
+    public async Task UpsertAsync(IEnumerable<ExchangeRate> exchangeRates, CancellationToken cancellationToken)
+    {
+        var models = exchangeRates
+            .Select(exchangeRate =>
+                new UpdateOneModel<ExchangeRate>(
+                    Builders<ExchangeRate>.Filter.Eq(x => x.Currency, exchangeRate.Currency),
+                    Builders<ExchangeRate>.Update
+                        .Set(x => x.Rate, exchangeRate.Rate)
+                        .Set(x => x.RateDate, exchangeRate.RateDate))
+                    {
+                        IsUpsert = true
+                    });
+        await GetCollection<ExchangeRate>().BulkWriteAsync(models, cancellationToken: cancellationToken);
     }
 
     public Task<IList<ExchangeRate>> GetAllAsync(CancellationToken cancellationToken)

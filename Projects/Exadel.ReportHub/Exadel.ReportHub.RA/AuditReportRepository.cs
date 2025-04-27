@@ -4,14 +4,9 @@ using MongoDB.Driver;
 
 namespace Exadel.ReportHub.RA;
 
-public class AuditReportRepository : BaseRepository, IAuditReportRepository
+public class AuditReportRepository(MongoDbContext context) : BaseRepository(context), IAuditReportRepository
 {
     private static readonly FilterDefinitionBuilder<AuditReport> _filterBuilder = Builders<AuditReport>.Filter;
-
-    public AuditReportRepository(MongoDbContext context)
-        : base(context)
-    {
-    }
 
     public async Task<AuditReport> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {

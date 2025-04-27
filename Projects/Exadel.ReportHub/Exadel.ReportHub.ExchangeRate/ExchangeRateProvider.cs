@@ -37,7 +37,7 @@ public class ExchangeRateProvider(IExchangeRateRepository exhangeRateRepository,
 
         if (exchangeRates.Any())
         {
-            await exhangeRateRepository.AddManyAsync(exchangeRates, cancellationToken);
+            await exhangeRateRepository.UpsertAsync(exchangeRates, cancellationToken);
         }
 
         return exchangeRates;
