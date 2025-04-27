@@ -23,14 +23,13 @@ public class CreateClientRequestValidator : AbstractValidator<CreateClientReques
             {
                 child.RuleFor(x => x.Name)
                     .SetValidator(_stringValidator, Constants.Validation.RuleSet.Names)
-                    .MustAsync(NameMustNotExistsAsync)
-                    .WithMessage(Constants.Validation.Name.IsTaken);
+                    .MustAsync(async (name, cancellationToken) => !await _clientRepository.NameExistsAsync(name, cancellationToken))
+                    .WithMessage(Constants.Validation.Name.AlreadyTaken);
+                child.RuleFor(x => x.BankAccountNumber)
+                    .NotEmpty()
+                    .Length(Constants.Validation.BankAccountNumber.MinLength, Constants.Validation.BankAccountNumber.MaxLength)
+                    .Matches(@"^[A-Z]{2}\d+$")
+                    .WithMessage(Constants.Validation.BankAccountNumber.InvalidFormat);
             });
-    }
-
-    private async Task<bool> NameMustNotExistsAsync(string name, CancellationToken cancellationToken)
-    {
-        var nameExists = await _clientRepository.NameExistsAsync(name, cancellationToken);
-        return !nameExists;
     }
 }
