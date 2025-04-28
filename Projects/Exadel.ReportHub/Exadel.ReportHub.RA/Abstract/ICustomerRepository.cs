@@ -6,9 +6,9 @@ public interface ICustomerRepository
 {
     Task AddAsync(Customer customer, CancellationToken cancellationToken);
 
-    Task<IList<Customer>> GetAsync(Guid clientId, CancellationToken cancellationToken);
+    Task<IList<Customer>> GetByClientIdAsync(Guid clientId, CancellationToken cancellationToken);
 
-    Task<Customer> GetByIdAsync(Guid clientId, Guid id, CancellationToken cancellationToken);
+    Task<Customer> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
     Task<IList<Customer>> GetByIdsAsync(IEnumerable<Guid> ids, CancellationToken cancellationToken);
 

@@ -6,7 +6,6 @@ if (db.MigrationHistory.findOne({ ScriptName: scriptName, Version: version })) {
     quit();
 }
 
-
 db.createCollection("Client", {
     collation: {
         locale: "en"

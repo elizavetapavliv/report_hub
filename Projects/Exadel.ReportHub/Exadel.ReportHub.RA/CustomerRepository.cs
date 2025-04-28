@@ -32,20 +32,17 @@ public class CustomerRepository : BaseRepository, ICustomerRepository
         return ExistsAsync<Customer>(id, cancellationToken);
     }
 
-    public Task<IList<Customer>> GetAsync(Guid clientId, CancellationToken cancellationToken)
+    public Task<IList<Customer>> GetByClientIdAsync(Guid clientId, CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.And(
-            _filterBuilder.Eq(x => x.IsDeleted, false),
-            _filterBuilder.Eq(x => x.ClientId, clientId));
+            _filterBuilder.Eq(x => x.ClientId, clientId),
+            _filterBuilder.Eq(x => x.IsDeleted, false));
         return GetAsync(filter, cancellationToken);
     }
 
-    public async Task<Customer> GetByIdAsync(Guid clientId, Guid id, CancellationToken cancellationToken)
+    public async Task<Customer> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var filter = _filterBuilder.And(
-            _filterBuilder.Eq(x => x.Id, id),
-            _filterBuilder.Eq(x => x.ClientId, clientId));
-        return await GetCollection<Customer>().Find(filter).SingleOrDefaultAsync(cancellationToken);
+        return await GetByIdAsync<Customer>(id, cancellationToken);
     }
 
     public async Task<Guid> GetClientIdAsync(Guid id, CancellationToken cancellationToken)
