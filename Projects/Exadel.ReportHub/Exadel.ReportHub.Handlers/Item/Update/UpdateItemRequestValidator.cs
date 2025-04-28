@@ -21,7 +21,6 @@ public class UpdateItemRequestValidator : AbstractValidator<UpdateItemRequest>
             .NotEmpty();
 
         RuleFor(x => x.UpdateItemDto)
-            .NotEmpty()
             .SetValidator(_itemValidator);
     }
 }
