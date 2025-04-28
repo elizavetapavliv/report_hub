@@ -40,9 +40,9 @@ public class CustomersService(ISender sender) : BaseService
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required")]
     [SwaggerResponse(StatusCodes.Status403Forbidden, "User doesnt have permission to access a Customers")]
     [SwaggerResponse(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<IList<CustomerDTO>>> GetCustomers()
+    public async Task<ActionResult<IList<CustomerDTO>>> GetCustomersByClient(Guid clientId)
     {
-        var result = await sender.Send(new GetCustomersRequest());
+        var result = await sender.Send(new GetCustomersRequest(clientId));
         return FromResult(result);
     }
 
@@ -54,9 +54,9 @@ public class CustomersService(ISender sender) : BaseService
     [SwaggerResponse(StatusCodes.Status403Forbidden, "User doesnt have permission to access a Customer")]
     [SwaggerResponse(StatusCodes.Status404NotFound, "Customer was not found", typeof(ErrorResponse))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorResponse))]
-    public async Task<ActionResult<CustomerDTO>> GetCustomerById([FromRoute] Guid id)
+    public async Task<ActionResult<CustomerDTO>> GetCustomerById([FromRoute] Guid id, Guid clientId)
     {
-        var result = await sender.Send(new GetCustomerByIdRequest(id));
+        var result = await sender.Send(new GetCustomerByIdRequest(clientId, id));
         return FromResult(result);
     }
 

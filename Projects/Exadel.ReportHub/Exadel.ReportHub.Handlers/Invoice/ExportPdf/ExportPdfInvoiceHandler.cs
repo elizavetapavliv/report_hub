@@ -38,7 +38,7 @@ public class ExportPdfInvoiceHandler(
 
             var itemsTask = itemRepository.GetByIdsAsync(invoice.ItemIds, cancellationToken);
             var clientTask = clientRepository.GetByIdAsync(invoice.ClientId, cancellationToken);
-            var customerTask = customerRepository.GetByIdAsync(invoice.CustomerId, cancellationToken);
+            var customerTask = customerRepository.GetByIdAsync(invoice.ClientId, invoice.CustomerId, cancellationToken);
             await Task.WhenAll(itemsTask, clientTask, customerTask);
 
             var invoiceModel = mapper.Map<InvoiceModel>(invoice);

@@ -53,6 +53,7 @@ public class ExchangeRateClient(IHttpClientFactory factory, ILogger<ExchangeRate
         var rates = cubeTime.Elements(root + "Cube")
             .Select(x => new ExchangeRate
             {
+                Id = Guid.NewGuid(),
                 Currency = x.Attribute("currency").Value,
                 Rate = decimal.Parse(x.Attribute("rate").Value, CultureInfo.InvariantCulture),
                 RateDate = rateDate

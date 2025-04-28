@@ -6,13 +6,13 @@ using MediatR;
 
 namespace Exadel.ReportHub.Handlers.Customer.GetById;
 
-public record GetCustomerByIdRequest(Guid Id) : IRequest<ErrorOr<CustomerDTO>>;
+public record GetCustomerByIdRequest(Guid clientId, Guid Id) : IRequest<ErrorOr<CustomerDTO>>;
 
 public class GetCustomerByIdHandler(ICustomerRepository customerRepository, IMapper mapper) : IRequestHandler<GetCustomerByIdRequest, ErrorOr<CustomerDTO>>
 {
     public async Task<ErrorOr<CustomerDTO>> Handle(GetCustomerByIdRequest request, CancellationToken cancellationToken)
     {
-        var customer = await customerRepository.GetByIdAsync(request.Id, cancellationToken);
+        var customer = await customerRepository.GetByIdAsync(request.clientId, request.Id, cancellationToken);
         if (customer == null)
         {
             return Error.NotFound();
