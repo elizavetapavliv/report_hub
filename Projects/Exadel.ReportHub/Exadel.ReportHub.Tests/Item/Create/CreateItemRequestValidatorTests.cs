@@ -1,36 +1,40 @@
-﻿using Exadel.ReportHub.Handlers.Item.Create;
+﻿using Exadel.ReportHub.Handlers;
+using Exadel.ReportHub.Handlers.Item.Create;
 using Exadel.ReportHub.SDK.DTOs.Item;
 using FluentValidation;
-using FluentValidation.Results;
 using FluentValidation.TestHelper;
-using Moq;
 
 namespace Exadel.ReportHub.Tests.Item.Create;
 
 [TestFixture]
 public class CreateItemRequestValidatorTests
 {
-    private Mock<IValidator<CreateUpdateItemDTO>> _itemValidatorMock;
     private CreateItemRequestValidator _validator;
 
     [SetUp]
     public void Setup()
     {
-        _itemValidatorMock = new Mock<IValidator<CreateUpdateItemDTO>>();
-        _validator = new CreateItemRequestValidator(_itemValidatorMock.Object);
+        var itemValidatorMock = new InlineValidator<CreateUpdateItemDTO>();
+        itemValidatorMock.RuleSet("Default", () =>
+        {
+            itemValidatorMock.RuleLevelCascadeMode = CascadeMode.Stop;
+
+            itemValidatorMock.RuleFor(x => x.Price)
+                .NotEmpty()
+                .GreaterThan(0)
+                .WithMessage(Constants.Validation.Item.PriceMustBePositive);
+        });
+        _validator = new CreateItemRequestValidator(itemValidatorMock);
     }
 
     [Test]
-    public async Task ValidateAsync_ValidRequest_NoErrors()
+    public async Task ValidateAsync_ValidRequest_NoErrorsReturned()
     {
         // Arrange
-        var createItemDto = new CreateUpdateItemDTO();
-        _itemValidatorMock.Setup(x => x.ValidateAsync(createItemDto, CancellationToken.None))
-            .ReturnsAsync(new ValidationResult());
-
-        var request = new CreateItemRequest(createItemDto);
+        var createItemDto = new CreateUpdateItemDTO { Price = 1500.50m };
 
         // Act
+        var request = new CreateItemRequest(createItemDto);
         var result = await _validator.TestValidateAsync(request);
 
         // Assert
@@ -38,16 +42,17 @@ public class CreateItemRequestValidatorTests
     }
 
     [Test]
-    public async Task ValidateAsync_EmptyItemDto_ErrorReturned()
+    public async Task ValidateAsync_InvalidItemDto_ErrorReturned()
     {
         // Arrange
-        var request = new CreateItemRequest(null);
+        var createItemDto = new CreateUpdateItemDTO { Price = -1500.50m };
 
         // Act
+        var request = new CreateItemRequest(createItemDto);
         var result = await _validator.TestValidateAsync(request);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.CreateItemDto)
-            .WithErrorMessage("'Create Item Dto' must not be empty.");
+        result.ShouldHaveValidationErrorFor(x => x.CreateItemDto.Price)
+            .WithErrorMessage(Constants.Validation.Item.PriceMustBePositive);
     }
 }

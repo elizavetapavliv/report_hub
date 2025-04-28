@@ -1,6 +1,7 @@
 ﻿using AutoFixture;
 using Exadel.ReportHub.Handlers.Item.GetByClientId;
 using Exadel.ReportHub.RA.Abstract;
+using Exadel.ReportHub.SDK.DTOs.Item;
 using Exadel.ReportHub.Tests.Abstracts;
 using Moq;
 
@@ -39,21 +40,20 @@ public class GetItemsByClientIdHandlerTests : BaseTestFixture
         Assert.That(result.Value, Is.Not.Null);
         Assert.That(result.Value, Has.Exactly(2).Items);
 
-        Assert.That(result.Value[0].Id, Is.EqualTo(items[0].Id));
-        Assert.That(result.Value[0].ClientId, Is.EqualTo(clientId));
-        Assert.That(result.Value[0].Name, Is.EqualTo(items[0].Name));
-        Assert.That(result.Value[0].Description, Is.EqualTo(items[0].Description));
-        Assert.That(result.Value[0].Price, Is.EqualTo(items[0].Price));
-        Assert.That(result.Value[0].CurrencyId, Is.EqualTo(items[0].CurrencyId));
-        Assert.That(result.Value[0].CurrencyCode, Is.EqualTo(items[0].CurrencyCode));
-
-        Assert.That(result.Value[1].Id, Is.EqualTo(items[1].Id));
-        Assert.That(result.Value[1].ClientId, Is.EqualTo(clientId));
-        Assert.That(result.Value[1].Name, Is.EqualTo(items[1].Name));
-        Assert.That(result.Value[1].Description, Is.EqualTo(items[1].Description));
-        Assert.That(result.Value[1].Price, Is.EqualTo(items[1].Price));
-        Assert.That(result.Value[1].CurrencyId, Is.EqualTo(items[1].CurrencyId));
-        Assert.That(result.Value[1].CurrencyCode, Is.EqualTo(items[1].CurrencyCode));
+        for (int i = 0; i < result.Value.Count; i++)
+        {
+            var expectedItem = new ItemDTO
+            {
+                Id = items[i].Id,
+                ClientId = clientId,
+                Name = items[i].Name,
+                Description = items[i].Description,
+                Price = items[i].Price,
+                CurrencyId = items[i].CurrencyId,
+                CurrencyCode = items[i].CurrencyCode,
+            };
+            AssertItemIsCorrect(result.Value[i], expectedItem);
+        }
 
         _itemRepositoryMock.Verify(
             x => x.GetByClientIdAsync(clientId, CancellationToken.None),
@@ -81,5 +81,16 @@ public class GetItemsByClientIdHandlerTests : BaseTestFixture
         _itemRepositoryMock.Verify(
             x => x.GetByClientIdAsync(clientId, CancellationToken.None),
             Times.Once);
+    }
+
+    private void AssertItemIsCorrect(ItemDTO item, ItemDTO expectedItem)
+    {
+        Assert.That(item.Id, Is.EqualTo(expectedItem.Id));
+        Assert.That(item.ClientId, Is.EqualTo(expectedItem.ClientId));
+        Assert.That(item.Name, Is.EqualTo(expectedItem.Name));
+        Assert.That(item.Description, Is.EqualTo(expectedItem.Description));
+        Assert.That(item.Price, Is.EqualTo(expectedItem.Price));
+        Assert.That(item.CurrencyId, Is.EqualTo(expectedItem.CurrencyId));
+        Assert.That(item.CurrencyCode, Is.EqualTo(expectedItem.CurrencyCode));
     }
 }
