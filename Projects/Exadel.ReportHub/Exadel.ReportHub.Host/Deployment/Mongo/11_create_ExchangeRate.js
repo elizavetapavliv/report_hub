@@ -1,5 +1,5 @@
 ﻿const scriptName = "11_create_ExchangeRate";
-const version = NumberInt(2);
+const version = NumberInt(1);
 
 if (db.MigrationHistory.findOne({ ScriptName: scriptName, Version: version })) {
     print(`${scriptName} v${version} is already applied`);
