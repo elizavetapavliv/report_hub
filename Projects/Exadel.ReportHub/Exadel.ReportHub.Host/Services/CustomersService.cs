@@ -36,7 +36,7 @@ public class CustomersService(ISender sender) : BaseService
 
     [Authorize(Policy = Constants.Authorization.Policy.Read)]
     [HttpGet]
-    [SwaggerOperation(Summary = "Get all customers", Description = "Returns a list of all available customers.")]
+    [SwaggerOperation(Summary = "Get customers by client id", Description = "Returns a list of all available customers.")]
     [SwaggerResponse(StatusCodes.Status200OK, "Customers were retrieved successfully", typeof(ActionResult<IList<CustomerDTO>>))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required")]
     [SwaggerResponse(StatusCodes.Status403Forbidden, "User doesnt have permission to access a Customers")]

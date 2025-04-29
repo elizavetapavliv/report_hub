@@ -14,7 +14,7 @@ public interface ICustomerRepository
 
     Task<Guid> GetClientIdAsync(Guid id, CancellationToken cancellationToken);
 
-    Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken);
+    Task<bool> ExistsAsync(Guid id, Guid clientId, CancellationToken cancellationToken);
 
     Task<bool> EmailExistsAsync(string email, CancellationToken cancellationToken);
 

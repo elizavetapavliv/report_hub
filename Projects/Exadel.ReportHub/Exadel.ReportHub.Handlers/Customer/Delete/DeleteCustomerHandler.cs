@@ -11,16 +11,10 @@ public class DeleteCustomerHandler(ICustomerRepository customerRepository) : IRe
 {
     public async Task<ErrorOr<Deleted>> Handle(DeleteCustomerRequest request, CancellationToken cancellationToken)
     {
-        var isCustomerExists = await customerRepository.ExistsAsync(request.CustomerId, cancellationToken);
-        if (!isCustomerExists)
+        var isExists = await customerRepository.ExistsAsync(request.CustomerId, request.ClientId, cancellationToken);
+        if (!isExists)
         {
             return Error.NotFound();
-        }
-
-        var isClientCorrect = request.ClientId == await customerRepository.GetClientIdAsync(request.CustomerId, cancellationToken);
-        if (!isClientCorrect)
-        {
-            return Error.Forbidden();
         }
 
         await customerRepository.SoftDeleteAsync(request.CustomerId, cancellationToken);

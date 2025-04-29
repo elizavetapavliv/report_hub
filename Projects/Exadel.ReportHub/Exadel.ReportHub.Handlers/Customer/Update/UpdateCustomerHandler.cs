@@ -12,16 +12,10 @@ public class UpdateCustomerHandler(ICustomerRepository customerRepository, ICoun
 {
     public async Task<ErrorOr<Updated>> Handle(UpdateCustomerRequest request, CancellationToken cancellationToken)
     {
-        var isCustomerExists = await customerRepository.ExistsAsync(request.CustomerId, cancellationToken);
-        if (!isCustomerExists)
+        var isExists = await customerRepository.ExistsAsync(request.CustomerId, request.ClientId, cancellationToken);
+        if (!isExists)
         {
             return Error.NotFound();
-        }
-
-        var isClientCorrect = request.ClientId == await customerRepository.GetClientIdAsync(request.CustomerId, cancellationToken);
-        if (!isClientCorrect)
-        {
-            return Error.Forbidden();
         }
 
         var customer = mapper.Map<Data.Models.Customer>(request.UpdateCustomerDto);
