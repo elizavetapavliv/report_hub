@@ -48,11 +48,16 @@ public class ExchangeRateClient(IHttpClientFactory factory, ILogger<ExchangeRate
             .Descendants(root + "Cube")
             .Single(x => x.Attribute("time") != null);
 
-        var rateDate = DateTime.UtcNow;
+        var rateDate = DateTime.Parse(cubeTime.Attribute("time").Value, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).AddHours(16);
+        if (rateDate.Day != DateTime.Now.Day)
+        {
+            return new List<ExchangeRate>();
+        }
 
         var rates = cubeTime.Elements(root + "Cube")
             .Select(x => new ExchangeRate
             {
+                Id = Guid.NewGuid(),
                 Currency = x.Attribute("currency").Value,
                 Rate = decimal.Parse(x.Attribute("rate").Value, CultureInfo.InvariantCulture),
                 RateDate = rateDate

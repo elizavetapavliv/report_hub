@@ -20,7 +20,7 @@ db.ExchangeRate.createIndex(
 
 db.ExchangeRate.createIndex(
     { RateDate: 1 },
-    { expireAfterSeconds: 3 * 24 * 60 * 60 }
+    { expireAfterSeconds: 24 * 60 * 60 }
 );
 
 db.MigrationHistory.insertOne({

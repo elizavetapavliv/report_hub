@@ -19,14 +19,12 @@ public class ExchangeRateRepository(MongoDbContext context) : BaseRepository(con
     {
         var models = exchangeRates
             .Select(exchangeRate =>
-                new UpdateOneModel<ExchangeRate>(
+                new ReplaceOneModel<ExchangeRate>(
                     Builders<ExchangeRate>.Filter.Eq(x => x.Currency, exchangeRate.Currency),
-                    Builders<ExchangeRate>.Update
-                        .Set(x => x.Rate, exchangeRate.Rate)
-                        .Set(x => x.RateDate, exchangeRate.RateDate))
-                    {
-                        IsUpsert = true
-                    });
+                    exchangeRate)
+                {
+                    IsUpsert = true
+                });
         await GetCollection<ExchangeRate>().BulkWriteAsync(models, cancellationToken: cancellationToken);
     }
 
