@@ -6,7 +6,6 @@ using Exadel.ReportHub.Handlers.Invoice.ExportPdf;
 using Exadel.ReportHub.Handlers.Invoice.GetByClientId;
 using Exadel.ReportHub.Handlers.Invoice.GetById;
 using Exadel.ReportHub.Handlers.Invoice.GetTotalRevenue;
-using Exadel.ReportHub.Handlers.Invoice.GetTotalRevenuel;
 using Exadel.ReportHub.Handlers.Invoice.Import;
 using Exadel.ReportHub.Handlers.Invoice.Update;
 using Exadel.ReportHub.Host.Infrastructure.Models;
@@ -126,14 +125,14 @@ public class InvoicesService(ISender sender) : BaseService
     [Authorize(Policy = Constants.Authorization.Policy.Read)]
     [HttpGet("revenue")]
     [SwaggerOperation(Summary = "Get total revenue", Description = "Returns the total revenue for the specified client")]
-    [SwaggerResponse(StatusCodes.Status200OK, "Total revenue was retrieved successfully", typeof(ActionResult<TotalRevenueResult>))]
+    [SwaggerResponse(StatusCodes.Status200OK, "Total revenue was retrieved successfully", typeof(ActionResult<TotalInvoicesRevenueResult>))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required to access this endpoint")]
     [SwaggerResponse(StatusCodes.Status403Forbidden, "User does not have permission to access this invoice")]
     [SwaggerResponse(StatusCodes.Status404NotFound, "Invoice was not found for the specified dates", typeof(ErrorResponse))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorResponse))]
-    public async Task<ActionResult<TotalRevenueResult>> GetTotalRevenue([FromQuery] InvoiceFilterDTO invoiceFilter, [FromQuery][Required] Guid clientId)
+    public async Task<ActionResult<TotalInvoicesRevenueResult>> GetTotalRevenue([FromQuery] InvoiceIssueDateFilterDTO invoiceDateFilter, [FromQuery][Required] Guid clientId)
     {
-        var result = await sender.Send(new GetTotalRevenueRequest(invoiceFilter, clientId));
+        var result = await sender.Send(new GetInvoicesTotalRevenueRequest(invoiceDateFilter, clientId));
         return FromResult(result);
     }
 }
