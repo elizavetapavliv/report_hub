@@ -19,4 +19,6 @@ public interface IInvoiceRepository
     Task SoftDeleteAsync(Guid id, CancellationToken cancellationToken);
 
     Task UpdateAsync(Invoice invoice, CancellationToken cancellationToken);
+
+    Task<IList<Invoice>> GetByDateRangeAsync(Invoice invoice, CancellationToken cancellationToken);
 }

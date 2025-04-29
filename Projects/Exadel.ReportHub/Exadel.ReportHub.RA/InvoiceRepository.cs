@@ -62,4 +62,13 @@ public class InvoiceRepository : BaseRepository, IInvoiceRepository
             .Set(x => x.DueDate, invoice.DueDate);
         return UpdateAsync(invoice.Id, definition, cancellationToken);
     }
+
+    public Task<IList<Invoice>> GetByDateRangeAsync(Invoice invoice, CancellationToken cancellationToken)
+    {
+        var filter = _filterBuilder.And(
+            _filterBuilder.Gte(x => x.IssueDate, invoice.IssueDate),
+            _filterBuilder.Lte(x => x.IssueDate, invoice.DueDate),
+            _filterBuilder.Eq(x => x.IsDeleted, false));
+        return GetAsync(filter, cancellationToken);
+    }
 }
