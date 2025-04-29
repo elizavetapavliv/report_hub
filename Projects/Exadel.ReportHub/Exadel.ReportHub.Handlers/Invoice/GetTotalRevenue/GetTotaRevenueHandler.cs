@@ -25,15 +25,21 @@ public class GetTotaRevenueHandler(
             return Error.NotFound();
         }
 
+        var client = await clientRepository.GetByIdAsync(request.clientId, cancellationToken);
+        if (client == null)
+        {
+            return Error.NotFound();
+        }
+
         var convertedAmounts = await Task.WhenAll(invoices
             .Select(invoice => currencyConverter.ConvertAsync(invoice.Amount, invoice.CurrencyCode,
-            Constants.Validation.Currency.DefaultCurrencyCode, cancellationToken)).ToList());
+            client.CurrencyCode, cancellationToken)).ToList());
 
         var totalRevenue = convertedAmounts.Sum();
         TotalRevenueResult totalRevenueResult = new()
         {
             TotalRevenue = totalRevenue,
-            CurrencyCode = Constants.Validation.Currency.DefaultCurrencyCode
+            CurrencyCode = client.CurrencyCode
         };
         return totalRevenueResult;
     }
