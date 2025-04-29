@@ -6,7 +6,6 @@ if (db.MigrationHistory.findOne({ ScriptName: scriptName, Version: version })) {
     quit();
 }
 
-
 db.createCollection("Client", {
     collation: {
         locale: "en"
@@ -157,7 +156,7 @@ for (let i = 0; i < clientCount; i++) {
     clients.push({
         _id: clientIds[i],
         Name: clientNames[i],
-        bankAccountNumber: bankAccountNumbers[i],
+        BankAccountNumber: bankAccountNumbers[i],
         CustomerIds: randomCustomerIds(i),
         CountryId: countries[i]._id,
         Country: countries[i].Name,
