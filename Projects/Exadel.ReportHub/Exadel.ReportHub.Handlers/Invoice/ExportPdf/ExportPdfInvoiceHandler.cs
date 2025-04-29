@@ -46,7 +46,7 @@ public class ExportPdfInvoiceHandler(
             invoiceModel.CustomerName = customerTask.Result.Name;
             invoiceModel.Items = mapper.Map<IList<ItemDTO>>(itemsTask.Result);
 
-            var stream = await pdfInvoiceGenerator.GenerateAsync(invoiceModel, cancellationToken);
+            var stream = pdfInvoiceGenerator.Generate(invoiceModel);
 
             var exportDto = new ExportResult
             {
