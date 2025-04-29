@@ -49,7 +49,6 @@ public static class Constants
         public static class Currency
         {
             public const string DoesNotExist = "Currency does not exist.";
-            public const string DefaultCurrencyCode = "EUR";
         }
 
         public static class Name

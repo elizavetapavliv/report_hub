@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
-using ErrorOr;
 using Exadel.ReportHub.Handlers.Invoice.Create;
 using Exadel.ReportHub.Handlers.Invoice.Delete;
 using Exadel.ReportHub.Handlers.Invoice.ExportPdf;
@@ -130,7 +129,7 @@ public class InvoicesService(ISender sender) : BaseService
     [SwaggerResponse(StatusCodes.Status200OK, "Total revenue was retrieved successfully", typeof(ActionResult<TotalRevenueResult>))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required to access this endpoint")]
     [SwaggerResponse(StatusCodes.Status403Forbidden, "User does not have permission to access this invoice")]
-    [SwaggerResponse(StatusCodes.Status404NotFound, "Invoice was not found for the specified id", typeof(ErrorResponse))]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "Invoice was not found for the specified dates", typeof(ErrorResponse))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorResponse))]
     public async Task<ActionResult<TotalRevenueResult>> GetTotalRevenue([FromQuery] InvoiceFilterDTO invoiceFilter, [FromQuery][Required] Guid clientId)
     {
