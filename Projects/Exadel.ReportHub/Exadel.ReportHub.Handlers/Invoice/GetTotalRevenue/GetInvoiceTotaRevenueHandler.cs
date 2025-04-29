@@ -26,7 +26,6 @@ public class GetInvoicesTotalRevenueHandler(
         var totalRevenue = convertedAmounts.Sum();
         TotalInvoicesRevenueResult totalRevenueResult = new()
         {
-            SumOfInvoices = invoices.Count,
             TotalRevenue = totalRevenue,
             CurrencyCode = client.CurrencyCode
         };
