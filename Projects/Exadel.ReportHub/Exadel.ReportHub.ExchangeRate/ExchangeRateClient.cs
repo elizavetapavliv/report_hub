@@ -48,7 +48,7 @@ public class ExchangeRateClient(IHttpClientFactory factory, ILogger<ExchangeRate
             .Descendants(root + "Cube")
             .Single(x => x.Attribute("time") != null);
 
-        var rateDate = DateTime.Parse(cubeTime.Attribute("time").Value, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).AddHours(16);
+        var rateDate = DateTime.Parse(cubeTime.Attribute("time").Value, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).AddHours(14);
         if (rateDate.Day != DateTime.Now.Day)
         {
             return new List<ExchangeRate>();
