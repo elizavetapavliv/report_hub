@@ -12,13 +12,12 @@ public class GetCustomerByIdHandler(ICustomerRepository customerRepository, IMap
 {
     public async Task<ErrorOr<CustomerDTO>> Handle(GetCustomerByIdRequest request, CancellationToken cancellationToken)
     {
-        var isExists = await customerRepository.ExistsAsync(request.CustomerId, request.ClientId, cancellationToken);
-        if (!isExists)
+        var customer = await customerRepository.GetByIdAsync(request.CustomerId, cancellationToken);
+        if(customer is null || customer.ClientId != request.ClientId)
         {
             return Error.NotFound();
         }
 
-        var customer = await customerRepository.GetByIdAsync(request.CustomerId, cancellationToken);
         var customerDto = mapper.Map<CustomerDTO>(customer);
         return customerDto;
     }
