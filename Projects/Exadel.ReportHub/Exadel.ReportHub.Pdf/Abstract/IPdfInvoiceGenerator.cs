@@ -4,5 +4,5 @@ namespace Exadel.ReportHub.Pdf.Abstract;
 
 public interface IPdfInvoiceGenerator
 {
-    Stream Generate(InvoiceModel invoice);
+    Task<Stream> GenerateAsync(InvoiceModel invoice, CancellationToken cancellationToken);
 }
