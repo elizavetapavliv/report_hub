@@ -5,6 +5,7 @@ using Exadel.ReportHub.Handlers.Invoice.Delete;
 using Exadel.ReportHub.Handlers.Invoice.ExportPdf;
 using Exadel.ReportHub.Handlers.Invoice.GetByClientId;
 using Exadel.ReportHub.Handlers.Invoice.GetById;
+using Exadel.ReportHub.Handlers.Invoice.GetTotalNumber;
 using Exadel.ReportHub.Handlers.Invoice.Import;
 using Exadel.ReportHub.Handlers.Invoice.Update;
 using Exadel.ReportHub.Host.Infrastructure.Models;
@@ -98,7 +99,7 @@ public class InvoicesService(ISender sender) : BaseService
     [SwaggerResponse(StatusCodes.Status204NoContent, "Invoice was updated successfully")]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "The request contains invalid invoice data", typeof(ErrorResponse))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required to access this endpoint")]
-    [SwaggerResponse(StatusCodes.Status403Forbidden, "User doesnt have permission to update the invoice")]
+    [SwaggerResponse(StatusCodes.Status403Forbidden, "User does not have permission to access this invoice")]
     [SwaggerResponse(StatusCodes.Status404NotFound, "Invoice was not found for the specified id", typeof(ErrorResponse))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorResponse))]
     public async Task<ActionResult> UpdateInvoice([FromRoute] Guid id, [FromBody] UpdateInvoiceDTO invoiceDto)
@@ -112,12 +113,25 @@ public class InvoicesService(ISender sender) : BaseService
     [SwaggerOperation(Summary = "Export invoice as PDF", Description = "Generates and exports a PDF version of the invoice using the provided invoice id")]
     [SwaggerResponse(StatusCodes.Status200OK, "Invoices were exported successfully")]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required to access this endpoint")]
-    [SwaggerResponse(StatusCodes.Status403Forbidden, "User doesnt have permission to export the invoice")]
+    [SwaggerResponse(StatusCodes.Status403Forbidden, "User does not have permission to access this invoice")]
     [SwaggerResponse(StatusCodes.Status404NotFound, "Invoice was not found for the specified id", typeof(ErrorResponse))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorResponse))]
     public async Task<ActionResult<ExportResult>> ExportInvoiceAsync(Guid invoiceId, Guid clientId)
     {
         var result = await sender.Send(new ExportPdfInvoiceRequest(invoiceId));
+        return FromResult(result);
+    }
+
+    [Authorize(Policy = Constants.Authorization.Policy.Read)]
+    [HttpGet("count")]
+    [SwaggerOperation(Summary = "Get total number of invoices", Description = "Returns the total number of invoices for specific client/customer")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Invoices number was retrieved successfully", typeof(ActionResult<InvoicesNumberResultDTO>))]
+    [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required to access this endpoint")]
+    [SwaggerResponse(StatusCodes.Status403Forbidden, "User does not have permission to access this invoice")]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorResponse))]
+    public async Task<ActionResult<InvoicesNumberResultDTO>> GetTotalRevenue([FromQuery] InvoiceIssueDateFilterDTO invoiceDateFilter, [FromQuery][Required] Guid clientId, Guid customerId)
+    {
+        var result = await sender.Send(new GetInvoicesNumberRequest(invoiceDateFilter, clientId, customerId));
         return FromResult(result);
     }
 }

@@ -57,4 +57,22 @@ public class InvoiceRepository(MongoDbContext context) : BaseRepository(context)
             .Set(x => x.DueDate, invoice.DueDate);
         return UpdateAsync(invoice.Id, definition, cancellationToken);
     }
+
+    public Task<IList<Invoice>> GetByDateRangeAsync(DateTime startDate, DateTime endDate, Guid clientId, Guid? customerId, CancellationToken cancellationToken)
+    {
+        var filters = new List<FilterDefinition<Invoice>>
+        {
+            _filterBuilder.Eq(x => x.ClientId, clientId),
+            _filterBuilder.Gte(x => x.IssueDate, startDate),
+            _filterBuilder.Lte(x => x.IssueDate, endDate),
+            _filterBuilder.Eq(x => x.IsDeleted, false)
+        };
+        if (customerId.HasValue && customerId != Guid.Empty)
+        {
+            filters.Add(_filterBuilder.Eq(x => x.CustomerId, customerId));
+        }
+
+        var filter = _filterBuilder.And(filters);
+        return GetAsync(filter, cancellationToken);
+    }
 }
