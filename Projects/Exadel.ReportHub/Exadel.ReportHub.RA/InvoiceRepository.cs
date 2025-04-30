@@ -58,12 +58,18 @@ public class InvoiceRepository(MongoDbContext context) : BaseRepository(context)
         return UpdateAsync(invoice.Id, definition, cancellationToken);
     }
 
-    public Task<IList<Invoice>> GetByDateRangeAsync(DateTime StartDate, DateTime EndDate, CancellationToken cancellationToken)
+    public async Task<IDictionary<string, decimal>> GetByDateRangeAsync(Guid clientId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.And(
-            _filterBuilder.Gte(x => x.IssueDate, StartDate),
-            _filterBuilder.Lte(x => x.IssueDate, EndDate),
+            _filterBuilder.Gte(x => x.IssueDate, startDate),
+            _filterBuilder.Lte(x => x.IssueDate, endDate),
+            _filterBuilder.Eq(x => x.ClientId, clientId),
             _filterBuilder.Eq(x => x.IsDeleted, false));
-        return GetAsync(filter, cancellationToken);
+        var invoices = await GetAsync(filter, cancellationToken);
+        var sumOfInvoices = invoices.GroupBy(x => x.CurrencyCode)
+            .ToDictionary(
+                x => x.Key,
+                x => x.Sum(y => y.Amount));
+        return sumOfInvoices;
     }
 }

@@ -6,25 +6,25 @@ using MediatR;
 
 namespace Exadel.ReportHub.Handlers.Invoice.GetTotalRevenue;
 
-public record GetInvoicesTotalRevenueRequest(InvoiceIssueDateFilterDTO InvoiceDateFilterDto, Guid ClientId) : IRequest<ErrorOr<TotalInvoicesRevenueResult>>;
+public record GetInvoicesTotalRevenueRequest(InvoiceIssueDateFilterDTO InvoiceDateFilterDto, Guid ClientId) : IRequest<ErrorOr<TotalInvoicesRevenueDTO>>;
 
 public class GetInvoicesTotalRevenueHandler(
     IInvoiceRepository invoiceRepository,
     ICurrencyConverter currencyConverter,
-    IClientRepository clientRepository) : IRequestHandler<GetInvoicesTotalRevenueRequest, ErrorOr<TotalInvoicesRevenueResult>>
+    IClientRepository clientRepository) : IRequestHandler<GetInvoicesTotalRevenueRequest, ErrorOr<TotalInvoicesRevenueDTO>>
 {
-    public async Task<ErrorOr<TotalInvoicesRevenueResult>> Handle(GetInvoicesTotalRevenueRequest request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<TotalInvoicesRevenueDTO>> Handle(GetInvoicesTotalRevenueRequest request, CancellationToken cancellationToken)
     {
-        var invoices = await invoiceRepository.GetByDateRangeAsync(request.InvoiceDateFilterDto.StartDate, request.InvoiceDateFilterDto.EndDate, cancellationToken);
+        var sumOfInvoicesAmount = await invoiceRepository.GetByDateRangeAsync(request.ClientId, request.InvoiceDateFilterDto.StartDate, request.InvoiceDateFilterDto.EndDate, cancellationToken);
 
         var client = await clientRepository.GetByIdAsync(request.ClientId, cancellationToken);
 
-        var convertedAmounts = await Task.WhenAll(invoices
-            .Select(invoice => currencyConverter.ConvertAsync(invoice.Amount, invoice.CurrencyCode,
+        var convertedAmounts = await Task.WhenAll(sumOfInvoicesAmount
+            .Select(x => currencyConverter.ConvertAsync(x.Value, x.Key,
             client.CurrencyCode, cancellationToken)).ToList());
 
         var totalRevenue = convertedAmounts.Sum();
-        TotalInvoicesRevenueResult totalRevenueResult = new()
+        TotalInvoicesRevenueDTO totalRevenueResult = new()
         {
             TotalRevenue = totalRevenue,
             CurrencyCode = client.CurrencyCode

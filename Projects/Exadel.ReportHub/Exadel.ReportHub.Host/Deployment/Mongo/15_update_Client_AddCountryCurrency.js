@@ -7,25 +7,6 @@ if (db.MigrationHistory.findOne({ ScriptName: scriptName, Version: version })) {
 }
 
 const countries = db.Country.find().toArray();
-const defaultCountryId = UUID("a8e9b8b2-d3f1-44a1-a149-0fbaabf7e81d");
-const defaultCountryName = "International";
-const defaultCurrencyId = UUID("04d123f0-dc7e-4b92-829c-dffd1ef0b89a");
-const defaultCurrencyCode = "EUR";
-
-const countryMap = {
-    US: { country: "USA" },
-    GE: { country: "Georgia" },
-    CZ: { country: "Czech" },
-    PL: { country: "Poland" },
-    BY: { country: "Belarus" },
-    IT: { country: "Italy" },
-    AU: { country: "Australia" },
-    CA: { country: "Canada" },
-    FR: { country: "France" },
-    BG: { country: "Bulgaria" },
-    GB: { country: "United Kingdom" },
-    DE: { country: "Germany" }
-};
 
 function getCountryData(bankAccountNumber) {
     if (!bankAccountNumber) {
@@ -33,32 +14,41 @@ function getCountryData(bankAccountNumber) {
     }
 
     const countryCode = bankAccountNumber.substring(0, 2).toUpperCase();
-    const countryInfo = countryMap[countryCode];
+
+    const countryInfo = countries.find(country => country.CountryCode.toUpperCase() === countryCode.toUpperCase());
     if (!countryInfo) return null;
 
-    return countries.find(x => x.Name === countryInfo.country);
+    return countries.find(x => x.Name === countryInfo.Name);
 }
+const clients = db.Client.find({}, { _id: 1, BankAccountNumber: 1 }).toArray();
 
-db.Client.find().forEach(client => {
+const updates = clients.map(client => {
     const countryData = getCountryData(client.BankAccountNumber);
 
     const update = {
-        CountryId: defaultCountryId,
-        CountryName: defaultCountryName,
-        CurrencyId: defaultCurrencyId,
-        CurrencyCode: defaultCurrencyCode
+        CountryId: null,
+        CountryName: null,
+        CurrencyId: null,
+        CurrencyCode: null
     };
-
     if (countryData) {
         update.CountryId = countryData._id;
         update.CountryName = countryData.Name;
         update.CurrencyId = countryData.CurrencyId;
         update.CurrencyCode = countryData.CurrencyCode;
-
     }
 
-    db.Client.updateOne({ _id: client._id }, { $set: update });
+    return {
+        updateOne: {
+            filter: { _id: client._id },
+            update: { $set: update }
+        }
+    };
 });
+
+if (updates.length > 0) {
+    db.Client.bulkWrite(updates);
+}
 
 db.MigrationHistory.insertOne({
     ScriptName: scriptName,

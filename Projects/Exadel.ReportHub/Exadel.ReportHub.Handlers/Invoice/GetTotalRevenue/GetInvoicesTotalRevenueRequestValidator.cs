@@ -18,13 +18,13 @@ public class GetInvoicesTotalRevenueRequestValidator : AbstractValidator<GetInvo
 
                 child.RuleFor(x => x.StartDate)
                     .NotEmpty()
-                    .WithMessage("Start date is required")
-                    .LessThanOrEqualTo(x => x.EndDate)
-                    .WithMessage("Start date must be less than or equal to end date");
+                    .LessThan(x => x.EndDate)
+                    .WithMessage(Constants.Validation.Date.InvalidStartDate);
 
                 child.RuleFor(x => x.StartDate.TimeOfDay)
                     .Equal(TimeSpan.Zero)
                     .WithMessage(Constants.Validation.Invoice.TimeComponentNotAllowed);
+
                 child.RuleFor(x => x.EndDate)
                     .NotEmpty();
 

@@ -20,5 +20,5 @@ public interface IInvoiceRepository
 
     Task UpdateAsync(Invoice invoice, CancellationToken cancellationToken);
 
-    Task<IList<Invoice>> GetByDateRangeAsync(DateTime StartDate, DateTime EndDate, CancellationToken cancellationToken);
+    Task<IDictionary<string, decimal>> GetByDateRangeAsync(Guid clientId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken);
 }
