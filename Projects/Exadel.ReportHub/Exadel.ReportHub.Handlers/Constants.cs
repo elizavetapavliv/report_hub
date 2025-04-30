@@ -103,9 +103,14 @@ public static class Constants
 
         public static class Plan
         {
+            public const string AlreadyExistsForItemAndClient = "Plan already exists for this item and client";
+        }
+
+        public static class Date
+        {
             public const string InvalidStartDate = "Start date must be less than end date";
             public const string EndDateInPast = "End date must be in the future";
-            public const string AlreadyExistsForItemAndClient = "Plan already exists for this item and client";
+            public const string EmptyStartDate = "Start date is required";
         }
     }
 

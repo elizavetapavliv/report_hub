@@ -129,9 +129,9 @@ public class InvoicesService(ISender sender) : BaseService
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required to access this endpoint")]
     [SwaggerResponse(StatusCodes.Status403Forbidden, "User does not have permission to access this invoice")]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorResponse))]
-    public async Task<ActionResult<InvoicesNumberResultDTO>> GetTotalRevenue([FromQuery] InvoiceIssueDateFilterDTO invoiceDateFilter, [FromQuery][Required] Guid clientId, Guid customerId)
+    public async Task<ActionResult<InvoicesNumberResultDTO>> GetTotalNumber([Required] Guid clientId, [FromQuery]InvoiceFilterDTO invoiceDateFilter)
     {
-        var result = await sender.Send(new GetInvoicesNumberRequest(invoiceDateFilter, clientId, customerId));
+        var result = await sender.Send(new GetInvoicesNumberRequest(invoiceDateFilter, clientId));
         return FromResult(result);
     }
 }

@@ -1,6 +1,8 @@
-﻿namespace Exadel.ReportHub.SDK.DTOs.Plan;
+﻿using Exadel.ReportHub.SDK.DTOs.Date;
 
-public class PlanDTO
+namespace Exadel.ReportHub.SDK.DTOs.Plan;
+
+public class PlanDTO : DatesDTO
 {
     public Guid Id { get; set; }
 
@@ -9,8 +11,4 @@ public class PlanDTO
     public Guid ItemId { get; set; }
 
     public int Amount { get; set; }
-
-    public DateTime StartDate { get; set; }
-
-    public DateTime EndDate { get; set; }
 }

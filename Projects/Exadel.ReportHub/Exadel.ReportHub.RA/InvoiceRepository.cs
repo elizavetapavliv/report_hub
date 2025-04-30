@@ -58,7 +58,7 @@ public class InvoiceRepository(MongoDbContext context) : BaseRepository(context)
         return UpdateAsync(invoice.Id, definition, cancellationToken);
     }
 
-    public Task<IList<Invoice>> GetByDateRangeAsync(DateTime startDate, DateTime endDate, Guid clientId, Guid? customerId, CancellationToken cancellationToken)
+    public async Task<long> GetCountByDateRangeAsync(DateTime startDate, DateTime endDate, Guid clientId, Guid? customerId, CancellationToken cancellationToken)
     {
         var filters = new List<FilterDefinition<Invoice>>
         {
@@ -67,12 +67,12 @@ public class InvoiceRepository(MongoDbContext context) : BaseRepository(context)
             _filterBuilder.Lte(x => x.IssueDate, endDate),
             _filterBuilder.Eq(x => x.IsDeleted, false)
         };
-        if (customerId.HasValue && customerId != Guid.Empty)
+        if (customerId.HasValue)
         {
             filters.Add(_filterBuilder.Eq(x => x.CustomerId, customerId));
         }
 
         var filter = _filterBuilder.And(filters);
-        return GetAsync(filter, cancellationToken);
+        return await GetCollection<Invoice>().CountDocumentsAsync(filter, cancellationToken: cancellationToken);
     }
 }

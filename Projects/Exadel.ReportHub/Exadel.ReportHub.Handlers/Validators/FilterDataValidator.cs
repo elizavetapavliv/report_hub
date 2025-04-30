@@ -1,11 +1,11 @@
-﻿using Exadel.ReportHub.SDK.DTOs.Invoice;
+﻿using Exadel.ReportHub.SDK.DTOs.Date;
 using FluentValidation;
 
 namespace Exadel.ReportHub.Handlers.Validators;
 
-public class InvoiceDateFilterValidator : AbstractValidator<InvoiceIssueDateFilterDTO>
+public class FilterDataValidator : AbstractValidator<DatesDTO>
 {
-    public InvoiceDateFilterValidator()
+    public FilterDataValidator()
     {
         ConfigureRules();
     }
@@ -19,15 +19,18 @@ public class InvoiceDateFilterValidator : AbstractValidator<InvoiceIssueDateFilt
 
                 child.RuleFor(x => x.StartDate)
                     .NotEmpty()
-                    .WithMessage("Start date is required")
+                    .WithMessage(Constants.Validation.Date.EmptyStartDate)
                     .LessThanOrEqualTo(x => x.EndDate)
-                    .WithMessage("Start date must be less than or equal to end date");
+                    .WithMessage(Constants.Validation.Date.InvalidStartDate);
+
+                child.RuleFor(x => x.EndDate)
+                    .NotEmpty()
+                    .GreaterThan(DateTime.UtcNow)
+                    .WithMessage(Constants.Validation.Date.EndDateInPast);
 
                 child.RuleFor(x => x.StartDate.TimeOfDay)
                     .Equal(TimeSpan.Zero)
                     .WithMessage(Constants.Validation.Invoice.TimeComponentNotAllowed);
-                child.RuleFor(x => x.EndDate)
-                    .NotEmpty();
 
                 child.RuleFor(x => x.EndDate.TimeOfDay)
                     .Equal(TimeSpan.Zero)

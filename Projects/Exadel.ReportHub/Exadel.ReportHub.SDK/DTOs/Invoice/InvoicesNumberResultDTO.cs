@@ -1,6 +1,10 @@
-﻿namespace Exadel.ReportHub.SDK.DTOs.Invoice;
+﻿using Exadel.ReportHub.SDK.Enums;
+
+namespace Exadel.ReportHub.SDK.DTOs.Invoice;
 
 public class InvoicesNumberResultDTO
 {
-    public int InvoicesNumber { get; set; }
+    public long InvoicesNumber { get; set; }
+
+    public ImporterType ImportedBy { get; set; }
 }
