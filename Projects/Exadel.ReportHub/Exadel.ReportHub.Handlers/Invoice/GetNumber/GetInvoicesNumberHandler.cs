@@ -3,7 +3,7 @@ using Exadel.ReportHub.RA.Abstract;
 using Exadel.ReportHub.SDK.DTOs.Invoice;
 using MediatR;
 
-namespace Exadel.ReportHub.Handlers.Invoice.GetTotalNumber;
+namespace Exadel.ReportHub.Handlers.Invoice.GetNumber;
 
 public record GetInvoicesNumberRequest(InvoiceIssueDateFilterDTO InvoiceIssueDateFilterDto, Guid ClientId, Guid CustomerId) : IRequest<ErrorOr<InvoicesNumberResultDTO>>;
 

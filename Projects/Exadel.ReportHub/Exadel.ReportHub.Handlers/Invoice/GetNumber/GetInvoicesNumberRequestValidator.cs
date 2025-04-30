@@ -1,4 +1,4 @@
-﻿using Exadel.ReportHub.Handlers.Invoice.GetTotalNumber;
+﻿using Exadel.ReportHub.Handlers.Invoice.GetNumber;
 using Exadel.ReportHub.Handlers.Validators;
 using Exadel.ReportHub.SDK.DTOs.Invoice;
 using FluentValidation;

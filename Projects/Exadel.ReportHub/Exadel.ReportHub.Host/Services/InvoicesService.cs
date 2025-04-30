@@ -5,7 +5,7 @@ using Exadel.ReportHub.Handlers.Invoice.Delete;
 using Exadel.ReportHub.Handlers.Invoice.ExportPdf;
 using Exadel.ReportHub.Handlers.Invoice.GetByClientId;
 using Exadel.ReportHub.Handlers.Invoice.GetById;
-using Exadel.ReportHub.Handlers.Invoice.GetTotalNumber;
+using Exadel.ReportHub.Handlers.Invoice.GetNumber;
 using Exadel.ReportHub.Handlers.Invoice.Import;
 using Exadel.ReportHub.Handlers.Invoice.Update;
 using Exadel.ReportHub.Host.Infrastructure.Models;
