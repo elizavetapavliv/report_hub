@@ -20,6 +20,6 @@ public static class Constants
 
     public static class Path
     {
-        public static readonly Uri ExchangeRate = new Uri("/stats/eurofxref/eurofxref-daily.xml", UriKind.Relative);
+        public const string ExchangeRatePathTemplate = "/service/data/EXR/D.{0}.EUR.SP00.A?startPeriod={1}&endPeriod={2}";
     }
 }

@@ -8,22 +8,25 @@ namespace Exadel.ReportHub.Ecb;
 
 public class ExchangeRateClient(IHttpClientFactory factory, ILogger<ExchangeRateClient> logger) : IExchangeRateClient
 {
-    public async Task<IList<ExchangeRate>> GetDailyRatesAsync(CancellationToken cancellationToken)
+    public async Task<IList<ExchangeRate>> GetWeekByCurrencyAsync(string currency, DateTime date, CancellationToken cancellationToken)
     {
         var client = factory.CreateClient(Constants.ClientName);
+        var daysCount = 7;
 
         HttpResponseMessage response;
         try
         {
-            response = await client.GetAsync(Constants.Path.ExchangeRate, cancellationToken);
+            response = await client.GetAsync(new Uri(string.Format(Constants.Path.ExchangeRatePathTemplate, currency,
+                DateOnly.FromDateTime(date.AddDays(-daysCount)).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+                DateOnly.FromDateTime(date).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)), UriKind.Relative), cancellationToken);
             response.EnsureSuccessStatusCode();
         }
-        catch(HttpRequestException ex)
+        catch (HttpRequestException ex)
         {
             logger.LogError(ex, Constants.Error.HttpFetchError);
             return new List<ExchangeRate>();
         }
-        catch(TaskCanceledException ex)
+        catch (TaskCanceledException ex)
         {
             logger.LogError(ex, Constants.Error.TimeoutError);
             return new List<ExchangeRate>();
@@ -42,29 +45,25 @@ public class ExchangeRateClient(IHttpClientFactory factory, ILogger<ExchangeRate
             return new List<ExchangeRate>();
         }
 
-        var root = document.Root.GetDefaultNamespace();
+        var generic = document.Root.GetNamespaceOfPrefix("generic");
+        var series = document.Descendants(generic + "Series").SingleOrDefault();
 
-        var cubeTime = document
-            .Descendants(root + "Cube")
-            .Single(x => x.Attribute("time") != null);
-
-        var rateDate = DateTime.Parse(cubeTime.Attribute("time").Value, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).AddHours(Constants.UpdateHour);
-
-        var rates = cubeTime.Elements(root + "Cube")
+        var rates = series.Elements(generic + "Obs")
             .Select(x => new ExchangeRate
             {
                 Id = Guid.NewGuid(),
-                Currency = x.Attribute("currency").Value,
-                Rate = decimal.Parse(x.Attribute("rate").Value, CultureInfo.InvariantCulture),
-                RateDate = rateDate
+                Currency = currency,
+                Rate = decimal.Parse(x.Element(generic + "ObsValue").Attribute("value").Value, CultureInfo.InvariantCulture),
+                RateDate = DateTime.Parse(x.Element(generic + "ObsDimension").Attribute("value").Value,
+                    CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal)
             })
             .ToList();
 
         return rates;
     }
 
-    public async Task<ExchangeRate> GetByCurrencyAsync(string currency, CancellationToken cancellationToken)
+    public async Task<ExchangeRate> GetByCurrencyAsync(string currency, DateTime date, CancellationToken cancellationToken)
     {
-        return (await GetDailyRatesAsync(cancellationToken)).SingleOrDefault(x => x.Currency.Equals(currency, StringComparison.Ordinal));
+        return (await GetWeekByCurrencyAsync(currency, date, cancellationToken)).OrderByDescending(x => x.RateDate).FirstOrDefault();
     }
 }

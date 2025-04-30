@@ -2,6 +2,7 @@
 using Exadel.ReportHub.Data.Models;
 using Exadel.ReportHub.RA.Abstract;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 
 namespace Exadel.ReportHub.RA;
 
@@ -15,14 +16,21 @@ public class ExchangeRateRepository(MongoDbContext context) : BaseRepository(con
         return base.AddManyAsync(exchangeRates, cancellationToken);
     }
 
-    public Task<IList<ExchangeRate>> GetAllAsync(CancellationToken cancellationToken)
+    public async Task<IList<ExchangeRate>> GetWeekByCurrencyAsync(string currency, DateTime date, CancellationToken cancellationToken)
     {
-        return GetAllAsync<ExchangeRate>(cancellationToken);
+        var daysCount = 7;
+        var filter = _filterBuilder.And(
+            _filterBuilder.Eq(x => x.Currency, currency),
+            _filterBuilder.Lte(x => x.RateDate, date),
+            _filterBuilder.Gte(x => x.RateDate, date.AddDays(-daysCount)));
+        return await GetAsync(filter, cancellationToken);
     }
 
-    public async Task<ExchangeRate> GetByCurrencyAsync(string currency, CancellationToken cancellationToken)
+    public async Task<ExchangeRate> GetByCurrencyAsync(string currency, DateTime date, CancellationToken cancellationToken)
     {
-        var filter = _filterBuilder.Eq(x => x.Currency, currency);
+        var filter = _filterBuilder.And(
+            _filterBuilder.Eq(x => x.Currency, currency),
+            _filterBuilder.Eq(x => x.RateDate, date));
         return await GetCollection<ExchangeRate>().Find(filter).SingleOrDefaultAsync(cancellationToken);
     }
 }
