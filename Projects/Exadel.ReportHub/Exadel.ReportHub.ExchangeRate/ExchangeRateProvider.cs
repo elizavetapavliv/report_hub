@@ -1,11 +1,13 @@
-﻿using Exadel.ReportHub.Ecb.Abstract;
+﻿using Exadel.ReportHub.Data.Models;
+using Exadel.ReportHub.Ecb.Abstract;
+using Exadel.ReportHub.Ecb.Helpers;
 using Exadel.ReportHub.RA.Abstract;
 
 namespace Exadel.ReportHub.Ecb;
 
-public class ExchangeRateProvider(IExchangeRateRepository exhangeRateRepository, IExchangeRateClient exchangeRateClient) : IExchangeRateClient
+public class ExchangeRateProvider(IExchangeRateRepository exhangeRateRepository, IExchangeRateClient exchangeRateClient) : IExchangeRateProvider
 {
-    public async Task<Data.Models.ExchangeRate> GetByCurrencyAsync(string currency, DateTime date, CancellationToken cancellationToken)
+    public async Task<ExchangeRate> GetByCurrencyForWeekAsync(string currency, DateTime date, CancellationToken cancellationToken)
     {
         var exchangeRate = await exhangeRateRepository.GetByCurrencyAsync(currency, date, cancellationToken);
 
@@ -14,36 +16,21 @@ public class ExchangeRateProvider(IExchangeRateRepository exhangeRateRepository,
             return exchangeRate;
         }
 
-        var exchangeRates = await GetRatesAsync(currency, date, cancellationToken);
-        return exchangeRates.OrderByDescending(x => x.RateDate).FirstOrDefault();
-    }
-
-    public async Task<IList<Data.Models.ExchangeRate>> GetWeekByCurrencyAsync(string currency, DateTime date, CancellationToken cancellationToken)
-    {
-        var exchangeRates = await exhangeRateRepository.GetWeekByCurrencyAsync(currency, date, cancellationToken);
-
-        if (exchangeRates.Any())
+        var limit = 4;
+        while (limit > 0)
         {
-            return exchangeRates;
-        }
-
-        return await GetRatesAsync(currency, date, cancellationToken);
-    }
-
-    private async Task<IList<Data.Models.ExchangeRate>> GetRatesAsync(string currency, DateTime date, CancellationToken cancellationToken)
-    {
-        var daysCount = 7;
-        while (true)
-        {
-            var exchangeRates = await exchangeRateClient.GetWeekByCurrencyAsync(currency, date, cancellationToken);
+            var exchangeRates = await exchangeRateClient.GetByCurrencyInPeriodAsync(currency, date.GetWeekPeriodStart(), date, cancellationToken);
 
             if (exchangeRates.Any())
             {
                 await exhangeRateRepository.AddManyAsync(exchangeRates, cancellationToken);
-                return exchangeRates;
+                return exchangeRates.MaxBy(x => x.RateDate);
             }
 
-            date = date.AddDays(-daysCount);
+            date = date.GetWeekPeriodStart().AddDays(-1);
+            limit++;
         }
+
+        return null;
     }
 }

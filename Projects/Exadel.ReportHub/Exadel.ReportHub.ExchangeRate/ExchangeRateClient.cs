@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Xml;
 using System.Xml.Linq;
 using Exadel.ReportHub.Data.Models;
 using Exadel.ReportHub.Ecb.Abstract;
@@ -8,29 +9,15 @@ namespace Exadel.ReportHub.Ecb;
 
 public class ExchangeRateClient(IHttpClientFactory factory, ILogger<ExchangeRateClient> logger) : IExchangeRateClient
 {
-    public async Task<IList<ExchangeRate>> GetWeekByCurrencyAsync(string currency, DateTime date, CancellationToken cancellationToken)
+    public async Task<IList<ExchangeRate>> GetByCurrencyInPeriodAsync(string currency, DateTime startDate, DateTime endDate, CancellationToken cancellationToken)
     {
         var client = factory.CreateClient(Constants.ClientName);
-        var daysCount = 7;
 
         HttpResponseMessage response;
-        try
-        {
-            response = await client.GetAsync(new Uri(string.Format(Constants.Path.ExchangeRatePathTemplate, currency,
-                DateOnly.FromDateTime(date.AddDays(-daysCount)).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
-                DateOnly.FromDateTime(date).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)), UriKind.Relative), cancellationToken);
-            response.EnsureSuccessStatusCode();
-        }
-        catch (HttpRequestException ex)
-        {
-            logger.LogError(ex, Constants.Error.HttpFetchError);
-            return new List<ExchangeRate>();
-        }
-        catch (TaskCanceledException ex)
-        {
-            logger.LogError(ex, Constants.Error.TimeoutError);
-            return new List<ExchangeRate>();
-        }
+        response = await client.GetAsync(new Uri(string.Format(Constants.Path.ExchangeRatePathTemplate, currency,
+            startDate.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+            endDate.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)), UriKind.Relative), cancellationToken);
+        response.EnsureSuccessStatusCode();
 
         var result = await response.Content.ReadAsStringAsync(cancellationToken);
 
@@ -39,7 +26,7 @@ public class ExchangeRateClient(IHttpClientFactory factory, ILogger<ExchangeRate
         {
             document = XDocument.Parse(result);
         }
-        catch (Exception ex)
+        catch (XmlException ex)
         {
             logger.LogError(ex, Constants.Error.ParseError);
             return new List<ExchangeRate>();
@@ -60,10 +47,5 @@ public class ExchangeRateClient(IHttpClientFactory factory, ILogger<ExchangeRate
             .ToList();
 
         return rates;
-    }
-
-    public async Task<ExchangeRate> GetByCurrencyAsync(string currency, DateTime date, CancellationToken cancellationToken)
-    {
-        return (await GetWeekByCurrencyAsync(currency, date, cancellationToken)).OrderByDescending(x => x.RateDate).FirstOrDefault();
     }
 }

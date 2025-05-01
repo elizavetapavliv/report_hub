@@ -16,16 +16,6 @@ public class ExchangeRateRepository(MongoDbContext context) : BaseRepository(con
         return base.AddManyAsync(exchangeRates, cancellationToken);
     }
 
-    public async Task<IList<ExchangeRate>> GetWeekByCurrencyAsync(string currency, DateTime date, CancellationToken cancellationToken)
-    {
-        var daysCount = 7;
-        var filter = _filterBuilder.And(
-            _filterBuilder.Eq(x => x.Currency, currency),
-            _filterBuilder.Lte(x => x.RateDate, date),
-            _filterBuilder.Gte(x => x.RateDate, date.AddDays(-daysCount)));
-        return await GetAsync(filter, cancellationToken);
-    }
-
     public async Task<ExchangeRate> GetByCurrencyAsync(string currency, DateTime date, CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.And(
