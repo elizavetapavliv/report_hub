@@ -34,21 +34,24 @@ public class CreateClientRequestValidator : AbstractValidator<CreateClientReques
                     .Length(Constants.Validation.BankAccountNumber.MinLength, Constants.Validation.BankAccountNumber.MaxLength)
                     .Matches(@"^[A-Z]{2}\d+$")
                     .WithMessage(Constants.Validation.BankAccountNumber.InvalidFormat)
-                    .MustAsync((x, bankAccountNumber, cancellationToken)
-                    => ValidateBankAccountNumberAsync(x.CountryId, bankAccountNumber, cancellationToken))
+                    .MustAsync(ValidateBankAccountNumberAsync)
                     .WithMessage(Constants.Validation.BankAccountNumber.InvalidCountryCode);
+                child.RuleFor(x => x.CountryId)
+                    .NotEmpty()
+                    .MustAsync(_countryRepository.ExistsAsync)
+                    .WithMessage(Constants.Validation.Country.DoesNotExist);
             });
     }
 
-    private async Task<bool> ValidateBankAccountNumberAsync(Guid countryId, string bankAccountNumber, CancellationToken cancellationToken)
+    private async Task<bool> ValidateBankAccountNumberAsync(string bankAccountNumber, CancellationToken cancellationToken)
     {
-        var country = await _countryRepository.GetByIdAsync(countryId, cancellationToken);
-        if(country == null)
+        var countryCodes = await _countryRepository.GetCountryCodeAsync(cancellationToken);
+        var countryCode = bankAccountNumber.Substring(0, 2);
+        if (countryCodes.Contains(countryCode))
         {
-            return false;
+            return true;
         }
 
-        var countryCode = bankAccountNumber.Substring(0, 2);
-        return countryCode == country.CountryCode;
+        return false;
     }
 }

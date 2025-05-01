@@ -130,9 +130,9 @@ public class InvoicesService(ISender sender) : BaseService
     [SwaggerResponse(StatusCodes.Status403Forbidden, "User does not have permission to access this invoice")]
     [SwaggerResponse(StatusCodes.Status404NotFound, "Invoice was not found for the specified dates", typeof(ErrorResponse))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorResponse))]
-    public async Task<ActionResult<TotalInvoicesRevenueDTO>> GetTotalRevenue([FromQuery] InvoiceIssueDateFilterDTO invoiceDateFilter, [FromQuery][Required] Guid clientId)
+    public async Task<ActionResult<TotalInvoicesRevenueDTO>> GetTotalRevenue([FromQuery] InvoiceIssueDateFilterDTO invoiceDateFilter)
     {
-        var result = await sender.Send(new GetInvoicesTotalRevenueRequest(invoiceDateFilter, clientId));
+        var result = await sender.Send(new GetInvoicesTotalRevenueRequest(invoiceDateFilter));
         return FromResult(result);
     }
 }

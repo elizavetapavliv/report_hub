@@ -15,10 +15,6 @@ public class CreateClientHandler(
     public async Task<ErrorOr<ClientDTO>> Handle(CreateClientRequest request, CancellationToken cancellationToken)
     {
         var country = await countryRepository.GetByIdAsync(request.CreateClientDto.CountryId, cancellationToken);
-        if (country is null)
-        {
-            return Error.NotFound();
-        }
 
         var client = mapper.Map<Data.Models.Client>(request.CreateClientDto);
         client.Id = Guid.NewGuid();
