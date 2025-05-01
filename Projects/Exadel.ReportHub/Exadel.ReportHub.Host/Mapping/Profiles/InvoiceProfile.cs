@@ -42,6 +42,8 @@ public class InvoiceProfile : Profile
         CreateMap<Invoice, InvoiceModel>()
             .ForMember(x => x.ClientName, opt => opt.Ignore())
             .ForMember(x => x.CustomerName, opt => opt.Ignore())
-            .ForMember(x => x.Items, opt => opt.Ignore());
+            .ForMember(x => x.Items, opt => opt.Ignore())
+            .ForMember(x => x.Amount, opt => opt.MapFrom(scr => scr.CustomerCurrencyAmount))
+            .ForMember(x => x.CurrencyCode, opt => opt.MapFrom(scr => scr.CustomerCurrencyCode));
     }
 }
