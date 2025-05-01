@@ -74,7 +74,7 @@ public class InvoiceRepository(MongoDbContext context) : BaseRepository(context)
                 Currency = g.Key,
                 Total = g.Sum(x => x.ClientCurrencyAmount)
             })
-            .FirstOrDefaultAsync(cancellationToken);
+            .SingleOrDefaultAsync(cancellationToken);
 
         return (result.Currency, result.Total);
     }

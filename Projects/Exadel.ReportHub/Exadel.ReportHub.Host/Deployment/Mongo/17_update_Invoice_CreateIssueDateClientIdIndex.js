@@ -7,7 +7,7 @@ if (db.MigrationHistory.findOne({ ScriptName: scriptName, Version: version })) {
 }
 
 db.Invoice.createIndex(
-    { IssueDate: 1, ClientId: 1 },
+    { ClientId: 1, IssueDate: 1 },
     { partialFilterExpression: { IsDeleted: false } }
 );
 

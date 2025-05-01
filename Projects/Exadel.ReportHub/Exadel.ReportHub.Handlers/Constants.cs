@@ -33,7 +33,7 @@ public static class Constants
             public const int MinLength = 8;
             public const int MaxLength = 28;
             public const string InvalidFormat = "Bank account number must start with two uppercase letters followed by digits.";
-            public const string InvalidCountryCode = "Provided country and bank account number do not match.";
+            public const string InvalidCountryCode = "Provided country code is invalid.";
         }
 
         public static class Customer

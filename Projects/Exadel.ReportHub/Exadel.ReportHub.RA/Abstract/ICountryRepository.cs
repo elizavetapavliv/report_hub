@@ -10,5 +10,5 @@ public interface ICountryRepository
 
     Task<Country> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
-    Task<IList<string>> GetCountryCodeAsync(CancellationToken cancellationToken);
+    Task<bool> CountryCodeExistsAsync(string countryCode, CancellationToken cancellationToken);
 }

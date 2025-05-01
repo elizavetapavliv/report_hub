@@ -1,4 +1,4 @@
-﻿const scriptName = "14_update_Client_CreateClientIdIndex";
+﻿const scriptName = "14_update_Customer_CreateClientIdIndex";
 const version = NumberInt(2);
 
 if (db.MigrationHistory.findOne({ ScriptName: scriptName, Version: version })) {

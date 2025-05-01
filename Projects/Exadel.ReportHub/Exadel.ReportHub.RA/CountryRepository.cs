@@ -23,11 +23,10 @@ public class CountryRepository(MongoDbContext context) : BaseRepository(context)
         return GetByIdAsync<Country>(id, cancellationToken);
     }
 
-    public async Task<IList<string>> GetCountryCodeAsync(CancellationToken cancellationToken)
+    public async Task<bool> CountryCodeExistsAsync(string countryCode, CancellationToken cancellationToken)
     {
-        return await GetCollection<Country>()
-            .Find(_filterBuilder.Empty)
-            .Project(x => x.CountryCode)
-            .ToListAsync(cancellationToken);
+        var filter = _filterBuilder.Eq(x => x.CountryCode, countryCode);
+        var count = await GetCollection<Country>().Find(filter).CountDocumentsAsync(cancellationToken);
+        return count > 0;
     }
 }

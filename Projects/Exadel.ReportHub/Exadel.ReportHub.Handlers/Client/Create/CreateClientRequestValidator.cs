@@ -45,13 +45,7 @@ public class CreateClientRequestValidator : AbstractValidator<CreateClientReques
 
     private async Task<bool> ValidateBankAccountNumberAsync(string bankAccountNumber, CancellationToken cancellationToken)
     {
-        var countryCodes = await _countryRepository.GetCountryCodeAsync(cancellationToken);
         var countryCode = bankAccountNumber.Substring(0, 2);
-        if (countryCodes.Contains(countryCode))
-        {
-            return true;
-        }
-
-        return false;
+        return await _countryRepository.CountryCodeExistsAsync(countryCode, cancellationToken);
     }
 }

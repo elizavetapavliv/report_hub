@@ -16,7 +16,6 @@ function getCountryData(bankAccountNumber) {
     const countryCode = bankAccountNumber.substring(0, 2).toUpperCase();
 
     const countryInfo = countries.find(country => country.CountryCode.toUpperCase() === countryCode.toUpperCase());
-    if (!countryInfo) return null;
 
     return countries.find(x => x.Name === countryInfo.Name);
 }
