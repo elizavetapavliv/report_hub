@@ -13,8 +13,7 @@ public class ExchangeRateClient(IHttpClientFactory factory, ILogger<ExchangeRate
     {
         var client = factory.CreateClient(Constants.ClientName);
 
-        HttpResponseMessage response;
-        response = await client.GetAsync(new Uri(string.Format(Constants.Path.ExchangeRatePathTemplate, currency,
+        var response = await client.GetAsync(new Uri(string.Format(Constants.Path.ExchangeRatePathTemplate, currency,
             startDate.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
             endDate.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)), UriKind.Relative), cancellationToken);
         response.EnsureSuccessStatusCode();
@@ -28,7 +27,7 @@ public class ExchangeRateClient(IHttpClientFactory factory, ILogger<ExchangeRate
         }
         catch (XmlException ex)
         {
-            logger.LogError(ex, Constants.Error.ParseError);
+            logger.LogError(ex, Constants.Error.EmptyXml);
             return new List<ExchangeRate>();
         }
 
