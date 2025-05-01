@@ -58,7 +58,7 @@ public class InvoiceRepository(MongoDbContext context) : BaseRepository(context)
         return UpdateAsync(invoice.Id, definition, cancellationToken);
     }
 
-    public async Task<long> GetCountByDateRangeAsync(DateTime startDate, DateTime endDate, Guid clientId, Guid? customerId, CancellationToken cancellationToken)
+    public async Task<Dictionary<Guid, int>> GetCountByDateRangeAsync(DateTime startDate, DateTime endDate, Guid clientId, Guid? customerId, CancellationToken cancellationToken)
     {
         var filters = new List<FilterDefinition<Invoice>>
         {
@@ -73,6 +73,7 @@ public class InvoiceRepository(MongoDbContext context) : BaseRepository(context)
         }
 
         var filter = _filterBuilder.And(filters);
-        return await GetCollection<Invoice>().CountDocumentsAsync(filter, cancellationToken: cancellationToken);
+        var grouping = await GetCollection<Invoice>().Aggregate().Match(filter).Group(x => x.CustomerId, g => new { CustomerId = g.Key, Count = g.Count() }).ToListAsync(cancellationToken);
+        return grouping.ToDictionary(x => x.CustomerId, x => x.Count);
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Exadel.ReportHub.SDK.DTOs.Date;
+﻿namespace Exadel.ReportHub.SDK.DTOs.Invoice;
 
 public class DatesDTO
 {

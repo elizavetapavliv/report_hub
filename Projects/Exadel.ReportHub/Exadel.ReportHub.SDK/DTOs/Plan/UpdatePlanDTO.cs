@@ -1,8 +1,10 @@
-﻿using Exadel.ReportHub.SDK.DTOs.Date;
+﻿namespace Exadel.ReportHub.SDK.DTOs.Plan;
 
-namespace Exadel.ReportHub.SDK.DTOs.Plan;
-
-public class UpdatePlanDTO : DatesDTO
+public class UpdatePlanDTO
 {
     public int Amount { get; set; }
+
+    public DateTime StartDate { get; set; }
+
+    public DateTime EndDate { get; set; }
 }

@@ -109,6 +109,7 @@ public static class Constants
         public static class Date
         {
             public const string InvalidStartDate = "Start date must be less than end date";
+            public const string EndDateNotInPast = "End date must be less than/or equals to today's date";
             public const string EndDateInPast = "End date must be in the future";
             public const string EmptyStartDate = "Start date is required";
         }

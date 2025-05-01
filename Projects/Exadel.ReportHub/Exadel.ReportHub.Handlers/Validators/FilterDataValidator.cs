@@ -1,4 +1,4 @@
-﻿using Exadel.ReportHub.SDK.DTOs.Date;
+﻿using Exadel.ReportHub.SDK.DTOs.Invoice;
 using FluentValidation;
 
 namespace Exadel.ReportHub.Handlers.Validators;
@@ -25,8 +25,8 @@ public class FilterDataValidator : AbstractValidator<DatesDTO>
 
                 child.RuleFor(x => x.EndDate)
                     .NotEmpty()
-                    .GreaterThan(DateTime.UtcNow)
-                    .WithMessage(Constants.Validation.Date.EndDateInPast);
+                    .LessThanOrEqualTo(DateTime.UtcNow)
+                    .WithMessage(Constants.Validation.Date.EndDateNotInPast);
 
                 child.RuleFor(x => x.StartDate.TimeOfDay)
                     .Equal(TimeSpan.Zero)
