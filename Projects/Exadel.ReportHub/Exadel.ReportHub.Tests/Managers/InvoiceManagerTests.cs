@@ -67,7 +67,7 @@ public class InvoiceManagerTests : BaseTestFixture
 
         _currencyConverterMock
             .Setup(x => x.ConvertAsync(amount, Constants.Currency.DefaultCurrencyCode,
-                Constants.Currency.DefaultCurrencyCode, CancellationToken.None))
+                Constants.Currency.DefaultCurrencyCode, invoiceDto.IssueDate, CancellationToken.None))
             .ReturnsAsync(amount);
 
         _clientRepositoryMock
@@ -111,9 +111,12 @@ public class InvoiceManagerTests : BaseTestFixture
             .With(x => x.CurrencyCode, Constants.Currency.DefaultCurrencyCode)
             .CreateMany(3).ToList();
         var itemIds = items.Select(x => x.Id).ToList();
+        var date = DateTime.Now;
         var invoiceDtos = Fixture.Build<CreateInvoiceDTO>()
             .With(x => x.CustomerId, customers[0].Id)
             .With(x => x.ItemIds, itemIds)
+            .With(x => x.ClientId, client.Id)
+            .With(x => x.IssueDate, date)
             .With(x => x.ClientId, clients[0].Id)
             .CreateMany(2).ToList();
         var amount = items.Sum(x => x.Price);
@@ -128,7 +131,7 @@ public class InvoiceManagerTests : BaseTestFixture
 
         _currencyConverterMock
             .Setup(x => x.ConvertAsync(amount, Constants.Currency.DefaultCurrencyCode,
-                Constants.Currency.DefaultCurrencyCode, CancellationToken.None))
+                Constants.Currency.DefaultCurrencyCode, date, CancellationToken.None))
             .ReturnsAsync(amount);
 
         _clientRepositoryMock.Setup(x => x.GetByIdsAsync(new[] { clientId }, CancellationToken.None))
