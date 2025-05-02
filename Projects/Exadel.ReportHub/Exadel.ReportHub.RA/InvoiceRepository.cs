@@ -58,7 +58,7 @@ public class InvoiceRepository(MongoDbContext context) : BaseRepository(context)
         return UpdateAsync(invoice.Id, definition, cancellationToken);
     }
 
-    public async Task<(string CurrencyCode, decimal Total)> GetAmountByDateRangeAsync(Guid clientId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken)
+    public async Task<(string CurrencyCode, decimal Total)> GetTotalAmountByDateRangeAsync(Guid clientId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.And(
             _filterBuilder.Gte(x => x.IssueDate, startDate),
