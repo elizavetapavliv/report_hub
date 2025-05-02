@@ -1,4 +1,4 @@
-﻿const scriptName = "17_update_Invoice_CreateIssueDateClientIdIndex";
+﻿const scriptName = "18_update_Invoice_CreateIssueDateClientIdIndex";
 const version = NumberInt(1);
 
 if (db.MigrationHistory.findOne({ ScriptName: scriptName, Version: version })) {

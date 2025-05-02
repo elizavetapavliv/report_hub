@@ -115,7 +115,6 @@ public class InvoiceManagerTests : BaseTestFixture
         var invoiceDtos = Fixture.Build<CreateInvoiceDTO>()
             .With(x => x.CustomerId, customers[0].Id)
             .With(x => x.ItemIds, itemIds)
-            .With(x => x.ClientId, client.Id)
             .With(x => x.IssueDate, date)
             .With(x => x.ClientId, clients[0].Id)
             .CreateMany(2).ToList();

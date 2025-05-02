@@ -51,6 +51,7 @@ public class InvoiceManager(
                 invoice.CustomerCurrencyAmount,
                 invoice.CustomerCurrencyCode,
                 clients[invoice.ClientId].CurrencyCode,
+                invoice.IssueDate,
                 cancellationToken);
 
             invoice.ClientCurrencyCode = clientCurrencyCode;
