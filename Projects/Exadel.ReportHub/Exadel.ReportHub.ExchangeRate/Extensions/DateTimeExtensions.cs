@@ -4,7 +4,7 @@ public static class DateTimeExtensions
 {
     public static DateTime GetWeekPeriodStart(this DateTime endDate)
     {
-        var dayCount = 6;
-        return endDate.AddDays(-dayCount);
+        const int daysToWeekStartCount = 6;
+        return endDate.AddDays(-daysToWeekStartCount);
     }
 }

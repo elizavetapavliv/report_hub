@@ -18,7 +18,8 @@ public class ExchangeRateProvider(IExchangeRateRepository exhangeRateRepository,
 
         for (int i = 0; i < Constants.WeeksLimit; i++)
         {
-            var exchangeRates = await exchangeRateClient.GetByCurrencyInPeriodAsync(currency, weekEndDate.GetWeekPeriodStart(), weekEndDate, cancellationToken);
+            var weekStartDate = weekEndDate.GetWeekPeriodStart();
+            var exchangeRates = await exchangeRateClient.GetByCurrencyInPeriodAsync(currency, weekStartDate, weekEndDate, cancellationToken);
 
             if (exchangeRates.Any())
             {
@@ -26,7 +27,7 @@ public class ExchangeRateProvider(IExchangeRateRepository exhangeRateRepository,
                 return exchangeRates.MaxBy(x => x.RateDate);
             }
 
-            weekEndDate = weekEndDate.GetWeekPeriodStart().AddDays(-1);
+            weekEndDate = weekStartDate.AddDays(-1);
         }
 
         return null;
