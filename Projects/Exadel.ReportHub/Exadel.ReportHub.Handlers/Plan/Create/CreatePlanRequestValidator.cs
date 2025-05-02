@@ -18,7 +18,7 @@ public class CreatePlanRequestValidator : AbstractValidator<CreatePlanRequest>
         ConfigureRules();
     }
 
-    public void ConfigureRules()
+    private void ConfigureRules()
     {
         RuleFor(x => x.CreatePlanDto)
             .ChildRules(child =>

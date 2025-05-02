@@ -3,9 +3,9 @@ using FluentValidation;
 
 namespace Exadel.ReportHub.Handlers.Validators;
 
-public class FilterDataValidator : AbstractValidator<InvoiceFilterDTO>
+public class InvoiceRevenueFilterDtoValidator : AbstractValidator<InvoiceRevenueFilterDTO>
 {
-    public FilterDataValidator()
+    public InvoiceRevenueFilterDtoValidator()
     {
         ConfigureRules();
     }

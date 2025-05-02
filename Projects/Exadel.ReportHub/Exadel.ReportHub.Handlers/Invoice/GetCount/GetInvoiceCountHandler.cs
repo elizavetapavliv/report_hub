@@ -5,17 +5,17 @@ using MediatR;
 
 namespace Exadel.ReportHub.Handlers.Invoice.GetCount;
 
-public record GetInvoiceCountRequest(InvoiceFilterDTO InvoiceFilterDto, Guid ClientId) : IRequest<ErrorOr<InvoiceCountResultDTO>>;
+public record GetInvoiceCountRequest(InvoiceCountFilterDTO InvoiceCountFilterDto) : IRequest<ErrorOr<InvoiceCountResultDTO>>;
 
 public class GetInvoiceCountHandler(IInvoiceRepository invoiceRepository) : IRequestHandler<GetInvoiceCountRequest, ErrorOr<InvoiceCountResultDTO>>
 {
     public async Task<ErrorOr<InvoiceCountResultDTO>> Handle(GetInvoiceCountRequest request, CancellationToken cancellationToken)
     {
         var invoiceCount = await invoiceRepository.GetCountByDateRangeAsync(
-            request.InvoiceFilterDto.StartDate,
-            request.InvoiceFilterDto.EndDate,
-            request.ClientId,
-            request.InvoiceFilterDto.CustomerId,
+            request.InvoiceCountFilterDto.StartDate,
+            request.InvoiceCountFilterDto.EndDate,
+            request.InvoiceCountFilterDto.ClientId,
+            request.InvoiceCountFilterDto.CustomerId,
             cancellationToken);
 
         return new InvoiceCountResultDTO

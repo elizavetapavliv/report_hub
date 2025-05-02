@@ -9,7 +9,7 @@ public class UpdatePlanRequestValidator : AbstractValidator<UpdatePlanRequest>
         ConfigureRules();
     }
 
-    public void ConfigureRules()
+    private void ConfigureRules()
     {
         RuleFor(x => x.UpdatePlanDatedto)
             .ChildRules(child =>
