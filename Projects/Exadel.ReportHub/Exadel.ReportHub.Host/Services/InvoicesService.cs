@@ -110,7 +110,7 @@ public class InvoicesService(ISender sender) : BaseService
     }
 
     [Authorize(Policy = Constants.Authorization.Policy.Export)]
-    [HttpGet("pdf/export")]
+    [HttpGet("{invoiceId:guid}/export")]
     [SwaggerOperation(Summary = "Export invoice as PDF", Description = "Generates and exports a PDF version of the invoice using the provided invoice id")]
     [SwaggerResponse(StatusCodes.Status200OK, "Invoices were exported successfully")]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required to access this endpoint")]
