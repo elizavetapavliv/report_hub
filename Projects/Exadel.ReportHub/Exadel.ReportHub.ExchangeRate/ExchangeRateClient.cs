@@ -13,7 +13,8 @@ public class ExchangeRateClient(IHttpClientFactory factory, ILogger<ExchangeRate
     {
         var client = factory.CreateClient(Constants.ClientName);
 
-        var response = await client.GetAsync(GetPathUri(currency, startDate, endDate), cancellationToken);
+        var response = await client.GetAsync(new Uri(string.Format(Constants.Path.ExchangeRatePathTemplate, currency,
+            FormatDate(startDate), FormatDate(endDate)), UriKind.Relative), cancellationToken);
         response.EnsureSuccessStatusCode();
 
         var result = await response.Content.ReadAsStringAsync(cancellationToken);
@@ -46,11 +47,8 @@ public class ExchangeRateClient(IHttpClientFactory factory, ILogger<ExchangeRate
         return rates;
     }
 
-    private Uri GetPathUri(string currency, DateTime startDate, DateTime endDate)
+    private string FormatDate(DateTime date)
     {
-        var formatStartDate = startDate.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-        var formatEndDate = endDate.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-        return new Uri(string.Format(Constants.Path.ExchangeRatePathTemplate, currency,
-            formatStartDate, formatEndDate), UriKind.Relative);
+        return date.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
     }
 }
