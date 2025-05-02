@@ -4,5 +4,5 @@ namespace Exadel.ReportHub.Ecb.Abstract;
 
 public interface IExchangeRateProvider
 {
-    Task<ExchangeRate> GetByCurrencyForWeekAsync(string currency, DateTime date, CancellationToken cancellationToken);
+    Task<ExchangeRate> GetByCurrencyForWeekAsync(string currency, DateTime weekEndDate, CancellationToken cancellationToken);
 }

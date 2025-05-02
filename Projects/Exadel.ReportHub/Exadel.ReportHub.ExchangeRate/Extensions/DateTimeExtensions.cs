@@ -1,6 +1,6 @@
-﻿namespace Exadel.ReportHub.Ecb.Helpers;
+﻿namespace Exadel.ReportHub.Ecb.Extensions;
 
-public static class DateHelper
+public static class DateTimeExtensions
 {
     public static DateTime GetWeekPeriodStart(this DateTime endDate)
     {

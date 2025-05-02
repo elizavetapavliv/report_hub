@@ -3,6 +3,7 @@
 public static class Constants
 {
     public const string ClientName = "ExchangeRateClient";
+    public const int WeeksLimit = 4;
 
     public static class Currency
     {
