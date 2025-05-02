@@ -5,17 +5,17 @@ namespace Exadel.ReportHub.Handlers.Invoice.GetCount;
 
 public class GetInvoiceCountRequestValidator : AbstractValidator<GetInvoiceCountRequest>
 {
-    private readonly IValidator<DatesDTO> _datesDto;
+    private readonly IValidator<InvoiceFilterDTO> _invoiceFilterDto;
 
-    public GetInvoiceCountRequestValidator(IValidator<DatesDTO> datesDto)
+    public GetInvoiceCountRequestValidator(IValidator<InvoiceFilterDTO> invoiceFilterDto)
     {
-        _datesDto = datesDto;
+        _invoiceFilterDto = invoiceFilterDto;
         ConfigureRules();
     }
 
     public void ConfigureRules()
     {
         RuleFor(x => x.InvoiceFilterDto)
-            .SetValidator(_datesDto);
+            .SetValidator(_invoiceFilterDto);
     }
 }

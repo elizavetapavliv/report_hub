@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace Exadel.ReportHub.Handlers.Validators;
 
-public class FilterDataValidator : AbstractValidator<DatesDTO>
+public class FilterDataValidator : AbstractValidator<InvoiceFilterDTO>
 {
     public FilterDataValidator()
     {
