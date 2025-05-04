@@ -9,5 +9,7 @@ public class InvoiceReportMap : ClassMap<InvoiceReportModel>
     public InvoiceReportMap()
     {
         AutoMap(CultureInfo.InvariantCulture);
+
+        Map(x => x.ReportDate).TypeConverterOption.Format("yyyy-MM-dd");
     }
 }

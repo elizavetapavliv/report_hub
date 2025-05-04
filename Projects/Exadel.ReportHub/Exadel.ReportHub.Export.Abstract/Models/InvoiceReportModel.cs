@@ -12,6 +12,8 @@ public class InvoiceReportModel
 
     public int UnpaidCount { get; set; }
 
+    public int OverdueCount { get; set; }
+
     public int PaidCount { get; set; }
 
     public DateTime ReportDate { get; set; }
