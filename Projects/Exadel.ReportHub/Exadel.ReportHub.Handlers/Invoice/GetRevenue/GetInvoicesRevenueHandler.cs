@@ -11,8 +11,15 @@ public class GetInvoicesRevenueHandler(IInvoiceRepository invoiceRepository) : I
 {
     public async Task<ErrorOr<TotalInvoicesRevenueDTO>> Handle(GetInvoicesRevenueRequest request, CancellationToken cancellationToken)
     {
-        var (currencyCode, total) = await invoiceRepository.GetTotalAmountByDateRangeAsync(request.InvoiceRevenueFilterDto.ClientId,
+        var result = await invoiceRepository.GetTotalAmountByDateRangeAsync(request.InvoiceRevenueFilterDto.ClientId,
             request.InvoiceRevenueFilterDto.StartDate, request.InvoiceRevenueFilterDto.EndDate, cancellationToken);
+
+        if (!result.HasValue)
+        {
+            return Error.NotFound(nameof(Constants.Error.Invoice.NotFoundInSelectedPeriod), Constants.Error.Invoice.NotFoundInSelectedPeriod);
+        }
+
+        var (currencyCode, total) = result.Value;
 
         return new TotalInvoicesRevenueDTO
         {

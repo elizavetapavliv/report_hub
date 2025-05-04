@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using Exadel.ReportHub.Data.Enums;
 using Exadel.ReportHub.Data.Models;
 using Exadel.ReportHub.RA.Abstract;
 using MongoDB.Driver;
@@ -58,7 +59,38 @@ public class InvoiceRepository(MongoDbContext context) : BaseRepository(context)
         return UpdateAsync(invoice.Id, definition, cancellationToken);
     }
 
-    public async Task<(string CurrencyCode, decimal Total)> GetTotalAmountByDateRangeAsync(Guid clientId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken)
+    public async Task UpdatePaidStatusAsync(Guid id, Guid clientId, CancellationToken cancellationToken)
+    {
+        var filter = _filterBuilder.And(
+            _filterBuilder.Eq(x => x.Id, id),
+            _filterBuilder.Eq(x => x.ClientId, clientId));
+        var invoice = await GetCollection<Invoice>()
+            .Find(filter)
+            .SingleOrDefaultAsync(cancellationToken);
+
+        invoice.PaymentStatus = invoice.PaymentStatus switch
+        {
+            PaymentStatus.Unpaid => PaymentStatus.PaidOnTime,
+            PaymentStatus.Overdue => PaymentStatus.PaidLate,
+            _ => invoice.PaymentStatus
+        };
+
+        await GetCollection<Invoice>().ReplaceOneAsync(filter, invoice, cancellationToken: cancellationToken);
+    }
+
+    public async Task<long> UpdateOverdueStatusAsync(CancellationToken cancellationToken)
+    {
+        var filter = _filterBuilder.And(
+            _filterBuilder.Eq(x => x.PaymentStatus, PaymentStatus.Unpaid),
+            _filterBuilder.Lt(x => x.DueDate, DateTime.Now));
+        var definition = Builders<Invoice>.Update.Set(x => x.PaymentStatus, PaymentStatus.Overdue);
+
+        var result = await GetCollection<Invoice>().UpdateManyAsync(filter, definition, cancellationToken: cancellationToken);
+
+        return result.ModifiedCount;
+    }
+
+    public async Task<(string CurrencyCode, decimal Total)?> GetTotalAmountByDateRangeAsync(Guid clientId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.And(
             _filterBuilder.Gte(x => x.IssueDate, startDate),
@@ -75,26 +107,53 @@ public class InvoiceRepository(MongoDbContext context) : BaseRepository(context)
                 Total = g.Sum(x => x.ClientCurrencyAmount)
             })
             .SingleOrDefaultAsync(cancellationToken);
+        if (result is null)
+        {
+            return null;
+        }
 
         return (result.Currency, result.Total);
     }
 
     public async Task<Dictionary<Guid, int>> GetCountByDateRangeAsync(DateTime startDate, DateTime endDate, Guid clientId, Guid? customerId, CancellationToken cancellationToken)
     {
-        var filters = new List<FilterDefinition<Invoice>>
-        {
+        var filter = _filterBuilder.And(
             _filterBuilder.Eq(x => x.ClientId, clientId),
             _filterBuilder.Gte(x => x.IssueDate, startDate),
             _filterBuilder.Lte(x => x.IssueDate, endDate),
-            _filterBuilder.Eq(x => x.IsDeleted, false)
-        };
+            _filterBuilder.Eq(x => x.IsDeleted, false));
+
         if (customerId.HasValue)
         {
-            filters.Add(_filterBuilder.Eq(x => x.CustomerId, customerId));
+            filter &= _filterBuilder.Eq(x => x.CustomerId, customerId);
         }
 
-        var filter = _filterBuilder.And(filters);
         var grouping = await GetCollection<Invoice>().Aggregate().Match(filter).Group(x => x.CustomerId, g => new { CustomerId = g.Key, Count = g.Count() }).ToListAsync(cancellationToken);
         return grouping.ToDictionary(x => x.CustomerId, x => x.Count);
+    }
+
+    public async Task<(int Count, decimal Amount, string CurrencyCode)?> GetOverdueAsync(Guid clientId, CancellationToken cancellationToken)
+    {
+        var filter = _filterBuilder.And(
+            _filterBuilder.Eq(x => x.ClientId, clientId),
+            _filterBuilder.Eq(x => x.PaymentStatus, PaymentStatus.Overdue),
+            _filterBuilder.Eq(x => x.IsDeleted, false));
+
+        var result = await GetCollection<Invoice>()
+            .Aggregate()
+            .Match(filter)
+            .Group(x => x.ClientCurrencyCode, g => new
+            {
+                Currency = g.Key,
+                Amount = g.Sum(x => x.ClientCurrencyAmount),
+                Count = g.Count()
+            })
+            .SingleOrDefaultAsync(cancellationToken);
+        if (result is null)
+        {
+            return null;
+        }
+
+        return (result.Count, result.Amount, result.Currency);
     }
 }

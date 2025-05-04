@@ -1,14 +1,17 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
+using Exadel.ReportHub.Data.Enums;
 using Exadel.ReportHub.Handlers.Invoice.Create;
 using Exadel.ReportHub.Handlers.Invoice.Delete;
 using Exadel.ReportHub.Handlers.Invoice.ExportPdf;
 using Exadel.ReportHub.Handlers.Invoice.GetByClientId;
 using Exadel.ReportHub.Handlers.Invoice.GetById;
+using Exadel.ReportHub.Handlers.Invoice.GetByOverdueStatus;
 using Exadel.ReportHub.Handlers.Invoice.GetCount;
 using Exadel.ReportHub.Handlers.Invoice.GetRevenue;
 using Exadel.ReportHub.Handlers.Invoice.Import;
 using Exadel.ReportHub.Handlers.Invoice.Update;
+using Exadel.ReportHub.Handlers.Invoice.UpdateStatus;
 using Exadel.ReportHub.Host.Infrastructure.Models;
 using Exadel.ReportHub.Host.Services.Abstract;
 using Exadel.ReportHub.SDK.DTOs.Import;
@@ -147,6 +150,34 @@ public class InvoicesService(ISender sender) : BaseService
     public async Task<ActionResult<InvoiceCountResultDTO>> GetCount([FromQuery] InvoiceCountFilterDTO invoiceCountFilterDto)
     {
         var result = await sender.Send(new GetInvoiceCountRequest(invoiceCountFilterDto));
+        return FromResult(result);
+    }
+
+    [Authorize(Policy = Constants.Authorization.Policy.Update)]
+    [HttpPatch("{id:guid}/pay")]
+    [SwaggerOperation(Summary = "Mark invoice as paid", Description = "Marks the invoice as paid — on time or late depending on due date")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Invoice payment status was updated successfully")]
+    [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required to access this endpoint")]
+    [SwaggerResponse(StatusCodes.Status403Forbidden, "User does not have permission to update this invoice")]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "Invoice was not found for the specified id", typeof(ErrorResponse))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorResponse))]
+    public async Task<ActionResult> PayInvoice([FromRoute] Guid id, [FromQuery][Required] Guid clientId)
+    {
+        var result = await sender.Send(new UpdateInvoiceStatusRequest(id, clientId));
+
+        return FromResult(result);
+    }
+
+    [HttpGet("overdue")]
+    [SwaggerOperation(Summary = "Get overdue invoices summary", Description = "Returns the total number of overdue invoices and their amount for the specified client")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Overdue invoices data was retrieved successfully", typeof(ActionResult<OverdueInvoicesResultDTO>))]
+    [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required to access this endpoint")]
+    [SwaggerResponse(StatusCodes.Status403Forbidden, "User does not have permission to access this invoice")]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "Invoice was not found for the specified dates", typeof(ErrorResponse))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorResponse))]
+    public async Task<ActionResult<OverdueInvoicesResultDTO>> GetOverdue([Required] Guid clientId)
+    {
+        var result = await sender.Send(new GetInvoicesByOverdueStatusRequest(clientId));
         return FromResult(result);
     }
 }

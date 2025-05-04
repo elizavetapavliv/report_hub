@@ -1,4 +1,5 @@
-﻿using Exadel.ReportHub.Data.Models;
+﻿using Exadel.ReportHub.Data.Enums;
+using Exadel.ReportHub.Data.Models;
 
 namespace Exadel.ReportHub.RA.Abstract;
 
@@ -20,7 +21,13 @@ public interface IInvoiceRepository
 
     Task UpdateAsync(Invoice invoice, CancellationToken cancellationToken);
 
-    Task<(string CurrencyCode, decimal Total)> GetTotalAmountByDateRangeAsync(Guid clientId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken);
+    Task UpdatePaidStatusAsync(Guid id, Guid clientId, CancellationToken cancellationToken);
+
+    Task<long> UpdateOverdueStatusAsync(CancellationToken cancellationToken);
+
+    Task<(string CurrencyCode, decimal Total)?> GetTotalAmountByDateRangeAsync(Guid clientId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken);
 
     Task<Dictionary<Guid, int>> GetCountByDateRangeAsync(DateTime startDate, DateTime endDate, Guid clientId, Guid? customerId, CancellationToken cancellationToken);
+
+    Task<(int Count, decimal Amount, string CurrencyCode)?> GetOverdueAsync(Guid clientId, CancellationToken cancellationToken);
 }
