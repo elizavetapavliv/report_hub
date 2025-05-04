@@ -1,14 +1,32 @@
 ﻿const scriptName = "19_update_Invoice_CustomerAndClientCurrencyFields";
-const version = NumberInt(1);
+const version = NumberInt(2);
 
 if (db.MigrationHistory.findOne({ ScriptName: scriptName, Version: version })) {
     print(`${scriptName} v${version} is already applied`);;
     quit();
 }
 
-const clients = db.Client.find({}, { _id: 1, CurrencyId: 1, CurrencyCode: 1 }).toArray();
+const clientIds = db.Invoice.distinct("ClientId");
+const clients = db.Client.find({ _id: { $in: clientIds } }, { _id: 1, CurrencyId: 1, CurrencyCode: 1 }).toArray();
 
-const exchangeRates = db.ExchangeRate.find({}).toArray();
+const dates = db.Invoice.aggregate([
+    {
+        $group: {
+            _id: null,
+            minDate: { $min: "$IssueDate" },
+            maxDate: { $max: "$IssueDate" }
+        }
+    }
+]).toArray()[0];
+
+const exchangeRates = db.ExchangeRate.find({
+    RateDate: {
+        $gte: dates.minDate,
+        $lte: dates.maxDate
+    }
+}).toArray();
+
+db.ExchangeRate.createIndex({ RateDate: 1, Currency: 1 });
 
 const invoices = db.Invoice.find({}).toArray();
 const updates = invoices.map(invoice => {
@@ -47,7 +65,7 @@ const updates = invoices.map(invoice => {
                 clientCurrencyAmount = invoice.Amount * clientRate;
             }
 
-            update.ClientCurrencyAmount = clientCurrencyAmount;
+            update.ClientCurrencyAmount = NumberDecimal(clientCurrencyAmount.toString());
         }
     }
 
@@ -69,6 +87,8 @@ const updates = invoices.map(invoice => {
 if (updates.length > 0) {
     db.Invoice.bulkWrite(updates);
 }
+
+db.ExchangeRate.dropIndex({ RateDate: 1, Currency: 1 });
 
 db.MigrationHistory.insertOne({
     ScriptName: scriptName,
