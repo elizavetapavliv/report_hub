@@ -2,6 +2,8 @@
 
 public static class Constants
 {
+    public const string DateFormat = "yyyy-MM-dd";
+
     public static class File
     {
         public static class Extension

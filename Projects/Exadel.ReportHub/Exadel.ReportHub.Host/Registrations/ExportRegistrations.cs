@@ -1,4 +1,5 @@
 ﻿using Exadel.ReportHub.Csv;
+using Exadel.ReportHub.Excel;
 using Exadel.ReportHub.Export.Abstract;
 using Exadel.ReportHub.Host.Infrastructure.Export;
 
@@ -9,6 +10,7 @@ public static class ExportRegistrations
     public static IServiceCollection AddExport(this IServiceCollection services)
     {
         services.AddSingleton<CsvProcessor>();
+        services.AddSingleton<ExcelProcessor>();
         services.AddSingleton<IExportStrategyFactory, ExportStrategyFactory>();
 
         return services;

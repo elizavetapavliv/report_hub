@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using CsvHelper.Configuration;
+using Exadel.ReportHub.Export.Abstract;
 using Exadel.ReportHub.Export.Abstract.Models;
 
 namespace Exadel.ReportHub.Csv.ClassMaps;
@@ -10,6 +11,6 @@ public class InvoiceReportMap : ClassMap<InvoiceReportModel>
     {
         AutoMap(CultureInfo.InvariantCulture);
 
-        Map(x => x.ReportDate).TypeConverterOption.Format("yyyy-MM-dd");
+        Map(x => x.ReportDate).TypeConverterOption.Format(Constants.DateFormat);
     }
 }
