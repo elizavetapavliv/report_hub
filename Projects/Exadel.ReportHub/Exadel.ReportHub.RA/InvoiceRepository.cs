@@ -57,4 +57,44 @@ public class InvoiceRepository(MongoDbContext context) : BaseRepository(context)
             .Set(x => x.DueDate, invoice.DueDate);
         return UpdateAsync(invoice.Id, definition, cancellationToken);
     }
+
+    public async Task<(string CurrencyCode, decimal Total)> GetTotalAmountByDateRangeAsync(Guid clientId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken)
+    {
+        var filter = _filterBuilder.And(
+            _filterBuilder.Gte(x => x.IssueDate, startDate),
+            _filterBuilder.Lte(x => x.IssueDate, endDate),
+            _filterBuilder.Eq(x => x.ClientId, clientId),
+            _filterBuilder.Eq(x => x.IsDeleted, false));
+
+        var result = await GetCollection<Invoice>()
+            .Aggregate()
+            .Match(filter)
+            .Group(x => x.ClientCurrencyCode, g => new
+            {
+                Currency = g.Key,
+                Total = g.Sum(x => x.ClientCurrencyAmount)
+            })
+            .SingleOrDefaultAsync(cancellationToken);
+
+        return (result.Currency, result.Total);
+    }
+
+    public async Task<Dictionary<Guid, int>> GetCountByDateRangeAsync(DateTime startDate, DateTime endDate, Guid clientId, Guid? customerId, CancellationToken cancellationToken)
+    {
+        var filters = new List<FilterDefinition<Invoice>>
+        {
+            _filterBuilder.Eq(x => x.ClientId, clientId),
+            _filterBuilder.Gte(x => x.IssueDate, startDate),
+            _filterBuilder.Lte(x => x.IssueDate, endDate),
+            _filterBuilder.Eq(x => x.IsDeleted, false)
+        };
+        if (customerId.HasValue)
+        {
+            filters.Add(_filterBuilder.Eq(x => x.CustomerId, customerId));
+        }
+
+        var filter = _filterBuilder.And(filters);
+        var grouping = await GetCollection<Invoice>().Aggregate().Match(filter).Group(x => x.CustomerId, g => new { CustomerId = g.Key, Count = g.Count() }).ToListAsync(cancellationToken);
+        return grouping.ToDictionary(x => x.CustomerId, x => x.Count);
+    }
 }
