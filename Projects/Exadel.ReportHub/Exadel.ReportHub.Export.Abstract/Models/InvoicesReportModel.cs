@@ -1,6 +1,6 @@
 ﻿namespace Exadel.ReportHub.Export.Abstract.Models;
 
-public class InvoiceReportModel
+public class InvoicesReportModel : BaseReportModel
 {
     public int TotalCount { get; set; }
 
@@ -14,7 +14,7 @@ public class InvoiceReportModel
 
     public int OverdueCount { get; set; }
 
-    public int PaidCount { get; set; }
+    public int PaidOnTimeCount { get; set; }
 
-    public DateTime ReportDate { get; set; }
+    public int PaidLateCount { get; set; }
 }

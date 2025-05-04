@@ -6,7 +6,7 @@ namespace Exadel.ReportHub.Host.Infrastructure.Export;
 
 public class ExportStrategyFactory(IServiceProvider provider) : IExportStrategyFactory
 {
-    public IExportStrategy Create(ExportFormat format)
+    public IExportStrategy GetStrategy(ExportFormat format)
     {
         return format switch
         {

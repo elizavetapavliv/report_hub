@@ -8,9 +8,14 @@ public static class ClassMapFactory
 {
     public static ClassMap GetClassMap(Type modelType)
     {
-        if (modelType == typeof(InvoiceReportModel))
+        if (modelType == typeof(InvoicesReportModel))
         {
-            return new InvoiceReportMap();
+            return new InvoicesReportMap();
+        }
+
+        if (modelType == typeof(ItemsReportModel))
+        {
+            return new ItemsReportModelMap();
         }
 
         throw new ArgumentException($"No ClassMap for {modelType.Name}");

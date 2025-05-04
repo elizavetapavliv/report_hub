@@ -5,12 +5,12 @@ using Exadel.ReportHub.Export.Abstract.Models;
 
 namespace Exadel.ReportHub.Csv.ClassMaps;
 
-public class InvoiceReportMap : ClassMap<InvoiceReportModel>
+public class BaseReportModelMap<TModel> : ClassMap<TModel>
+    where TModel : BaseReportModel
 {
-    public InvoiceReportMap()
+    public BaseReportModelMap()
     {
         AutoMap(CultureInfo.InvariantCulture);
-
-        Map(x => x.ReportDate).TypeConverterOption.Format(Constants.DateFormat);
+        Map(x => x.ReportDate).TypeConverterOption.Format(Constants.Format.Date);
     }
 }

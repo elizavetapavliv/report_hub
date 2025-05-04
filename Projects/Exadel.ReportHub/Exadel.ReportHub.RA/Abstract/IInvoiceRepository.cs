@@ -23,4 +23,6 @@ public interface IInvoiceRepository
     Task<(string CurrencyCode, decimal Total)> GetTotalAmountByDateRangeAsync(Guid clientId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken);
 
     Task<Dictionary<Guid, int>> GetCountByDateRangeAsync(DateTime startDate, DateTime endDate, Guid clientId, Guid? customerId, CancellationToken cancellationToken);
+
+    Task<Dictionary<Guid, int>> GetItemsCountByClientIdAsync(Guid clientId, CancellationToken cancellationToken);
 }

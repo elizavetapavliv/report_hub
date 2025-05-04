@@ -97,4 +97,14 @@ public class InvoiceRepository(MongoDbContext context) : BaseRepository(context)
         var grouping = await GetCollection<Invoice>().Aggregate().Match(filter).Group(x => x.CustomerId, g => new { CustomerId = g.Key, Count = g.Count() }).ToListAsync(cancellationToken);
         return grouping.ToDictionary(x => x.CustomerId, x => x.Count);
     }
+
+    public async Task<Dictionary<Guid, int>> GetItemsCountByClientIdAsync(Guid clientId, CancellationToken cancellationToken)
+    {
+        var filter = _filterBuilder.Eq(x => x.ClientId, clientId);
+        var grouping = await GetCollection<Invoice>().Aggregate().Match(filter).Unwind<Invoice, UnwoundInvoice>(x => x.ItemIds)
+            .Group(x => x.ItemIds, g => new { ItemId = g.Key, Count = g.Count() }).ToListAsync(cancellationToken);
+        return grouping.ToDictionary(x => x.ItemId, x => x.Count);
+    }
+
+    private sealed record UnwoundInvoice(Guid ItemIds);
 }

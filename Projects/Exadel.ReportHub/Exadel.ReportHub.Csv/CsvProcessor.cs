@@ -4,6 +4,7 @@ using Exadel.ReportHub.Csv.Abstract;
 using Exadel.ReportHub.Csv.ClassMaps;
 using Exadel.ReportHub.Csv.Infrastructure;
 using Exadel.ReportHub.Export.Abstract;
+using Exadel.ReportHub.Export.Abstract.Models;
 using Exadel.ReportHub.SDK.DTOs.Invoice;
 
 namespace Exadel.ReportHub.Csv;
@@ -20,6 +21,7 @@ public class CsvProcessor : ICsvProcessor, IExportStrategy
     }
 
     public async Task<Stream> GenerateAsync<TModel>(TModel exportModel, CancellationToken cancellationToken)
+        where TModel : BaseReportModel
     {
         var csvStream = new MemoryStream();
         await using (var writer = new StreamWriter(csvStream, leaveOpen: true))
