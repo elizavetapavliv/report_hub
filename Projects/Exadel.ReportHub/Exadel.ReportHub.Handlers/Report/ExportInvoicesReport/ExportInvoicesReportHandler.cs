@@ -29,10 +29,11 @@ public class ExportInvoicesReportHandler(IInvoiceRepository invoiceRepository, I
         {
             TotalCount = invoices.Count,
             AverageMonthCount = (int)Math.Round(grouping.Select(g => g.Count()).Average()),
-            TotalAmount = invoices.Sum(x => x.Amount),
-            AverageAmount = grouping.Select(g => g.Sum(x => x.Amount)).Average(),
+            TotalAmount = invoices.Sum(x => x.ClientCurrencyAmount),
+            AverageAmount = grouping.Select(g => g.Sum(x => x.ClientCurrencyAmount)).Average(),
             UnpaidCount = invoices.Count(x => x.PaymentStatus == Data.Enums.PaymentStatus.Unpaid),
             PaidCount = invoices.Count(x => x.PaymentStatus == Data.Enums.PaymentStatus.Paid),
+            OverdueCount = invoices.Count(x => x.PaymentStatus == Data.Enums.PaymentStatus.Overdue),
             ReportDate = DateTime.UtcNow
         };
 

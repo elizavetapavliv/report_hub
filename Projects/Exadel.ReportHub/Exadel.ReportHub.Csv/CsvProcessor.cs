@@ -22,12 +22,20 @@ public class CsvProcessor : ICsvProcessor, IExportStrategy
     public async Task<Stream> GenerateAsync<TModel>(TModel exportModel, CancellationToken cancellationToken)
     {
         var csvStream = new MemoryStream();
-        await using var writer = new StreamWriter(csvStream);
-        await using var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
-        csv.Context.RegisterClassMap(ClassMapFactory.GetClassMap(typeof(TModel)));
+        await using (var writer = new StreamWriter(csvStream, leaveOpen: true))
+        {
+            await using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+            {
+                csv.Context.RegisterClassMap(ClassMapFactory.GetClassMap(typeof(TModel)));
+                csv.WriteHeader<TModel>();
+                await csv.NextRecordAsync();
+                csv.WriteRecord(exportModel);
+            }
 
-        csv.WriteRecord(exportModel);
+            await writer.FlushAsync(cancellationToken);
+        }
 
+        csvStream.Seek(0, SeekOrigin.Begin);
         return csvStream;
     }
 }
