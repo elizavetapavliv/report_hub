@@ -2,7 +2,12 @@
 
 public static class Constants
 {
-    public const string DateFormat = "yyyy-MM-dd";
+
+    public static class Format
+    {
+        public const string Date = "yyyy-MM-dd";
+        public const string Decimal = "0.00";
+    }
 
     public static class File
     {

@@ -4,5 +4,6 @@ public enum PaymentStatus
 {
     Unpaid,
     Overdue,
-    Paid
+    PaidOnTime,
+    PaidLate
 }

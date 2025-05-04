@@ -2,5 +2,5 @@
 
 public interface IExportStrategyFactory
 {
-    IExportStrategy Create(ExportFormat format);
+    IExportStrategy GetStrategy(ExportFormat format);
 }
