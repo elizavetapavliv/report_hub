@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
-using Exadel.ReportHub.Data.Enums;
 using Exadel.ReportHub.Handlers.Invoice.Create;
 using Exadel.ReportHub.Handlers.Invoice.Delete;
 using Exadel.ReportHub.Handlers.Invoice.ExportPdf;
@@ -168,6 +167,7 @@ public class InvoicesService(ISender sender) : BaseService
         return FromResult(result);
     }
 
+    [Authorize(Policy = Constants.Authorization.Policy.Read)]
     [HttpGet("overdue")]
     [SwaggerOperation(Summary = "Get overdue invoices summary", Description = "Returns the total number of overdue invoices and their amount for the specified client")]
     [SwaggerResponse(StatusCodes.Status200OK, "Overdue invoices data was retrieved successfully", typeof(ActionResult<OverdueInvoicesResultDTO>))]
