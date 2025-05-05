@@ -4,6 +4,8 @@ namespace Exadel.ReportHub.Export.Abstract;
 
 public interface IExportStrategy
 {
-    Task<Stream> GenerateAsync<TModel>(TModel exportModel, CancellationToken cancellationToken)
-        where TModel : BaseReportModel;
+    Task<Stream> ExportAsync<TModel>(TModel exportModel, CancellationToken cancellationToken)
+        where TModel : BaseReport;
+
+    bool Satisfy(ExportFormat format);
 }

@@ -2,13 +2,12 @@
 using Exadel.ReportHub.Export.Abstract;
 using Exadel.ReportHub.Export.Abstract.Models;
 
-
 namespace Exadel.ReportHub.Excel;
 
-public class ExcelProcessor : IExportStrategy
+public class ExcelExporter : IExportStrategy
 {
-    public async Task<Stream> GenerateAsync<TModel>(TModel exportModel, CancellationToken cancellationToken)
-        where TModel : BaseReportModel
+    public async Task<Stream> ExportAsync<TModel>(TModel exportModel, CancellationToken cancellationToken)
+        where TModel : BaseReport
     {
         var stream = new MemoryStream();
 
@@ -34,7 +33,7 @@ public class ExcelProcessor : IExportStrategy
             {
                 cells[1, i].SetStyle(dateStyle);
             }
-            
+
             if (value is decimal)
             {
                 cells[1, i].SetStyle(decimalStyle);
@@ -49,4 +48,6 @@ public class ExcelProcessor : IExportStrategy
         stream.Seek(0, SeekOrigin.Begin);
         return stream;
     }
+
+    public bool Satisfy(ExportFormat format) => format == ExportFormat.Excel;
 }

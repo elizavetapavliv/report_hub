@@ -24,5 +24,7 @@ public interface IInvoiceRepository
 
     Task<Dictionary<Guid, int>> GetCountByDateRangeAsync(DateTime startDate, DateTime endDate, Guid clientId, Guid? customerId, CancellationToken cancellationToken);
 
-    Task<Dictionary<Guid, int>> GetItemsCountByClientIdAsync(Guid clientId, CancellationToken cancellationToken);
+    Task<Dictionary<Guid, int>> GetClientItemsCountAsync(Guid clientId, CancellationToken cancellationToken);
+
+    Task<Dictionary<(int Year, int Month), List<Invoice>>> GetGroupedByMonthAsync(Guid clientId, CancellationToken cancellationToken);
 }

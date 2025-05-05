@@ -2,7 +2,7 @@
 
 namespace Exadel.ReportHub.Csv.Abstract;
 
-public interface ICsvProcessor
+public interface ICsvImporter
 {
     IList<CreateInvoiceDTO> ReadInvoices(Stream csvStream);
 }

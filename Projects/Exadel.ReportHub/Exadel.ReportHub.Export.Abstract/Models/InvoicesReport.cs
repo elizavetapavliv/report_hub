@@ -1,6 +1,6 @@
 ﻿namespace Exadel.ReportHub.Export.Abstract.Models;
 
-public class InvoicesReportModel : BaseReportModel
+public class InvoicesReport : BaseReport
 {
     public int TotalCount { get; set; }
 

@@ -1,6 +1,6 @@
 ﻿namespace Exadel.ReportHub.Export.Abstract.Models;
 
-public class ItemsReportModel : BaseReportModel
+public class ItemsReport : BaseReport
 {
     public Guid MostSoldItemId { get; set; }
 

@@ -12,7 +12,7 @@ namespace Exadel.ReportHub.Handlers.Invoice.Import;
 public record ImportInvoicesRequest(ImportDTO ImportDTO) : IRequest<ErrorOr<ImportResultDTO>>;
 
 public class ImportInvoicesHandler(
-    ICsvProcessor csvProcessor,
+    ICsvImporter csvProcessor,
     IInvoiceRepository invoiceRepository,
     IInvoiceManager invoiceManager,
     IValidator<CreateInvoiceDTO> invoiceValidator) : IRequestHandler<ImportInvoicesRequest, ErrorOr<ImportResultDTO>>
