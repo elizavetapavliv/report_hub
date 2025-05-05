@@ -27,8 +27,8 @@ public class AuditReportsService(ISender sender) : BaseService
     public async Task<ActionResult<IList<AuditReportDTO>>> GetAuditReportsByUserId(
         [FromQuery][Required] Guid userId,
         [FromQuery][Required] Guid clientId,
-        [FromQuery][Required] int pageNumber,
-        [FromQuery][Required] int pageSize)
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 10)
     {
             var result = await sender.Send(new GetAuditReportsByUserIdRequest(userId, pageNumber, pageSize));
             return FromResult(result);

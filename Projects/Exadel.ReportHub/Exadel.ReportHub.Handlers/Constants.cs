@@ -114,6 +114,13 @@ public static class Constants
             public const string EndDateInPast = "End date must be in the future";
             public const string EmptyStartDate = "Start date is required";
         }
+
+        public static class Pagination
+        {
+            public const int MaxPageSize = 100;
+            public const string InvalidValue = "Page value must be greater than 0";
+            public const string InvalidSize = "Page size cannot be greater than 100";
+        }
     }
 
     public static class ClientData
