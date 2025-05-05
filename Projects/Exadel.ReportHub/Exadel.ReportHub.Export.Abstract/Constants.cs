@@ -2,7 +2,6 @@
 
 public static class Constants
 {
-
     public static class Format
     {
         public const string Date = "yyyy-MM-dd";
