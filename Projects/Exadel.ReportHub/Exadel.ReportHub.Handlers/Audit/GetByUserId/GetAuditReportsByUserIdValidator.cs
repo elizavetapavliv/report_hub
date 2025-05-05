@@ -17,7 +17,8 @@ public class GetAuditReportsByUserIdValidator : AbstractValidator<GetAuditReport
                 child.ClassLevelCascadeMode = CascadeMode.Stop;
 
                 child.RuleFor(x => x.Top)
-                    .GreaterThanOrEqualTo(0);
+                    .GreaterThanOrEqualTo(0)
+                    .LessThan(Constants.Validation.Pagination.DefaultMaxValue);
 
                 child.RuleFor(x => x.Skip)
                     .GreaterThanOrEqualTo(0);
