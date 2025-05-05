@@ -117,9 +117,7 @@ public static class Constants
 
         public static class Pagination
         {
-            public const int MaxPageSize = 100;
-            public const string InvalidValue = "Page value must be greater than 0";
-            public const string InvalidSize = "Page size cannot be greater than 100";
+            public const int DefaultMaxValue = 100;
         }
     }
 

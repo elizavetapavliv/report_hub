@@ -18,14 +18,14 @@ public class AuditReportRepository : BaseRepository, IAuditReportRepository
         return await GetByIdAsync<AuditReport>(id, cancellationToken);
     }
 
-    public async Task<IList<AuditReport>> GetByUserIdAsync(Guid userId, int pageNumber, int pageSize, CancellationToken cancellationToken)
+    public async Task<IList<AuditReport>> GetByUserIdAsync(Guid userId, int skip, int top, CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.Eq(x => x.UserId, userId);
         var desc = await GetCollection<AuditReport>()
             .Find(filter)
-            .Skip(pageSize * (pageNumber - 1))
-            .Limit(pageSize)
             .SortByDescending(x => x.TimeStamp)
+            .Skip(skip)
+            .Limit(top)
             .ToListAsync(cancellationToken);
         return desc;
     }

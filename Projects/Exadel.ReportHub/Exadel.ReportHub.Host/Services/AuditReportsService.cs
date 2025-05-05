@@ -6,6 +6,7 @@ using Exadel.ReportHub.Host.Infrastructure.Models;
 using Exadel.ReportHub.Host.Services.Abstract;
 using Exadel.ReportHub.SDK.DTOs.AuditReport;
 using Exadel.ReportHub.SDK.DTOs.Client;
+using Exadel.ReportHub.SDK.DTOs.Pagination;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -27,10 +28,9 @@ public class AuditReportsService(ISender sender) : BaseService
     public async Task<ActionResult<IList<AuditReportDTO>>> GetAuditReportsByUserId(
         [FromQuery][Required] Guid userId,
         [FromQuery][Required] Guid clientId,
-        [FromQuery] int pageNumber = 1,
-        [FromQuery] int pageSize = 10)
+        [FromQuery][Required] PageRequestDTO pageRequestDTO)
     {
-            var result = await sender.Send(new GetAuditReportsByUserIdRequest(userId, pageNumber, pageSize));
+            var result = await sender.Send(new GetAuditReportsByUserIdRequest(userId, pageRequestDTO));
             return FromResult(result);
     }
 

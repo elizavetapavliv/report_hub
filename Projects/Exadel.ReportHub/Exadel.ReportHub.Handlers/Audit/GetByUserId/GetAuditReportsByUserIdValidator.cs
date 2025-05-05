@@ -11,16 +11,16 @@ public class GetAuditReportsByUserIdValidator : AbstractValidator<GetAuditReport
 
     private void ConfigureRules()
     {
-        ClassLevelCascadeMode = CascadeMode.Stop;
+        RuleFor(x => x.PageRequestDto)
+            .ChildRules(child =>
+            {
+                child.ClassLevelCascadeMode = CascadeMode.Stop;
 
-        RuleFor(x => x.PageNumber)
-            .GreaterThan(0)
-            .WithMessage(Constants.Validation.Pagination.InvalidValue);
+                child.RuleFor(x => x.Top)
+                    .GreaterThanOrEqualTo(0);
 
-        RuleFor(x => x.PageSize)
-            .GreaterThan(0)
-            .WithMessage(Constants.Validation.Pagination.InvalidValue)
-            .LessThanOrEqualTo(Constants.Validation.Pagination.MaxPageSize)
-            .WithMessage(Constants.Validation.Pagination.InvalidSize);
+                child.RuleFor(x => x.Skip)
+                    .GreaterThanOrEqualTo(0);
+            });
     }
 }
