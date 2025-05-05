@@ -6,7 +6,7 @@ using MediatR;
 
 namespace Exadel.ReportHub.Handlers.Audit.GetByUserId;
 
-public record GetAuditReportsByUserIdRequest(Guid UserId) : IRequest<ErrorOr<IList<AuditReportDTO>>>;
+public record GetAuditReportsByUserIdRequest(Guid UserId, int PageNumber, int PageSize) : IRequest<ErrorOr<IList<AuditReportDTO>>>;
 
 public class GetAuditReportsByUserIdHandler(
     IAuditReportRepository auditReportRepository,
@@ -14,7 +14,7 @@ public class GetAuditReportsByUserIdHandler(
 {
     public async Task<ErrorOr<IList<AuditReportDTO>>> Handle(GetAuditReportsByUserIdRequest request, CancellationToken cancellationToken)
     {
-        var auditReports = await auditReportRepository.GetByUserIdAsync(request.UserId, cancellationToken);
+        var auditReports = await auditReportRepository.GetByUserIdAsync(request.UserId, request.PageNumber, request.PageSize, cancellationToken);
         return mapper.Map<List<AuditReportDTO>>(auditReports);
     }
 }

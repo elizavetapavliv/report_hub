@@ -24,9 +24,13 @@ public class AuditReportsService(ISender sender) : BaseService
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required to access this endpoint")]
     [SwaggerResponse(StatusCodes.Status404NotFound, "User doesnt exist", typeof(ErrorResponse))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorResponse))]
-    public async Task<ActionResult<IList<AuditReportDTO>>> GetAuditReportsByUserId([FromQuery][Required] Guid userId, [FromQuery][Required] Guid clientId)
+    public async Task<ActionResult<IList<AuditReportDTO>>> GetAuditReportsByUserId(
+        [FromQuery][Required] Guid userId,
+        [FromQuery][Required] Guid clientId,
+        [FromQuery][Required] int pageNumber,
+        [FromQuery][Required] int pageSize)
     {
-            var result = await sender.Send(new GetAuditReportsByUserIdRequest(userId));
+            var result = await sender.Send(new GetAuditReportsByUserIdRequest(userId, pageNumber, pageSize));
             return FromResult(result);
     }
 
