@@ -3,9 +3,7 @@
 public class PageResultDTO<T>
     where T : class
 {
-    public long TotalCount { get; set; }
+    public long Count { get; set; }
 
-    public int PageSize { get; set; }
-
-    public IList<T> Entities { get; set; }
+    public IList<T> Items { get; set; }
 }

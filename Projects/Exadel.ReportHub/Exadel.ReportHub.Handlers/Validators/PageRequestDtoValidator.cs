@@ -15,7 +15,7 @@ public class PageRequestDtoValidator : AbstractValidator<PageRequestDTO>
 
         RuleFor(x => x.Top)
             .GreaterThanOrEqualTo(0)
-            .LessThan(Constants.Validation.Pagination.DefaultMaxValue);
+            .LessThan(Constants.Validation.Pagination.MaxValue);
 
         RuleFor(x => x.Skip)
             .GreaterThanOrEqualTo(0);

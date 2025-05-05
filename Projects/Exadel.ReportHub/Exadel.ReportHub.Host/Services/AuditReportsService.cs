@@ -20,7 +20,8 @@ namespace Exadel.ReportHub.Host.Services;
 public class AuditReportsService(ISender sender) : BaseService
 {
     [HttpGet]
-    [SwaggerOperation(Summary = "Get audit reports by user id", Description = "Retrieves a specific audit report using their user's identifier")]
+    [SwaggerOperation(Summary = "Get paginated audit reports by user ID",
+        Description = "Retrieves a specific audit report using their user's identifier. Supports pagination using Top and Skip")]
     [SwaggerResponse(StatusCodes.Status200OK, "Audit reports were retrieved successfully", typeof(ActionResult<PageResultDTO<AuditReportDTO>>))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required to access this endpoint")]
     [SwaggerResponse(StatusCodes.Status404NotFound, "User doesnt exist", typeof(ErrorResponse))]
@@ -28,9 +29,9 @@ public class AuditReportsService(ISender sender) : BaseService
     public async Task<ActionResult<PageResultDTO<AuditReportDTO>>> GetAuditReportsByUserId(
         [FromQuery][Required] Guid userId,
         [FromQuery][Required] Guid clientId,
-        [FromQuery][Required] PageRequestDTO pageRequestDTO)
+        [FromQuery][Required] PageRequestDTO pageRequestDto)
     {
-            var result = await sender.Send(new GetAuditReportsByUserIdRequest(userId, pageRequestDTO));
+            var result = await sender.Send(new GetAuditReportsByUserIdRequest(userId, pageRequestDto));
             return FromResult(result);
     }
 

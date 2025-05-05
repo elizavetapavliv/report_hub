@@ -15,19 +15,18 @@ public class GetAuditReportsByUserIdHandler(
 {
     public async Task<ErrorOr<PageResultDTO<AuditReportDTO>>> Handle(GetAuditReportsByUserIdRequest request, CancellationToken cancellationToken)
     {
-        var defaultMaxValue = await auditReportRepository.GetTotalAsync(request.UserId, cancellationToken);
+        var count = await auditReportRepository.GetCountAsync(request.UserId, cancellationToken);
 
         request.PageRequestDto.Top = request.PageRequestDto.Top == 0 ?
-            Constants.Validation.Pagination.DefaultMaxValue : request.PageRequestDto.Top;
+            Constants.Validation.Pagination.MaxValue : request.PageRequestDto.Top;
 
         var auditReports = await auditReportRepository.GetByUserIdAsync(request.UserId,
             request.PageRequestDto.Skip, request.PageRequestDto.Top, cancellationToken);
 
         var pageResult = new PageResultDTO<AuditReportDTO>
         {
-            TotalCount = defaultMaxValue,
-            Entities = mapper.Map<List<AuditReportDTO>>(auditReports),
-            PageSize = auditReports.Count,
+            Count = count,
+            Items = mapper.Map<List<AuditReportDTO>>(auditReports),
         };
         return pageResult;
     }

@@ -35,7 +35,7 @@ public class AuditReportRepository : BaseRepository, IAuditReportRepository
         await base.AddAsync(auditReport, cancellationToken);
     }
 
-    public async Task<long> GetTotalAsync(Guid userId, CancellationToken cancellationToken)
+    public async Task<long> GetCountAsync(Guid userId, CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.Eq(x => x.UserId, userId);
         return await GetCollection<AuditReport>().CountDocumentsAsync(filter, cancellationToken: cancellationToken);

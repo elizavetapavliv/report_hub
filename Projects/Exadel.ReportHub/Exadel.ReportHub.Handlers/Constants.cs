@@ -117,7 +117,7 @@ public static class Constants
 
         public static class Pagination
         {
-            public const int DefaultMaxValue = 100;
+            public const int MaxValue = 100;
         }
     }
 
