@@ -1,6 +1,6 @@
-﻿namespace Exadel.ReportHub.SDK.DTOs.Invoice;
+﻿namespace Exadel.ReportHub.Data.Models;
 
-public class OverdueInvoicesResultDTO
+public class OverdueCount
 {
     public int Count { get; set; }
 

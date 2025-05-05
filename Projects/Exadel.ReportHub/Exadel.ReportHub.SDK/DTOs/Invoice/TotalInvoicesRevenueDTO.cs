@@ -2,7 +2,7 @@
 
 public class TotalInvoicesRevenueDTO
 {
-    public decimal TotalRevenue { get; set; }
+    public decimal TotalAmount { get; set; }
 
     public string CurrencyCode { get; set; }
 }

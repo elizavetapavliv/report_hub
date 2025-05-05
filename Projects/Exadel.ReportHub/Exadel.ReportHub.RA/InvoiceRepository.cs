@@ -21,9 +21,13 @@ public class InvoiceRepository(MongoDbContext context) : BaseRepository(context)
         return base.AddManyAsync(invoices, cancellationToken);
     }
 
-    public Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<bool> ExistsAsync(Guid id, Guid clientId, CancellationToken cancellationToken)
     {
-        return ExistsAsync<Invoice>(id, cancellationToken);
+        var filter = _filterBuilder.And(
+            _filterBuilder.Eq(x => x.Id, id),
+            _filterBuilder.Eq(x => x.ClientId, clientId));
+        var count = await GetCollection<Invoice>().Find(filter).CountDocumentsAsync(cancellationToken);
+        return count > 0;
     }
 
     public async Task<bool> ExistsAsync(string invoiceNumber, CancellationToken cancellationToken)
@@ -64,38 +68,43 @@ public class InvoiceRepository(MongoDbContext context) : BaseRepository(context)
         var filter = _filterBuilder.And(
             _filterBuilder.Eq(x => x.Id, id),
             _filterBuilder.Eq(x => x.ClientId, clientId));
-        var invoice = await GetCollection<Invoice>()
-            .Find(filter)
-            .SingleOrDefaultAsync(cancellationToken);
 
-        invoice.PaymentStatus = invoice.PaymentStatus switch
-        {
-            PaymentStatus.Unpaid => PaymentStatus.PaidOnTime,
-            PaymentStatus.Overdue => PaymentStatus.PaidLate,
-            _ => invoice.PaymentStatus
-        };
+        var pipeline = new EmptyPipelineDefinition<Invoice>()
+        .AppendStage(
+            PipelineStageDefinitionBuilder.Set<Invoice, Invoice>(i => new Invoice
+            {
+                PaymentStatus = i.PaymentStatus == PaymentStatus.Unpaid
+                    ? PaymentStatus.PaidOnTime
+                    : i.PaymentStatus
+            }))
+        .AppendStage(
+            PipelineStageDefinitionBuilder.Set<Invoice, Invoice>(i => new Invoice
+            {
+                PaymentStatus = i.PaymentStatus == PaymentStatus.Overdue
+                    ? PaymentStatus.PaidLate
+                    : i.PaymentStatus
+            }));
 
-        await GetCollection<Invoice>().ReplaceOneAsync(filter, invoice, cancellationToken: cancellationToken);
+        await GetCollection<Invoice>().UpdateOneAsync(filter, pipeline, cancellationToken: cancellationToken);
     }
 
-    public async Task<long> UpdateOverdueStatusAsync(CancellationToken cancellationToken)
+    public async Task<long> UpdateOverdueStatusAsync(DateTime date, CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.And(
             _filterBuilder.Eq(x => x.PaymentStatus, PaymentStatus.Unpaid),
-            _filterBuilder.Lt(x => x.DueDate, DateTime.Now));
-        var definition = Builders<Invoice>.Update.Set(x => x.PaymentStatus, PaymentStatus.Overdue);
+            _filterBuilder.Lt(x => x.DueDate, date));
+        var updateDefinition = Builders<Invoice>.Update.Set(x => x.PaymentStatus, PaymentStatus.Overdue);
 
-        var result = await GetCollection<Invoice>().UpdateManyAsync(filter, definition, cancellationToken: cancellationToken);
-
+        var result = await GetCollection<Invoice>().UpdateManyAsync(filter, updateDefinition, cancellationToken: cancellationToken);
         return result.ModifiedCount;
     }
 
-    public async Task<(string CurrencyCode, decimal Total)?> GetTotalAmountByDateRangeAsync(Guid clientId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken)
+    public async Task<TotalRevenue> GetTotalAmountByDateRangeAsync(Guid clientId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.And(
+            _filterBuilder.Eq(x => x.ClientId, clientId),
             _filterBuilder.Gte(x => x.IssueDate, startDate),
             _filterBuilder.Lte(x => x.IssueDate, endDate),
-            _filterBuilder.Eq(x => x.ClientId, clientId),
             _filterBuilder.Eq(x => x.IsDeleted, false));
 
         var result = await GetCollection<Invoice>()
@@ -107,12 +116,17 @@ public class InvoiceRepository(MongoDbContext context) : BaseRepository(context)
                 Total = g.Sum(x => x.ClientCurrencyAmount)
             })
             .SingleOrDefaultAsync(cancellationToken);
+
         if (result is null)
         {
-            return null;
+            return new TotalRevenue();
         }
 
-        return (result.Currency, result.Total);
+        return new TotalRevenue
+        {
+            TotalAmount = result.Total,
+            CurrencyCode = result.Currency,
+        };
     }
 
     public async Task<Dictionary<Guid, int>> GetCountByDateRangeAsync(DateTime startDate, DateTime endDate, Guid clientId, Guid? customerId, CancellationToken cancellationToken)
@@ -132,7 +146,7 @@ public class InvoiceRepository(MongoDbContext context) : BaseRepository(context)
         return grouping.ToDictionary(x => x.CustomerId, x => x.Count);
     }
 
-    public async Task<(int Count, decimal Amount, string CurrencyCode)?> GetOverdueAsync(Guid clientId, CancellationToken cancellationToken)
+    public async Task<OverdueCount> GetOverdueAsync(Guid clientId, CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.And(
             _filterBuilder.Eq(x => x.ClientId, clientId),
@@ -149,11 +163,17 @@ public class InvoiceRepository(MongoDbContext context) : BaseRepository(context)
                 Count = g.Count()
             })
             .SingleOrDefaultAsync(cancellationToken);
+
         if (result is null)
         {
-            return null;
+            return new OverdueCount();
         }
 
-        return (result.Count, result.Amount, result.Currency);
+        return new OverdueCount
+        {
+            Count = result.Count,
+            TotalAmount = result.Amount,
+            ClientCurrencyCode = result.Currency,
+        };
     }
 }

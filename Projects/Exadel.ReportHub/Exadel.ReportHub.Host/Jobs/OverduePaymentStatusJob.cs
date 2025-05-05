@@ -8,10 +8,10 @@ public class OverduePaymentStatusJob : IJob
 {
     public void Schedule()
     {
-        RecurringJob.AddOrUpdate<InvoiceService>(
-            recurringJobId: "OverduePaymentStatusUpdater",
-            methodCall: s => s.UpdateOverdueInvoicesStatusAsync(),
-            cronExpression: "0 0 * * *",
+        RecurringJob.AddOrUpdate<InvoicesService>(
+            recurringJobId: Constants.Job.Id.OverduePaymentStatusUpdater,
+            methodCall: s => s.UpdateOverdueInvoicesStatusAsync(DateTime.Now.Date),
+            cronExpression: "1 0 * * *",
             options: new RecurringJobOptions { TimeZone = TimeZoneInfo.Utc });
     }
 }

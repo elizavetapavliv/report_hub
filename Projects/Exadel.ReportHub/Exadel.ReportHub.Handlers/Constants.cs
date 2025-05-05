@@ -128,20 +128,4 @@ public static class Constants
             public const string Pdf = ".pdf";
         }
     }
-
-    public static class Logger
-    {
-        public static class Invoice
-        {
-            public const string OverdueInvoicesResult = "Marked {Count} invoices as overdue";
-        }
-    }
-
-    public static class Error
-    {
-        public static class Invoice
-        {
-            public const string NotFoundInSelectedPeriod = "No invoices issued in selected period";
-        }
-    }
 }
