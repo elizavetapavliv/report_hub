@@ -68,21 +68,17 @@ public class InvoiceRepository(MongoDbContext context) : BaseRepository(context)
     {
         var filter = _filterBuilder.And(
             _filterBuilder.Eq(x => x.Id, id),
-            _filterBuilder.Eq(x => x.ClientId, clientId));
+            _filterBuilder.Eq(x => x.ClientId, clientId),
+            _filterBuilder.In(x => x.PaymentStatus, new[] { PaymentStatus.Unpaid, PaymentStatus.Overdue }));
 
         PipelineDefinition<Invoice, Invoice> pipeline = new[]
         {
-            new BsonDocument("$set", new BsonDocument("PaymentStatus",
+            new BsonDocument("$set", new BsonDocument(nameof(PaymentStatus),
             new BsonDocument("$cond", new BsonArray
             {
-                new BsonDocument("$eq", new BsonArray { "$PaymentStatus", PaymentStatus.Unpaid.ToString() }),
+                new BsonDocument("$eq", new BsonArray { nameof(PaymentStatus), PaymentStatus.Unpaid.ToString() }),
                 PaymentStatus.PaidOnTime.ToString(),
-                new BsonDocument("$cond", new BsonArray
-                {
-                    new BsonDocument("$eq", new BsonArray { "$PaymentStatus", PaymentStatus.Overdue.ToString() }),
-                    PaymentStatus.PaidLate.ToString(),
-                    "$PaymentStatus"
-                })
+                PaymentStatus.PaidLate.ToString()
             })))
         };
 
@@ -111,10 +107,10 @@ public class InvoiceRepository(MongoDbContext context) : BaseRepository(context)
         var result = await GetCollection<Invoice>()
             .Aggregate()
             .Match(filter)
-            .Group(x => x.ClientCurrencyCode, g => new
+            .Group(x => x.ClientCurrencyCode, g => new TotalRevenue
             {
-                Currency = g.Key,
-                Total = g.Sum(x => x.ClientCurrencyAmount)
+                TotalAmount = g.Sum(x => x.ClientCurrencyAmount),
+                CurrencyCode = g.Key,
             })
             .SingleOrDefaultAsync(cancellationToken);
 
@@ -123,11 +119,7 @@ public class InvoiceRepository(MongoDbContext context) : BaseRepository(context)
             return new TotalRevenue();
         }
 
-        return new TotalRevenue
-        {
-            TotalAmount = result.Total,
-            CurrencyCode = result.Currency,
-        };
+        return result;
     }
 
     public async Task<Dictionary<Guid, int>> GetCountByDateRangeAsync(DateTime startDate, DateTime endDate, Guid clientId, Guid? customerId, CancellationToken cancellationToken)
@@ -157,11 +149,11 @@ public class InvoiceRepository(MongoDbContext context) : BaseRepository(context)
         var result = await GetCollection<Invoice>()
             .Aggregate()
             .Match(filter)
-            .Group(x => x.ClientCurrencyCode, g => new
+            .Group(x => x.ClientCurrencyCode, g => new OverdueCount
             {
-                Currency = g.Key,
-                Amount = g.Sum(x => x.ClientCurrencyAmount),
-                Count = g.Count()
+                Count = g.Count(),
+                TotalAmount = g.Sum(x => x.ClientCurrencyAmount),
+                ClientCurrencyCode = g.Key,
             })
             .SingleOrDefaultAsync(cancellationToken);
 
@@ -170,11 +162,6 @@ public class InvoiceRepository(MongoDbContext context) : BaseRepository(context)
             return new OverdueCount();
         }
 
-        return new OverdueCount
-        {
-            Count = result.Count,
-            TotalAmount = result.Amount,
-            ClientCurrencyCode = result.Currency,
-        };
+        return result;
     }
 }
