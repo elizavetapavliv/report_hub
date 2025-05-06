@@ -75,7 +75,8 @@ public class InvoiceRepository(MongoDbContext context) : BaseRepository(context)
             new BsonDocument("$set", new BsonDocument("PaymentStatus",
             new BsonDocument("$cond", new BsonArray
             {
-                new BsonDocument("$eq", new BsonArray { "$PaymentStatus", PaymentStatus.Unpaid.ToString() }), PaymentStatus.PaidOnTime.ToString(),
+                new BsonDocument("$eq", new BsonArray { "$PaymentStatus", PaymentStatus.Unpaid.ToString() }),
+                PaymentStatus.PaidOnTime.ToString(),
                 new BsonDocument("$cond", new BsonArray
                 {
                     new BsonDocument("$eq", new BsonArray { "$PaymentStatus", PaymentStatus.Overdue.ToString() }),
