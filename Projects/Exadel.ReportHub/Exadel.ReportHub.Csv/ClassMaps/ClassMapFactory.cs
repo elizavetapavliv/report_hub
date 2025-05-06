@@ -12,7 +12,8 @@ public static class ClassMapFactory
         return typeof(TModel).Name switch
         {
             nameof(InvoicesReport) => new InvoicesReportMap(),
-            nameof(ItemsReport) => new ItemsReportModelMap(),
+            nameof(ItemsReport) => new ItemsReportMap(),
+            nameof(PlansReport) => new PlansReportMap(),
             nameof(CreateInvoiceDTO) => new CreateInvoiceMap(),
             _ => throw new ArgumentException($"No ClassMap for {typeof(TModel).Name}")
         };

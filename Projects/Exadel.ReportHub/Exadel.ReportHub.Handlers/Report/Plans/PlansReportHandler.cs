@@ -1,0 +1,50 @@
+﻿using System.Globalization;
+using ErrorOr;
+using Exadel.ReportHub.Export.Abstract;
+using Exadel.ReportHub.Export.Abstract.Helpers;
+using Exadel.ReportHub.Export.Abstract.Models;
+using Exadel.ReportHub.RA.Abstract;
+using MediatR;
+
+namespace Exadel.ReportHub.Handlers.Report.Plans;
+
+public record PlansReportRequest(Guid ClientId, ExportFormat Format) : IRequest<ErrorOr<ExportResult>>;
+
+public class PlansReportHandler(IPlanRepository planRepository, IInvoiceRepository invoiceRepository, IExportStrategyFactory exportStrategyFactory)
+    : IRequestHandler<PlansReportRequest, ErrorOr<ExportResult>>
+{
+    public async Task<ErrorOr<ExportResult>> Handle(PlansReportRequest request, CancellationToken cancellationToken)
+    {
+        var exportStrategyTask = exportStrategyFactory.GetStrategyAsync(request.Format, cancellationToken);
+
+        var plansTask = planRepository.GetByClientIdAsync(request.ClientId, cancellationToken);
+        var countsTask = invoiceRepository.GetClientItemsCountAsync(request.ClientId, cancellationToken);
+
+        await Task.WhenAll(exportStrategyTask, plansTask, countsTask);
+
+        var reports = plansTask.Result.Select(x => new PlansReport
+        {
+            TargetItemId = x.ItemId,
+            StartDate = x.StartDate,
+            EndDate = x.EndDate,
+            PlannedQuantity = x.Amount,
+            ActualQuantity = countsTask.Result.GetValueOrDefault(x.ItemId), // GetCounts by period, query for each plan?
+            ReportDate = DateTime.UtcNow
+        }).ToList();
+
+        if (reports.Count == 0)
+        {
+            reports.Add(new PlansReport { StartDate = DateTime.UtcNow, EndDate = DateTime.UtcNow, ReportDate = DateTime.UtcNow });
+        }
+
+        var stream = await exportStrategyTask.Result.ExportAsync(reports, cancellationToken);
+
+        return new ExportResult
+        {
+            Stream = stream,
+            FileName = $"PlansReport_{reports[0].ReportDate.Date.ToString(Export.Abstract.Constants.Format.Date, CultureInfo.InvariantCulture)}" +
+                       $"{ExportFormatHelper.GetFileExtension(request.Format)}",
+            ContentType = ExportFormatHelper.GetContentType(request.Format)
+        };
+    }
+}

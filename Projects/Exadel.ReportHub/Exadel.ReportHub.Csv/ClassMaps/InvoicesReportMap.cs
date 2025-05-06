@@ -3,7 +3,7 @@ using Exadel.ReportHub.Export.Abstract;
 
 namespace Exadel.ReportHub.Csv.ClassMaps;
 
-public class InvoicesReportMap : BaseReportModelMap<InvoicesReport>
+public class InvoicesReportMap : BaseReportMap<InvoicesReport>
 {
     public InvoicesReportMap()
     {
