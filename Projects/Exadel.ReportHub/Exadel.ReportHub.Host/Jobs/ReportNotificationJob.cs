@@ -10,7 +10,7 @@ public class ReportNotificationJob(ISender sender) : IJob
     public void Schedule()
     {
         RecurringJob.AddOrUpdate<ReportNotificationJob>(
-            recurringJobId: "SendUserReportsJob",
+            recurringJobId: Constants.Job.Id.SendUserReports,
             methodCall: j => j.ExecuteAsync(),
             cronExpression: "0 * * * *",
             options: new RecurringJobOptions

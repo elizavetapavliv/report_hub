@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using ErrorOr;
 using Exadel.ReportHub.Common;
+using Exadel.ReportHub.Data.Enums;
+using Exadel.ReportHub.Data.Models;
 using Exadel.ReportHub.RA.Abstract;
 using Exadel.ReportHub.SDK.DTOs.User;
 using MediatR;
@@ -19,10 +21,13 @@ public class CreateUserHandler(IUserRepository userRepository, IMapper mapper) :
         user.Id = Guid.NewGuid();
         user.PasswordSalt = passwordSalt;
         user.PasswordHash = passwordHash;
-        user.NotificationSettings.ReportFormat = Data.Enums.ExportFormat.Excel;
-        user.NotificationSettings.NotificationHour = Constants.Validation.NotificationFrequency.DefaultHourValue;
-        user.NotificationSettings.NotificationFrequency = Data.Enums.NotificationFrequency.Weekly;
-        user.NotificationSettings.NotificationDayOfWeek = DayOfWeek.Monday;
+        user.NotificationSettings = new NotificationSettings
+        {
+            ReportFormat = ExportFormat.Excel,
+            NotificationHour = Constants.Validation.NotificationFrequency.DefaultHourValue,
+            NotificationFrequency = NotificationFrequency.Weekly,
+            NotificationDayOfWeek = DayOfWeek.Monday
+        };
 
         await userRepository.AddAsync(user, cancellationToken);
 
