@@ -184,8 +184,8 @@ public class InvoicesService(ISender sender) : BaseService, IInvoiceService
     }
 
     [NonAction]
-    public async Task UpdateOverdueInvoicesStatusAsync(DateTime date)
+    public async Task UpdateOverdueInvoicesStatusAsync()
     {
-        await sender.Send(new UpdateOverdueInvoicesStatusRequest(date));
+        await sender.Send(new UpdateOverdueInvoicesStatusRequest());
     }
 }

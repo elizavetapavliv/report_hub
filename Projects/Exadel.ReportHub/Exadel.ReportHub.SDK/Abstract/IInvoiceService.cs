@@ -2,5 +2,5 @@
 
 public interface IInvoiceService
 {
-    public Task UpdateOverdueInvoicesStatusAsync(DateTime date);
+    public Task UpdateOverdueInvoicesStatusAsync();
 }

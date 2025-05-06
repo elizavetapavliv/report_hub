@@ -7,19 +7,15 @@ if (db.MigrationHistory.findOne({ ScriptName: scriptName, Version: version })) {
 }
 
 db.Invoice.createIndex(
-    { _id: 1, ClientId: 1 },
-    {
-        background: true
-    });
-
-db.Invoice.createIndex(
-    { ClientId: 1, IssueDate: 1, IsDeleted: 1 },
+    { ClientId: 1, IssueDate: 1 },
+    { partialFilterExpression: { IsDeleted: false } },
     {
         background: true
     });
 
 db.Invoice.createIndex(
     { ClientId: 1, PaymentStatus: 1, IsDeleted: 1 },
+    { partialFilterExpression: { IsDeleted: false } },
     {
         background: true
     });
