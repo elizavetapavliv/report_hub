@@ -36,7 +36,7 @@ public class InvoicesService(ISender sender) : BaseService, IInvoiceService
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required to access this endpoint")]
     [SwaggerResponse(StatusCodes.Status403Forbidden, "User does not have permission to perform this action")]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorResponse))]
-    public async Task<ActionResult<ImportResultDTO>> ImportInvoicesAsync([FromForm] ImportDTO importDto, [FromQuery][Required] Guid clientId)
+    public async Task<ActionResult<ImportResultDTO>> ImportInvoicesAsync([FromForm] ImportDTO importDto, [FromQuery, Required] Guid clientId)
     {
         var result = await sender.Send(new ImportInvoicesRequest(importDto));
         return FromResult(result, StatusCodes.Status201Created);
@@ -63,7 +63,7 @@ public class InvoicesService(ISender sender) : BaseService, IInvoiceService
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required to access this endpoint")]
     [SwaggerResponse(StatusCodes.Status403Forbidden, "User does not have permission to access this invoice")]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorResponse))]
-    public async Task<ActionResult<IList<InvoiceDTO>>> GetInvoicesByClientId([FromQuery][Required] Guid clientId)
+    public async Task<ActionResult<IList<InvoiceDTO>>> GetInvoicesByClientId([FromQuery, Required] Guid clientId)
     {
         var result = await sender.Send(new GetInvoicesByClientIdRequest(clientId));
         return FromResult(result);
@@ -77,7 +77,7 @@ public class InvoicesService(ISender sender) : BaseService, IInvoiceService
     [SwaggerResponse(StatusCodes.Status403Forbidden, "User does not have permission to access this invoice")]
     [SwaggerResponse(StatusCodes.Status404NotFound, "Invoice was not found for the given id", typeof(ErrorResponse))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorResponse))]
-    public async Task<ActionResult<InvoiceDTO>> GetInvoiceById([FromRoute] Guid id, [FromQuery][Required] Guid clientId)
+    public async Task<ActionResult<InvoiceDTO>> GetInvoiceById([FromRoute] Guid id, [FromQuery, Required] Guid clientId)
     {
         var result = await sender.Send(new GetInvoiceByIdRequest(id));
         return FromResult(result);
@@ -162,7 +162,7 @@ public class InvoicesService(ISender sender) : BaseService, IInvoiceService
     [SwaggerResponse(StatusCodes.Status403Forbidden, "User does not have permission to update this invoice")]
     [SwaggerResponse(StatusCodes.Status404NotFound, "Invoice was not found for the specified id", typeof(ErrorResponse))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorResponse))]
-    public async Task<ActionResult> PayInvoice([FromRoute] Guid id, [FromQuery][Required] Guid clientId)
+    public async Task<ActionResult> PayInvoice([FromRoute] Guid id, [FromQuery, Required] Guid clientId)
     {
         var result = await sender.Send(new UpdateInvoicePaidStatusRequest(id, clientId));
 

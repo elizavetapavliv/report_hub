@@ -76,7 +76,7 @@ public class InvoiceRepository(MongoDbContext context) : BaseRepository(context)
             new BsonDocument("$set", new BsonDocument(nameof(PaymentStatus),
             new BsonDocument("$cond", new BsonArray
             {
-                new BsonDocument("$eq", new BsonArray { nameof(PaymentStatus), PaymentStatus.Unpaid.ToString() }),
+                new BsonDocument("$eq", new BsonArray { $"${nameof(PaymentStatus)}", PaymentStatus.Unpaid.ToString() }),
                 PaymentStatus.PaidOnTime.ToString(),
                 PaymentStatus.PaidLate.ToString()
             })))
@@ -89,7 +89,8 @@ public class InvoiceRepository(MongoDbContext context) : BaseRepository(context)
     {
         var filter = _filterBuilder.And(
             _filterBuilder.Eq(x => x.PaymentStatus, PaymentStatus.Unpaid),
-            _filterBuilder.Lt(x => x.DueDate, date));
+            _filterBuilder.Lt(x => x.DueDate, date),
+            _filterBuilder.Eq(x => x.IsDeleted, false));
         var updateDefinition = Builders<Invoice>.Update.Set(x => x.PaymentStatus, PaymentStatus.Overdue);
 
         var result = await GetCollection<Invoice>().UpdateManyAsync(filter, updateDefinition, cancellationToken: cancellationToken);
@@ -156,12 +157,6 @@ public class InvoiceRepository(MongoDbContext context) : BaseRepository(context)
                 ClientCurrencyCode = g.Key,
             })
             .SingleOrDefaultAsync(cancellationToken);
-
-        if (result is null)
-        {
-            return new OverdueCount();
-        }
-
         return result;
     }
 }

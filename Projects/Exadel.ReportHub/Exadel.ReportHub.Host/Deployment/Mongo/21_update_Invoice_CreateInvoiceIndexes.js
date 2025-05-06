@@ -14,7 +14,7 @@ db.Invoice.createIndex(
     });
 
 db.Invoice.createIndex(
-    { ClientId: 1, PaymentStatus: 1, IsDeleted: 1 },
+    { ClientId: 1, PaymentStatus: 1 },
     { partialFilterExpression: { IsDeleted: false } },
     {
         background: true
@@ -24,6 +24,13 @@ db.Invoice.createIndex(
     { ClientId: 1, InvoiceNumber: 1 },
     {
         unique: true,
+        background: true
+    });
+
+db.Invoice.createIndex(
+    { PaymentStatus: 1, DueDate: 1 },
+    { partialFilterExpression: { IsDeleted: false } },
+    {
         background: true
     });
 
