@@ -2,6 +2,7 @@
 using Exadel.ReportHub.Data.Enums;
 using Exadel.ReportHub.Data.Models;
 using Exadel.ReportHub.RA.Abstract;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Exadel.ReportHub.RA;
@@ -69,21 +70,20 @@ public class InvoiceRepository(MongoDbContext context) : BaseRepository(context)
             _filterBuilder.Eq(x => x.Id, id),
             _filterBuilder.Eq(x => x.ClientId, clientId));
 
-        var pipeline = new EmptyPipelineDefinition<Invoice>()
-        .AppendStage(
-            PipelineStageDefinitionBuilder.Set<Invoice, Invoice>(i => new Invoice
+        PipelineDefinition<Invoice, Invoice> pipeline = new[]
+        {
+            new BsonDocument("$set", new BsonDocument("PaymentStatus",
+            new BsonDocument("$cond", new BsonArray
             {
-                PaymentStatus = i.PaymentStatus == PaymentStatus.Unpaid
-                    ? PaymentStatus.PaidOnTime
-                    : i.PaymentStatus
-            }))
-        .AppendStage(
-            PipelineStageDefinitionBuilder.Set<Invoice, Invoice>(i => new Invoice
-            {
-                PaymentStatus = i.PaymentStatus == PaymentStatus.Overdue
-                    ? PaymentStatus.PaidLate
-                    : i.PaymentStatus
-            }));
+                new BsonDocument("$eq", new BsonArray { "$PaymentStatus", PaymentStatus.Unpaid.ToString() }), PaymentStatus.PaidOnTime.ToString(),
+                new BsonDocument("$cond", new BsonArray
+                {
+                    new BsonDocument("$eq", new BsonArray { "$PaymentStatus", PaymentStatus.Overdue.ToString() }),
+                    PaymentStatus.PaidLate.ToString(),
+                    "$PaymentStatus"
+                })
+            })))
+        };
 
         await GetCollection<Invoice>().UpdateOneAsync(filter, pipeline, cancellationToken: cancellationToken);
     }
