@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Exadel.ReportHub.Data.Enums;
 using Exadel.ReportHub.Handlers.User.Create;
 using Exadel.ReportHub.Handlers.User.Delete;
 using Exadel.ReportHub.Handlers.User.Get;
@@ -37,7 +36,7 @@ public class UsersService(ISender sender) : BaseService
         return FromResult(result, StatusCodes.Status201Created);
     }
 
-    //[Authorize(Policy = Constants.Authorization.Policy.Read)]
+    [Authorize(Policy = Constants.Authorization.Policy.Read)]
     [HttpGet("{id:guid}")]
     [SwaggerOperation(Summary = "Get user details", Description = "Retrieves the details of a user by their unique id.")]
     [SwaggerResponse(StatusCodes.Status200OK, "User details were retrieved successfully", typeof(ActionResult<UserDTO>))]
@@ -51,7 +50,7 @@ public class UsersService(ISender sender) : BaseService
         return FromResult(result);
     }
 
-    //[Authorize(Policy = Constants.Authorization.Policy.Read)]
+    [Authorize(Policy = Constants.Authorization.Policy.Read)]
     [HttpGet]
     [SwaggerOperation(Summary = "Get list of users", Description = "Retrieves a list of users, optionally filtered by their active status.")]
     [SwaggerResponse(StatusCodes.Status200OK, "Users were retrieved successfully", typeof(ActionResult<IList<UserDTO>>))]
