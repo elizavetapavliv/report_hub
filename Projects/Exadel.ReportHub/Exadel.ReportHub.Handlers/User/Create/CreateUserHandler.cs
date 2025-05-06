@@ -19,6 +19,10 @@ public class CreateUserHandler(IUserRepository userRepository, IMapper mapper) :
         user.Id = Guid.NewGuid();
         user.PasswordSalt = passwordSalt;
         user.PasswordHash = passwordHash;
+        user.NotificationSettings.ReportFormat = Data.Enums.ExportFormat.Excel;
+        user.NotificationSettings.NotificationHour = Constants.Validation.NotificationFrequency.DefaultHourValue;
+        user.NotificationSettings.NotificationFrequency = Data.Enums.NotificationFrequency.Weekly;
+        user.NotificationSettings.NotificationDayOfWeek = DayOfWeek.Monday;
 
         await userRepository.AddAsync(user, cancellationToken);
 

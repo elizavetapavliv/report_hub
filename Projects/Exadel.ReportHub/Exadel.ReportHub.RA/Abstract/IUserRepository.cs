@@ -29,7 +29,5 @@ public interface IUserRepository
 
     Task<IList<User>> GetUsersByNotificationAsync(int dayOfMonth, DayOfWeek dayOfWeek, int hour, CancellationToken cancellationToken);
 
-    Task UpdateReportFormatAsync(Guid id, ReportFormat reportFormat, CancellationToken cancellationToken);
-
-    Task UpdateNotificationFrequencyAsync(User user, CancellationToken cancellationToken);
+    Task UpdateNotificationSettingsAsync(Guid id, NotificationSettings notificationSettings, CancellationToken cancellationToken);
 }

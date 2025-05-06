@@ -15,32 +15,34 @@ const users = db.User.find({}, { _id: 1 }).toArray();
 
 
 var updates = users.map(user => {
-    const update =
+    const notificationSettings =
     {
         NotificationDayOfWeek: null,
-        NotificationDayOfMonth: 0,
+        NotificationDayOfMonth: null,
     };
 
     const randomFrequency = notificationFrequencies[Math.floor(Math.random() * notificationFrequencies.length)];
-    update.NotificationFrequency = randomFrequency;
+    notificationSettings.NotificationFrequency = randomFrequency;
 
 
-    update.NotificationTime = notificationTimes[Math.floor(Math.random() * notificationTimes.length)];
+    notificationSettings.NotificationTime = notificationTimes[Math.floor(Math.random() * notificationTimes.length)];
 
     if (randomFrequency === "Weekly") {
-        update.NotificationDayOfWeek = daysOfWeek[Math.floor(Math.random() * daysOfWeek.length)];
+        notificationSettings.NotificationDayOfWeek = daysOfWeek[Math.floor(Math.random() * daysOfWeek.length)];
     }
     else if (randomFrequency === "Monthly") {
-        update.NotificationDayOfMonth = Math.floor(Math.random() * 28) + 1;
+        notificationSettings.NotificationDayOfMonth = Math.floor(Math.random() * 28) + 1;
     }
 
-    update.ReportFormat = reportFormats[Math.floor(Math.random() * reportFormats.length)];
+    notificationSettings.ReportFormat = reportFormats[Math.floor(Math.random() * reportFormats.length)];
 
     return {
         updateOne: {
             filter: { _id: user._id },
             update: {
-                $set: update
+                $set: {
+                    NotificationSettings: notificationSettings
+                }
             }
         }
     };

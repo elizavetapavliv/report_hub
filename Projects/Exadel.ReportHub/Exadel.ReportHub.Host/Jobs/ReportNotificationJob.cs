@@ -1,16 +1,11 @@
-﻿using Exadel.ReportHub.Data.Enums;
-using Exadel.ReportHub.Handlers.User.GetByNotification;
+﻿using Exadel.ReportHub.Handlers.Report.Send;
 using Exadel.ReportHub.Host.Jobs.Abstract;
-using Exadel.ReportHub.RA.Abstract;
 using Hangfire;
 using MediatR;
 
 namespace Exadel.ReportHub.Host.Jobs;
 
-public class ReportNotificationJob(
-    ILogger<ReportNotificationJob> logger,
-    ISender sender
-    ) : IJob
+public class ReportNotificationJob(ISender sender) : IJob
 {
     public void Schedule()
     {
@@ -26,13 +21,6 @@ public class ReportNotificationJob(
 
     public async Task ExecuteAsync()
     {
-        try
-        {
-            var usersToNotify = sender.Send(new GetUsersByNotificationRequest());
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error occurred while sending reports at {Time}", DateTime.UtcNow);
-        }
+            var usersToNotify = await sender.Send(new SendReportsRequest());
     }
 }

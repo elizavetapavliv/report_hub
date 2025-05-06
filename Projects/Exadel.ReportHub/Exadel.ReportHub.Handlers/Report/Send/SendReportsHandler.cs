@@ -4,13 +4,13 @@ using Exadel.ReportHub.RA.Abstract;
 using Exadel.ReportHub.SDK.DTOs.User;
 using MediatR;
 
-namespace Exadel.ReportHub.Handlers.User.GetByNotification;
+namespace Exadel.ReportHub.Handlers.Report.Send;
 
-public record GetUsersByNotificationRequest : IRequest<ErrorOr<IList<UserDTO>>>;
+public record SendReportsRequest : IRequest<ErrorOr<IList<UserDTO>>>;
 
-public class GetUsersByNotificationHandler(IUserRepository userRepository, IMapper mapper) : IRequestHandler<GetUsersByNotificationRequest, ErrorOr<IList<UserDTO>>>
+public class SendReportsHandler(IUserRepository userRepository, IMapper mapper) : IRequestHandler<SendReportsRequest, ErrorOr<IList<UserDTO>>>
 {
-    public async Task<ErrorOr<IList<UserDTO>>> Handle(GetUsersByNotificationRequest request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<IList<UserDTO>>> Handle(SendReportsRequest request, CancellationToken cancellationToken)
     {
         var now = DateTime.UtcNow;
         var currentHour = now.Hour;

@@ -1,4 +1,6 @@
-﻿namespace Exadel.ReportHub.SDK.DTOs.User;
+﻿using Exadel.ReportHub.SDK.Enums;
+
+namespace Exadel.ReportHub.SDK.DTOs.User;
 
 public class UserDTO
 {
@@ -9,4 +11,6 @@ public class UserDTO
     public string FullName { get; set; }
 
     public bool IsActive { get; set; }
+
+    public NotificationFrequency NotificationFrequency { get; set; }
 }

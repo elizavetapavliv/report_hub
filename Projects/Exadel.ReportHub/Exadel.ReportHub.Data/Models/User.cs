@@ -17,13 +17,5 @@ public class User : IDocument
 
     public bool IsActive { get; set; } = true;
 
-    public NotificationFrequency NotificationFrequency { get; set; } = NotificationFrequency.Weekly;
-
-    public int NotificationDayOfMonth { get; set; }
-
-    public DayOfWeek? NotificationDayOfWeek { get; set; } = DayOfWeek.Monday;
-
-    public int NotificationTime { get; set; } = 9;
-
-    public ReportFormat ReportFormat { get; set; } = ReportFormat.Excel;
+    public NotificationSettings NotificationSettings { get; set; }
 }

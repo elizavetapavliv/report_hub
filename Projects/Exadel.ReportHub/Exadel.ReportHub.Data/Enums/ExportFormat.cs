@@ -1,6 +1,6 @@
 ﻿namespace Exadel.ReportHub.Data.Enums;
 
-public enum ReportFormat
+public enum ExportFormat
 {
     Excel,
     CSV
