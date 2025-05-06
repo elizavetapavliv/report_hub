@@ -1,13 +1,16 @@
 ﻿using Aspose.Cells;
 using Exadel.ReportHub.Export.Abstract;
-using Exadel.ReportHub.Export.Abstract.Models;
 
 namespace Exadel.ReportHub.Excel;
 
 public class ExcelExporter : IExportStrategy
 {
+    public Task<bool> SatisfyAsync(ExportFormat format, CancellationToken cancellationToken)
+    {
+        return Task.FromResult(format == ExportFormat.Excel);
+    }
+
     public async Task<Stream> ExportAsync<TModel>(TModel exportModel, CancellationToken cancellationToken)
-        where TModel : BaseReport
     {
         var stream = new MemoryStream();
 
@@ -48,6 +51,4 @@ public class ExcelExporter : IExportStrategy
         stream.Seek(0, SeekOrigin.Begin);
         return stream;
     }
-
-    public bool Satisfy(ExportFormat format) => format == ExportFormat.Excel;
 }

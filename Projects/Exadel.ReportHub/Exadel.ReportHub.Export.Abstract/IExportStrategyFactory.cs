@@ -2,5 +2,5 @@
 
 public interface IExportStrategyFactory
 {
-    IExportStrategy GetStrategy(ExportFormat format);
+    Task<IExportStrategy> GetStrategyAsync(ExportFormat format, CancellationToken cancellationToken);
 }

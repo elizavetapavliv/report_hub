@@ -1,4 +1,4 @@
-﻿namespace Exadel.ReportHub.Export.Abstract.Models;
+﻿namespace Exadel.ReportHub.Data.Abstract;
 
 public abstract class BaseReport
 {

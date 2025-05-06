@@ -18,6 +18,7 @@
   </ItemGroup>
 	
   <ItemGroup>
+    <ProjectReference Include="..\Exadel.ReportHub.Data\Exadel.ReportHub.Data.csproj" />
     <ProjectReference Include="..\Exadel.ReportHub.SDK\Exadel.ReportHub.SDK.csproj" />
   </ItemGroup>
 

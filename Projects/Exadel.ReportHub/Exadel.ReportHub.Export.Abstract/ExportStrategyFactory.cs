@@ -2,9 +2,16 @@
 
 public class ExportStrategyFactory(IEnumerable<IExportStrategy> strategies) : IExportStrategyFactory
 {
-    public IExportStrategy GetStrategy(ExportFormat format)
+    public async Task<IExportStrategy> GetStrategyAsync(ExportFormat format, CancellationToken cancellationToken)
     {
-        var strategy = strategies.FirstOrDefault(x => x.Satisfy(format));
-        return strategy ?? throw new ArgumentException($"Unsupported export format: {format}");
+        foreach (var strategy in strategies)
+        {
+            if (await strategy.SatisfyAsync(format, cancellationToken))
+            {
+                return strategy;
+            }
+        }
+
+        throw new ArgumentException($"Unsupported export format: {format}");
     }
 }

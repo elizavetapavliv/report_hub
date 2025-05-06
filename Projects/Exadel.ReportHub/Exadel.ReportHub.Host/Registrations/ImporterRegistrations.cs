@@ -5,9 +5,9 @@ using Exadel.ReportHub.Csv.Abstract;
 namespace Exadel.ReportHub.Host.Registrations;
 
 [ExcludeFromCodeCoverage]
-public static class CsvRegistrations
+public static class ImporterRegistrations
 {
-    public static IServiceCollection AddCsv(this IServiceCollection services)
+    public static IServiceCollection AddImporters(this IServiceCollection services)
     {
         services.AddSingleton<ICsvImporter, CsvImporter>();
 

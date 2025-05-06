@@ -1,5 +1,5 @@
-﻿using Exadel.ReportHub.Export.Abstract;
-using Exadel.ReportHub.Export.Abstract.Models;
+﻿using Exadel.ReportHub.Data.Models;
+using Exadel.ReportHub.Export.Abstract;
 
 namespace Exadel.ReportHub.Csv.ClassMaps;
 

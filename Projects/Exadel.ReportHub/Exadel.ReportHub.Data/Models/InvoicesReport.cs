@@ -1,4 +1,6 @@
-﻿namespace Exadel.ReportHub.Export.Abstract.Models;
+﻿using Exadel.ReportHub.Data.Abstract;
+
+namespace Exadel.ReportHub.Data.Models;
 
 public class InvoicesReport : BaseReport
 {
@@ -9,6 +11,8 @@ public class InvoicesReport : BaseReport
     public decimal TotalAmount { get; set; }
 
     public decimal AverageAmount { get; set; }
+
+    public string Currency { get; set; }
 
     public int UnpaidCount { get; set; }
 

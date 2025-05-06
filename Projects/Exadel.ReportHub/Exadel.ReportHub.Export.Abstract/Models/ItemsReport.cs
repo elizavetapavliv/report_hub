@@ -1,4 +1,6 @@
-﻿namespace Exadel.ReportHub.Export.Abstract.Models;
+﻿using Exadel.ReportHub.Data.Abstract;
+
+namespace Exadel.ReportHub.Export.Abstract.Models;
 
 public class ItemsReport : BaseReport
 {

@@ -15,32 +15,24 @@ public class ItemsReportHandler(IItemRepository itemRepository, IInvoiceReposito
 {
     public async Task<ErrorOr<ExportResult>> Handle(ItemsReportRequest request, CancellationToken cancellationToken)
     {
-        var exportStrategy = exportStrategyFactory.GetStrategy(request.Format);
+        var exportStrategyTask = exportStrategyFactory.GetStrategyAsync(request.Format, cancellationToken);
 
         var itemPricesTask = itemRepository.GetClientItemPricesAsync(request.ClientId, cancellationToken);
         var countsTask = invoiceRepository.GetClientItemsCountAsync(request.ClientId, cancellationToken);
 
-        await Task.WhenAll(itemPricesTask, countsTask);
-        if (itemPricesTask.Result.Count == 0)
-        {
-            return new ExportResult
-            {
-                Stream = Stream.Null,
-                FileName = $"ItemsReport_{DateTime.UtcNow.Date.ToString(Export.Abstract.Constants.Format.Date, CultureInfo.InvariantCulture)}" +
-                           $"{ExportFormatHelper.GetFileExtension(request.Format)}",
-                ContentType = ExportFormatHelper.GetContentType(request.Format)
-            };
-        }
-
+        await Task.WhenAll(exportStrategyTask, itemPricesTask, countsTask);
         var report = new ItemsReport
         {
-            MostSoldItemId = countsTask.Result.MaxBy(x => x.Value).Key,
-            AveragePrice = itemPricesTask.Result.Average(x => x.Value),
-            AverageRevenue = itemPricesTask.Result.Select(x => x.Value * countsTask.Result.GetValueOrDefault(x.Key)).Average(),
+            MostSoldItemId = countsTask.Result.Count > 0 ?
+                countsTask.Result.MaxBy(x => x.Value).Key : Guid.Empty,
+            AveragePrice = itemPricesTask.Result.Count > 0 ?
+                itemPricesTask.Result.Average(x => x.Value) : 0,
+            AverageRevenue = countsTask.Result.Count > 0 && itemPricesTask.Result.Count > 0 ?
+                itemPricesTask.Result.Select(x => x.Value * countsTask.Result.GetValueOrDefault(x.Key)).Average() : 0,
             ReportDate = DateTime.UtcNow
         };
 
-        var stream = await exportStrategy.ExportAsync(report, cancellationToken);
+        var stream = await exportStrategyTask.Result.ExportAsync(report, cancellationToken);
 
         return new ExportResult
         {

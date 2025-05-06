@@ -27,4 +27,6 @@ public interface IInvoiceRepository
     Task<Dictionary<Guid, int>> GetClientItemsCountAsync(Guid clientId, CancellationToken cancellationToken);
 
     Task<Dictionary<(int Year, int Month), List<Invoice>>> GetGroupedByMonthAsync(Guid clientId, CancellationToken cancellationToken);
+
+    Task<InvoicesReport> GetReportAsync(Guid clientId, CancellationToken cancellationToken);
 }

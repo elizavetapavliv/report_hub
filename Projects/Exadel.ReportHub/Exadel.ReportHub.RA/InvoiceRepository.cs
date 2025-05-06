@@ -115,5 +115,32 @@ public class InvoiceRepository(MongoDbContext context) : BaseRepository(context)
         return grouping.ToDictionary(x => (x.Year, x.Month), x => x.Invoices);
     }
 
+    public async Task<InvoicesReport> GetReportAsync(Guid clientId, CancellationToken cancellationToken)
+    {
+        var filter = _filterBuilder.Eq(x => x.ClientId, clientId);
+        var report = await GetCollection<Invoice>().Aggregate().Match(filter)
+            .Group(x => new { x.IssueDate.Year, x.IssueDate.Month }, g => new
+            {
+                Count = g.Count(),
+                Amount = g.Sum(x => x.ClientCurrencyAmount),
+                Invoices = g.ToList(),
+                Currency = g.FirstOrDefault().ClientCurrencyCode
+            })
+            .Group(_ => true, g => new InvoicesReport
+            {
+                TotalCount = g.Sum(x => x.Count),
+                AverageMonthCount = (int)Math.Round(g.Average(x => x.Count)),
+                TotalAmount = g.Sum(x => x.Amount),
+                AverageAmount = g.Sum(x => x.Amount) / g.Sum(x => x.Count),
+                Currency = g.FirstOrDefault().Currency,
+                UnpaidCount = g.Sum(x => x.Invoices.Count(i => i.PaymentStatus == Data.Enums.PaymentStatus.Unpaid)),
+                OverdueCount = g.Sum(x => x.Invoices.Count(i => i.PaymentStatus == Data.Enums.PaymentStatus.Overdue)),
+                PaidOnTimeCount = g.Sum(x => x.Invoices.Count(i => i.PaymentStatus == Data.Enums.PaymentStatus.PaidOnTime)),
+                PaidLateCount = g.Sum(x => x.Invoices.Count(i => i.PaymentStatus == Data.Enums.PaymentStatus.PaidLate)),
+                ReportDate = DateTime.UtcNow
+            }).FirstOrDefaultAsync(cancellationToken);
+        return report ?? new InvoicesReport { ReportDate = DateTime.UtcNow };
+    }
+
     private sealed record UnwoundInvoice(Guid ItemIds);
 }

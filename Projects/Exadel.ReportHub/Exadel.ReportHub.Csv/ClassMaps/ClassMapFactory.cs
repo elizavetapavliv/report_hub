@@ -1,17 +1,19 @@
 ﻿using CsvHelper.Configuration;
+using Exadel.ReportHub.Data.Models;
 using Exadel.ReportHub.Export.Abstract.Models;
+using Exadel.ReportHub.SDK.DTOs.Invoice;
 
 namespace Exadel.ReportHub.Csv.ClassMaps;
 
 public static class ClassMapFactory
 {
-    public static ClassMap GetClassMap<TModel>(TModel model)
-        where TModel : BaseReport
+    public static ClassMap GetClassMap<TModel>()
     {
-        return model switch
+        return typeof(TModel).Name switch
         {
-            InvoicesReport => new InvoicesReportMap(),
-            ItemsReport => new ItemsReportModelMap(),
+            nameof(InvoicesReport) => new InvoicesReportMap(),
+            nameof(ItemsReport) => new ItemsReportModelMap(),
+            nameof(CreateInvoiceDTO) => new CreateInvoiceMap(),
             _ => throw new ArgumentException($"No ClassMap for {typeof(TModel).Name}")
         };
     }
