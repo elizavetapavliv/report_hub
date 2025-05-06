@@ -1,4 +1,5 @@
 using Exadel.ReportHub.Data.Abstract;
+using Exadel.ReportHub.Data.Enums;
 
 namespace Exadel.ReportHub.Data.Models;
 
@@ -15,4 +16,14 @@ public class User : IDocument
     public string PasswordSalt { get; set; }
 
     public bool IsActive { get; set; } = true;
+
+    public NotificationFrequency NotificationFrequency { get; set; } = NotificationFrequency.Weekly;
+
+    public int NotificationDayOfMonth { get; set; }
+
+    public DayOfWeek? NotificationDayOfWeek { get; set; } = DayOfWeek.Monday;
+
+    public int NotificationTime { get; set; } = 9;
+
+    public ReportFormat ReportFormat { get; set; } = ReportFormat.Excel;
 }

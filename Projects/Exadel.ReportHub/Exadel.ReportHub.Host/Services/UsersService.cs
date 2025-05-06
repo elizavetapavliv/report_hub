@@ -1,11 +1,14 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using Exadel.ReportHub.Data.Enums;
 using Exadel.ReportHub.Handlers.User.Create;
 using Exadel.ReportHub.Handlers.User.Delete;
 using Exadel.ReportHub.Handlers.User.Get;
 using Exadel.ReportHub.Handlers.User.GetById;
 using Exadel.ReportHub.Handlers.User.UpdateActivity;
 using Exadel.ReportHub.Handlers.User.UpdateName;
+using Exadel.ReportHub.Handlers.User.UpdateNotificationFrequency;
 using Exadel.ReportHub.Handlers.User.UpdatePassword;
+using Exadel.ReportHub.Handlers.User.UpdateReportFormat;
 using Exadel.ReportHub.Host.Infrastructure.Models;
 using Exadel.ReportHub.Host.Services.Abstract;
 using Exadel.ReportHub.SDK.DTOs.User;
@@ -117,6 +120,36 @@ public class UsersService(ISender sender) : BaseService
     public async Task<ActionResult> DeleteUser([FromRoute] Guid id)
     {
         var result = await sender.Send(new DeleteUserRequest(id));
+        return FromResult(result);
+    }
+
+    [Authorize(Policy = Constants.Authorization.Policy.Update)]
+    [HttpPatch("{id:guid}/report-format")]
+    [SwaggerOperation(Summary = "Update user report format", Description = "Updates the report format of the user specified by id.")]
+    [SwaggerResponse(StatusCodes.Status204NoContent, "User report format was changed successfully")]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid report format data", typeof(ErrorResponse))]
+    [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required to access this endpoint")]
+    [SwaggerResponse(StatusCodes.Status403Forbidden, "this User does not have permission to update the report format")]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "User was not found", typeof(ErrorResponse))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorResponse))]
+    public async Task<ActionResult> UpdateUserReportFormat([FromRoute] Guid id, [FromBody] ReportFormat reportFormat)
+    {
+        var result = await sender.Send(new UpdateUserReportRequest(id, reportFormat));
+        return FromResult(result);
+    }
+
+    [Authorize(Policy = Constants.Authorization.Policy.Update)]
+    [HttpPatch("{id:guid}/notification-frequency")]
+    [SwaggerOperation(Summary = "Update user notification frequency", Description = "Updates the notification frequency of the user specified by id.")]
+    [SwaggerResponse(StatusCodes.Status204NoContent, "User notification frequency was changed successfully")]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid notification frequency data", typeof(ErrorResponse))]
+    [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required to access this endpoint")]
+    [SwaggerResponse(StatusCodes.Status403Forbidden, "this User does not have permission to update the notification frequency")]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "User was not found", typeof(ErrorResponse))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorResponse))]
+    public async Task<ActionResult> UpdateUserNotificationFrequency([FromRoute] Guid id, [FromBody] UpdateUserNotificationFrequencyDTO updateUserNotificationFrequencyDTO)
+    {
+        var result = await sender.Send(new UpdateUserNotificationFrequencyRequest(id, updateUserNotificationFrequencyDTO));
         return FromResult(result);
     }
 }
