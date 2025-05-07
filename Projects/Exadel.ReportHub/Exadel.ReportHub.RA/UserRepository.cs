@@ -80,19 +80,19 @@ public class UserRepository(MongoDbContext context) : BaseRepository(context), I
         return DeleteAsync<User>(id, cancellationToken);
     }
 
-    public async Task<IList<User>> GetUsersByNotificationAsync(int dayOfMonth, DayOfWeek dayOfWeek, int hour, CancellationToken cancellationToken)
+    public async Task<IList<User>> GetUsersByNotificationSettingsAsync(int dayOfMonth, DayOfWeek dayOfWeek, int hour, CancellationToken cancellationToken)
     {
-        var baseFilter = _filterBuilder.Eq(u => u.NotificationSettings.NotificationHour, hour);
+        var baseFilter = _filterBuilder.Eq(u => u.NotificationSettings.Hour, hour);
 
-        var dailyFilter = _filterBuilder.Eq(u => u.NotificationSettings.NotificationFrequency, NotificationFrequency.Daily);
+        var dailyFilter = _filterBuilder.Eq(u => u.NotificationSettings.Frequency, NotificationFrequency.Daily);
 
         var weeklyFilter = _filterBuilder.And(
-            _filterBuilder.Eq(u => u.NotificationSettings.NotificationFrequency, NotificationFrequency.Weekly),
-            _filterBuilder.Eq(u => u.NotificationSettings.NotificationDayOfWeek, dayOfWeek));
+            _filterBuilder.Eq(u => u.NotificationSettings.Frequency, NotificationFrequency.Weekly),
+            _filterBuilder.Eq(u => u.NotificationSettings.DayOfWeek, dayOfWeek));
 
         var monthlyFilter = _filterBuilder.And(
-            _filterBuilder.Eq(u => u.NotificationSettings.NotificationFrequency, NotificationFrequency.Monthly),
-            _filterBuilder.Eq(u => u.NotificationSettings.NotificationDayOfMonth, dayOfMonth));
+            _filterBuilder.Eq(u => u.NotificationSettings.Frequency, NotificationFrequency.Monthly),
+            _filterBuilder.Eq(u => u.NotificationSettings.DayOfMonth, dayOfMonth));
 
         var finalFilter = baseFilter & (dailyFilter | weeklyFilter | monthlyFilter);
         var result = await GetCollection<User>().Find(finalFilter).ToListAsync(cancellationToken);
@@ -103,11 +103,11 @@ public class UserRepository(MongoDbContext context) : BaseRepository(context), I
     public Task UpdateNotificationSettingsAsync(Guid id, NotificationSettings notificationSettings, CancellationToken cancellationToken)
     {
         var update = Builders<User>.Update
-            .Set(x => x.NotificationSettings.NotificationFrequency, notificationSettings.NotificationFrequency)
-            .Set(x => x.NotificationSettings.NotificationDayOfMonth, notificationSettings.NotificationDayOfMonth)
-            .Set(x => x.NotificationSettings.NotificationDayOfWeek, notificationSettings.NotificationDayOfWeek)
-            .Set(x => x.NotificationSettings.NotificationHour, notificationSettings.NotificationHour)
-            .Set(x => x.NotificationSettings.ReportFormat, notificationSettings.ReportFormat);
+            .Set(x => x.NotificationSettings.Frequency, notificationSettings.Frequency)
+            .Set(x => x.NotificationSettings.DayOfMonth, notificationSettings.DayOfMonth)
+            .Set(x => x.NotificationSettings.DayOfWeek, notificationSettings.DayOfWeek)
+            .Set(x => x.NotificationSettings.Hour, notificationSettings.Hour)
+            .Set(x => x.NotificationSettings.ExportFormat, notificationSettings.ExportFormat);
         return UpdateAsync(id, update, cancellationToken);
     }
 }

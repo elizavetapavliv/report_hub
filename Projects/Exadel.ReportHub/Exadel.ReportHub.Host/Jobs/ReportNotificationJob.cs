@@ -1,26 +1,20 @@
-﻿using Exadel.ReportHub.Handlers.Report.Send;
-using Exadel.ReportHub.Host.Jobs.Abstract;
+﻿using Exadel.ReportHub.Host.Jobs.Abstract;
+using Exadel.ReportHub.Host.Services;
 using Hangfire;
-using MediatR;
 
 namespace Exadel.ReportHub.Host.Jobs;
 
-public class ReportNotificationJob(ISender sender) : IJob
+public class ReportNotificationJob : IJob
 {
     public void Schedule()
     {
-        RecurringJob.AddOrUpdate<ReportNotificationJob>(
+        RecurringJob.AddOrUpdate<ReportsService>(
             recurringJobId: Constants.Job.Id.SendUserReports,
-            methodCall: j => j.ExecuteAsync(),
+            methodCall: j => j.SendReportsAsync(),
             cronExpression: "0 * * * *",
             options: new RecurringJobOptions
             {
                 TimeZone = TimeZoneInfo.Utc
             });
-    }
-
-    public async Task ExecuteAsync()
-    {
-            var usersToNotify = await sender.Send(new SendReportsRequest());
     }
 }

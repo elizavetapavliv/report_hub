@@ -27,7 +27,7 @@ public interface IUserRepository
 
     Task DeleteAsync(Guid id, CancellationToken cancellationToken);
 
-    Task<IList<User>> GetUsersByNotificationAsync(int dayOfMonth, DayOfWeek dayOfWeek, int hour, CancellationToken cancellationToken);
+    Task<IList<User>> GetUsersByNotificationSettingsAsync(int dayOfMonth, DayOfWeek dayOfWeek, int hour, CancellationToken cancellationToken);
 
     Task UpdateNotificationSettingsAsync(Guid id, NotificationSettings notificationSettings, CancellationToken cancellationToken);
 }

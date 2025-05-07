@@ -1,8 +1,8 @@
-﻿using Exadel.ReportHub.Data.Enums;
+﻿using Exadel.ReportHub.SDK.Enums;
 
-namespace Exadel.ReportHub.Data.Models;
+namespace Exadel.ReportHub.SDK.DTOs.User;
 
-public class NotificationSettings
+public class NotificationSettingsDTO
 {
     public NotificationFrequency Frequency { get; set; }
 
@@ -10,7 +10,7 @@ public class NotificationSettings
 
     public DayOfWeek? DayOfWeek { get; set; }
 
-    public int Hour { get; set; }
+    public int? Hour { get; set; }
 
     public ExportFormat ExportFormat { get; set; }
 

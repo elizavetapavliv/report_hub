@@ -4,13 +4,13 @@ namespace Exadel.ReportHub.SDK.DTOs.User;
 
 public class UpdateUserNotificationSettingsDTO
 {
-    public NotificationFrequency NotificationFrequency { get; set; }
+    public NotificationFrequency Frequency { get; set; }
 
-    public int? NotificationDayOfMonth { get; set; }
+    public int? DayOfMonth { get; set; }
 
-    public DayOfWeek? NotificationDayOfWeek { get; set; }
+    public DayOfWeek? DayOfWeek { get; set; }
 
-    public int? NotificationHour { get; set; }
+    public int? Hour { get; set; }
 
-    public ExportType ExportType { get; set; }
+    public ExportFormat ExportFormat { get; set; }
 }

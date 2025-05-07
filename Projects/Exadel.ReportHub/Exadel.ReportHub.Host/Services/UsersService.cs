@@ -3,6 +3,7 @@ using Exadel.ReportHub.Handlers.User.Create;
 using Exadel.ReportHub.Handlers.User.Delete;
 using Exadel.ReportHub.Handlers.User.Get;
 using Exadel.ReportHub.Handlers.User.GetById;
+using Exadel.ReportHub.Handlers.User.GetProfile;
 using Exadel.ReportHub.Handlers.User.UpdateActivity;
 using Exadel.ReportHub.Handlers.User.UpdateName;
 using Exadel.ReportHub.Handlers.User.UpdateNotificationFrequency;
@@ -60,6 +61,18 @@ public class UsersService(ISender sender) : BaseService
     {
         var result = await sender.Send(new GetUsersRequest(isActive));
 
+        return FromResult(result);
+    }
+
+    [Authorize(Policy = Constants.Authorization.Policy.Read)]
+    [HttpGet("profiles")]
+    [SwaggerOperation(Summary = "Get user profiles", Description = "Retrieves a list of user profiles, optionally filtered by their active status.")]
+    [SwaggerResponse(StatusCodes.Status200OK, "User profiles were retrieved successfully", typeof(ActionResult<IList<UserProfileDTO>>))]
+    [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required to access this endpoint")]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<IList<UserProfileDTO>>> GetUsersProfiles([FromQuery] bool? isActive)
+    {
+        var result = await sender.Send(new GetUsersProfilesRequest(isActive));
         return FromResult(result);
     }
 
@@ -132,7 +145,7 @@ public class UsersService(ISender sender) : BaseService
     [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorResponse))]
     public async Task<ActionResult> UpdateUserNotificationFrequency([FromBody] UpdateUserNotificationSettingsDTO updateUserNotificationFrequencyDTO)
     {
-        var result = await sender.Send(new UpdateUserNotificationFrequencyRequest(updateUserNotificationFrequencyDTO));
+        var result = await sender.Send(new UpdateUserNotificationSettingsRequest(updateUserNotificationFrequencyDTO));
         return FromResult(result);
     }
 }

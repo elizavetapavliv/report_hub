@@ -23,10 +23,10 @@ public class CreateUserHandler(IUserRepository userRepository, IMapper mapper) :
         user.PasswordHash = passwordHash;
         user.NotificationSettings = new NotificationSettings
         {
-            ReportFormat = ExportFormat.Excel,
-            NotificationHour = Constants.Validation.NotificationFrequency.DefaultHourValue,
-            NotificationFrequency = NotificationFrequency.Weekly,
-            NotificationDayOfWeek = DayOfWeek.Monday
+            ExportFormat = ExportFormat.Excel,
+            Hour = Constants.Validation.NotificationFrequency.DefaultHourValue,
+            Frequency = NotificationFrequency.Weekly,
+            DayOfWeek = DayOfWeek.Monday
         };
 
         await userRepository.AddAsync(user, cancellationToken);

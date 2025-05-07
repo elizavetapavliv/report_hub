@@ -6,19 +6,18 @@ using MediatR;
 
 namespace Exadel.ReportHub.Handlers.Report.Send;
 
-public record SendReportsRequest : IRequest<ErrorOr<IList<UserDTO>>>;
+public record SendReportsRequest : IRequest<ErrorOr<Unit>>;
 
-public class SendReportsHandler(IUserRepository userRepository, IMapper mapper) : IRequestHandler<SendReportsRequest, ErrorOr<IList<UserDTO>>>
+public class SendReportsHandler(IUserRepository userRepository) : IRequestHandler<SendReportsRequest, ErrorOr<Unit>>
 {
-    public async Task<ErrorOr<IList<UserDTO>>> Handle(SendReportsRequest request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<Unit>> Handle(SendReportsRequest request, CancellationToken cancellationToken)
     {
         var now = DateTime.UtcNow;
         var currentHour = now.Hour;
         var currentDay = now.Day;
         var currentDayOfWeek = now.DayOfWeek;
-        var users = await userRepository.GetUsersByNotificationAsync(currentDay, currentDayOfWeek, currentHour, cancellationToken);
+        var users = await userRepository.GetUsersByNotificationSettingsAsync(currentDay, currentDayOfWeek, currentHour, cancellationToken);
 
-        var result = mapper.Map<List<UserDTO>>(users);
-        return result;
+        return Unit.Value;
     }
 }

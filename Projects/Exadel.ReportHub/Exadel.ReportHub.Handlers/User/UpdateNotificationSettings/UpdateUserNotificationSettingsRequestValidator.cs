@@ -4,9 +4,9 @@ using Exadel.ReportHub.SDK.Enums;
 using FluentValidation;
 
 namespace Exadel.ReportHub.Handlers.User.UpdateNotificationFrequency;
-public class UpdateUserNotificationFrequencyRequestValidator : AbstractValidator<UpdateUserNotificationFrequencyRequest>
+public class UpdateUserNotificationSettingsRequestValidator : AbstractValidator<UpdateUserNotificationSettingsRequest>
 {
-    public UpdateUserNotificationFrequencyRequestValidator()
+    public UpdateUserNotificationSettingsRequestValidator()
     {
         ConfigureRules();
     }
@@ -18,36 +18,36 @@ public class UpdateUserNotificationFrequencyRequestValidator : AbstractValidator
             {
                 child.ClassLevelCascadeMode = CascadeMode.Stop;
 
-                child.RuleFor(x => x.NotificationHour)
+                child.RuleFor(x => x.Hour)
                    .InclusiveBetween(0, Constants.Validation.NotificationFrequency.MaxHour)
                    .WithMessage(Constants.Validation.NotificationFrequency.TimeHourRange);
 
-                child.When(x => x.NotificationFrequency == NotificationFrequency.Daily, () =>
+                child.When(x => x.Frequency == NotificationFrequency.Daily, () =>
                 {
-                    child.RuleFor(x => x.NotificationDayOfWeek)
+                    child.RuleFor(x => x.DayOfWeek)
                         .Null()
                         .WithMessage(Constants.Validation.NotificationFrequency.ShouldNotBeSet);
-                    child.RuleFor(x => x.NotificationDayOfMonth)
+                    child.RuleFor(x => x.DayOfMonth)
                         .Null()
                         .WithMessage(Constants.Validation.NotificationFrequency.ShouldNotBeSet);
                 });
 
-                child.When(x => x.NotificationFrequency == NotificationFrequency.Weekly, () =>
+                child.When(x => x.Frequency == NotificationFrequency.Weekly, () =>
                 {
-                    child.RuleFor(x => x.NotificationDayOfWeek)
+                    child.RuleFor(x => x.DayOfWeek)
                         .NotNull()
                         .WithMessage(Constants.Validation.NotificationFrequency.ShouldBeSet);
-                    child.RuleFor(x => x.NotificationDayOfMonth)
+                    child.RuleFor(x => x.DayOfMonth)
                         .Null()
                         .WithMessage(Constants.Validation.NotificationFrequency.ShouldNotBeSet);
                 });
 
-                child.When(x => x.NotificationFrequency == NotificationFrequency.Monthly, () =>
+                child.When(x => x.Frequency == NotificationFrequency.Monthly, () =>
                 {
-                    child.RuleFor(x => x.NotificationDayOfWeek)
+                    child.RuleFor(x => x.DayOfWeek)
                         .Null()
                         .WithMessage(Constants.Validation.NotificationFrequency.ShouldNotBeSet);
-                    child.RuleFor(x => x.NotificationDayOfMonth)
+                    child.RuleFor(x => x.DayOfMonth)
                         .InclusiveBetween(1, DateTime.DaysInMonth(DateTime.UtcNow.Year, DateTime.UtcNow.Month))
                         .WithMessage(Constants.Validation.NotificationFrequency.MonthDayRange);
                 });
