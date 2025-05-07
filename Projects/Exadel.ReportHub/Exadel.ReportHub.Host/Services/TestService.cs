@@ -11,9 +11,9 @@ namespace Exadel.ReportHub.Host.Services;
 public class TestService(ISender sender) : BaseService
 {
     [HttpGet("send-email")]
-    public async Task<ActionResult<TestEmailResult>> SendEmail([FromQuery] string email, [FromQuery] string subject, [FromQuery] string body)
+    public async Task<ActionResult<TestEmailResult>> SendEmail([FromQuery] string email, [FromQuery] string subject)
     {
-        var result = await sender.Send(new TestEmailRequest(email, subject, body));
+        var result = await sender.Send(new TestEmailRequest(email, subject));
 
         return FromResult(result);
     }

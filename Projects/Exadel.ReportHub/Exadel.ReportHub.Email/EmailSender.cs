@@ -1,18 +1,32 @@
-﻿using System.Net.Mail;
+﻿using System.Net;
+using System.Net.Mail;
 using Exadel.ReportHub.Email.Abstract;
+using Exadel.ReportHub.Email.Configs;
+using Exadel.ReportHub.Email.Models;
 using Microsoft.Extensions.Options;
 
 namespace Exadel.ReportHub.Email;
 
-public class EmailSender(SmtpClient smtpClient, IOptionsMonitor<SmtpConfig> smtpConfig) : IEmailSender
+public class EmailSender(IOptionsMonitor<SmtpConfig> smtpConfig, ITemplateRender templateRender) : IEmailSender
 {
-    public Task SendAsync(MailMessage message)
+    public async Task SendAsync(string to, string subject, string templateName, object viewModel, CancellationToken cancellationToken)
     {
-        if(message.From is null)
+        var htmlBody = await templateRender.RenderAsync(templateName, viewModel, cancellationToken);
+        using var message = new MailMessage
         {
-            message.From = new MailAddress(smtpConfig.CurrentValue.UserName);
-        }
+            From = new MailAddress(smtpConfig.CurrentValue.Email, smtpConfig.CurrentValue.DisplayName),
+            Subject = subject,
+            Body = htmlBody,
+            IsBodyHtml = true
+        };
+        message.To.Add(to);
 
-        return smtpClient.SendMailAsync(message);
+        using var smtpClient = new SmtpClient(smtpConfig.CurrentValue.Host, smtpConfig.CurrentValue.Port)
+        {
+            EnableSsl = true,
+            Credentials = new NetworkCredential(smtpConfig.CurrentValue.Email, smtpConfig.CurrentValue.Password)
+        };
+
+        await smtpClient.SendMailAsync(message, cancellationToken);
     }
 }
