@@ -23,7 +23,7 @@ jobs:
          ConnectionStrings__Mongo: ${{ secrets.MONGO_CONNECTION_STRING }}
          EcbConfig__Host: ${{ vars.ECB_CONFIG_HOST }}
          ReportHubConfig__Host: ${{ vars.REPORTHUB_CONFIG_HOST }}
-         SmtpConfig__UserName: ${{ secrets.SMTP_USERNAME }}
+         SmtpConfig__Email: ${{ vars.SMTP_Email }}
          SmtpConfig__Password: ${{ secrets.SMTP_PASSWORD }}
          
     steps:
