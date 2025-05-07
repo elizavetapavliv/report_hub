@@ -38,7 +38,7 @@ public class PlanRepository(MongoDbContext context) : BaseRepository(context), I
         var update = Builders<Plan>.Update
             .Set(x => x.StartDate, plan.StartDate)
             .Set(x => x.EndDate, plan.EndDate)
-            .Set(x => x.Amount, plan.Amount);
+            .Set(x => x.Count, plan.Count);
         return UpdateAsync(id, update, cancellationToken);
     }
 

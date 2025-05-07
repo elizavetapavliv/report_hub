@@ -10,7 +10,7 @@ public class PlansReport : BaseReport
 
     public DateTime EndDate { get; set; }
 
-    public int PlannedQuantity { get; set; }
+    public int PlannedCount { get; set; }
 
-    public int ActualQuantity { get; set; }
+    public int ActualCount { get; set; }
 }

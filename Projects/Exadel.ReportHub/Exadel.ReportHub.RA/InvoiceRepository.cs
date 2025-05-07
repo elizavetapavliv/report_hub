@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Numerics;
 using Exadel.ReportHub.Data.Enums;
 using Exadel.ReportHub.Data.Models;
 using Exadel.ReportHub.RA.Abstract;
@@ -163,62 +164,141 @@ public class InvoiceRepository(MongoDbContext context) : BaseRepository(context)
     public async Task<Dictionary<Guid, int>> GetClientItemsCountAsync(Guid clientId, CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.Eq(x => x.ClientId, clientId);
-        var grouping = await GetCollection<Invoice>().Aggregate().Match(filter).Unwind<Invoice, UnwoundInvoice>(x => x.ItemIds)
-            .Group(x => x.ItemIds, g => new { ItemId = g.Key, Count = g.Count() }).ToListAsync(cancellationToken);
+        var grouping = await GetCollection<Invoice>()
+            .Aggregate().
+            Match(filter)
+            .Unwind<Invoice, UnwoundInvoice>(x => x.ItemIds)
+            .Group(x => x.ItemIds, g => new { ItemId = g.Key, Count = g.Count() })
+            .ToListAsync(cancellationToken);
         return grouping.ToDictionary(x => x.ItemId, x => x.Count);
+    }
+
+    public async Task<Dictionary<Guid, int>> GetPlansActualCountAsync(IEnumerable<Plan> plans, CancellationToken cancellationToken)
+    {
+        if (!plans.Any())
+        {
+            return new();
+        }
+
+        var facets = plans
+            .Select(plan =>
+                AggregateFacet.Create(
+                    plan.Id.ToString(),
+                    PipelineDefinition<Invoice, AggregateCountResult>.Create([
+                        PipelineStageDefinitionBuilder.Match(
+                            _filterBuilder.AnyEq(x => x.ItemIds, plan.ItemId) &
+                            _filterBuilder.Gte(x => x.IssueDate, plan.StartDate) &
+                            _filterBuilder.Lte(x => x.IssueDate, plan.EndDate)),
+                        PipelineStageDefinitionBuilder.Count<Invoice>()
+                    ])))
+            .ToList();
+
+        var facetResults = await GetCollection<Invoice>()
+            .Aggregate()
+            .Facet(facets)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        return plans.ToDictionary(
+            plan => plan.Id,
+            plan =>
+            {
+                var result = facetResults.Facets.FirstOrDefault(x => x.Name.Equals(plan.Id.ToString(), StringComparison.Ordinal));
+                if (result is null || !result.Output<AggregateCountResult>().Any())
+                {
+                    return 0;
+                }
+
+                return (int)result.Output<AggregateCountResult>()[0].Count;
+            });
     }
 
     public async Task<InvoicesReport> GetReportAsync(Guid clientId, CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.Eq(x => x.ClientId, clientId);
 
-        var filteredInvoices = GetCollection<Invoice>().Aggregate().Match(filter);
+        var facetMainStatistics = AggregateFacet.Create(
+            "MainStatistics",
+            PipelineDefinition<Invoice, ReportMainStatistics>.Create([
+                PipelineStageDefinitionBuilder.Match(filter),
+                PipelineStageDefinitionBuilder.Group<Invoice, bool, ReportMainStatistics>(
+                    _ => true,
+                    g => new ReportMainStatistics(
+                        g.Count(),
+                        g.Sum(x => x.ClientCurrencyAmount),
+                        g.Average(x => x.ClientCurrencyAmount),
+                        g.First().ClientCurrencyCode))
+            ]));
 
-        var groupedByMonthStatus = filteredInvoices.Group(
-            x => new { x.IssueDate.Year, x.IssueDate.Month, x.PaymentStatus },
-            g => new
-            {
-                YearMonth = new { g.Key.Year, g.Key.Month },
-                PaymentStatus = g.Key.PaymentStatus,
-                Count = g.Count(),
-                Amount = g.Sum(x => x.ClientCurrencyAmount),
-                ClientCurrency = g.FirstOrDefault().ClientCurrencyCode
-            });
+        var facetMonthCount = AggregateFacet.Create(
+            "MonthCount",
+            PipelineDefinition<Invoice, MonthCount>.Create([
+                PipelineStageDefinitionBuilder.Match(filter),
+                PipelineStageDefinitionBuilder.Group<Invoice, YearMonth, MonthCount>(
+                    x => new YearMonth(x.IssueDate.Year, x.IssueDate.Month),
+                    g => new MonthCount(
+                        g.Key,
+                        g.Count()))
+            ]));
 
-        var groupedByMonth = groupedByMonthStatus.Group(
-            x => x.YearMonth,
-            g => new
-            {
-                MonthCount = g.Sum(x => x.Count),
-                MonthAmount = g.Sum(x => x.Amount),
-                ClientCurrency = g.FirstOrDefault().ClientCurrency,
-                MonthUnpaidCount = g.Where(x => x.PaymentStatus == PaymentStatus.Unpaid).Sum(x => x.Count),
-                MonthOverdueCount = g.Where(x => x.PaymentStatus == PaymentStatus.Overdue).Sum(x => x.Count),
-                MonthPaidOnTimeCount = g.Where(x => x.PaymentStatus == PaymentStatus.PaidOnTime).Sum(x => x.Count),
-                MonthPaidLateCount = g.Where(x => x.PaymentStatus == PaymentStatus.PaidLate).Sum(x => x.Count)
-            });
+        var facetStatusCount = AggregateFacet.Create(
+            "StatusCount",
+            PipelineDefinition<Invoice, StatusCount>.Create([
+                PipelineStageDefinitionBuilder.Match(filter),
+                PipelineStageDefinitionBuilder.Group<Invoice, PaymentStatus, StatusCount>(
+                    x => x.PaymentStatus,
+                    g => new StatusCount(
+                        g.Key,
+                        g.Count()))
+                ]));
 
-        var report = await groupedByMonth.Group(
-            _ => true,
-            g => new InvoicesReport
-            {
-                TotalCount = g.Sum(x => x.MonthCount),
-                AverageMonthCount = (int)Math.Round(g.Average(x => x.MonthCount)),
-                TotalAmount = g.Sum(x => x.MonthAmount),
-                ClientCurrency = g.FirstOrDefault().ClientCurrency,
-                UnpaidCount = g.Sum(x => x.MonthUnpaidCount),
-                OverdueCount = g.Sum(x => x.MonthOverdueCount),
-                PaidOnTimeCount = g.Sum(x => x.MonthPaidOnTimeCount),
-                PaidLateCount = g.Sum(x => x.MonthPaidLateCount)
-            }).FirstOrDefaultAsync(cancellationToken);
+        var facetResults = await GetCollection<Invoice>()
+            .Aggregate()
+            .Facet(facetMonthCount, facetStatusCount, facetMainStatistics)
+            .FirstOrDefaultAsync(cancellationToken);
 
-        if (report is not null)
+        var mainStatistics = facetResults.Facets.FirstOrDefault(x => x.Name.Equals(facetMainStatistics.Name, StringComparison.Ordinal))
+            .Output<ReportMainStatistics>()
+            .FirstOrDefault();
+
+        if (mainStatistics == null || mainStatistics.TotalCount == 0)
         {
-            report.AverageAmount = report.TotalAmount / report.TotalCount;
+            return null;
         }
 
-        return report;
+        var monthCounts = facetResults.Facets.FirstOrDefault(x => x.Name.Equals(facetMonthCount.Name, StringComparison.Ordinal))
+            .Output<MonthCount>();
+
+        var statusCounts = facetResults.Facets.FirstOrDefault(x => x.Name.Equals(facetStatusCount.Name, StringComparison.Ordinal))
+            .Output<StatusCount>()
+            .ToDictionary(x => x.status, x => x.Count);
+
+        statusCounts.TryGetValue(PaymentStatus.Unpaid, out var unpaidCount);
+        statusCounts.TryGetValue(PaymentStatus.Overdue, out var overdueCount);
+        statusCounts.TryGetValue(PaymentStatus.PaidOnTime, out var paidOnTimeCount);
+        statusCounts.TryGetValue(PaymentStatus.PaidLate, out var paidLateCount);
+
+        return new InvoicesReport
+        {
+            TotalCount = mainStatistics.TotalCount,
+            AverageMonthCount = monthCounts.Any() ?
+                (int)Math.Round(monthCounts.Average(x => x.Count)) : 0,
+            TotalAmount = mainStatistics.TotalAmount,
+            AverageAmount = mainStatistics.AverageAmount,
+            ClientCurrency = mainStatistics.ClientCurrency,
+            UnpaidCount = unpaidCount,
+            OverdueCount = overdueCount,
+            PaidOnTimeCount = paidOnTimeCount,
+            PaidLateCount = paidLateCount
+        };
     }
 
-    private sealed record UnwoundInvoice(Guid ItemIds);
+    private sealed record UnwoundInvoice(Guid ItemIds, DateTime IssueDate);
+
+    private sealed record ReportMainStatistics(int TotalCount, decimal TotalAmount, decimal AverageAmount, string ClientCurrency);
+
+    private sealed record YearMonth(int Year, int Month);
+
+    private sealed record MonthCount(YearMonth Month, int Count);
+
+    private sealed record StatusCount(PaymentStatus status, int Count);
 }

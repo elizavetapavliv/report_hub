@@ -15,20 +15,20 @@ public class PlansReportHandler(IPlanRepository planRepository, IInvoiceReposito
 {
     public async Task<ErrorOr<ExportResult>> Handle(PlansReportRequest request, CancellationToken cancellationToken)
     {
+        var plans = await planRepository.GetByClientIdAsync(request.ClientId, cancellationToken);
+
         var exportStrategyTask = exportStrategyFactory.GetStrategyAsync(request.Format, cancellationToken);
+        var countsTask = invoiceRepository.GetPlansActualCountAsync(plans, cancellationToken);
 
-        var plansTask = planRepository.GetByClientIdAsync(request.ClientId, cancellationToken);
-        var countsTask = invoiceRepository.GetClientItemsCountAsync(request.ClientId, cancellationToken);
+        await Task.WhenAll(exportStrategyTask, countsTask);
 
-        await Task.WhenAll(exportStrategyTask, plansTask, countsTask);
-
-        var reports = plansTask.Result.Select(x => new PlansReport
+        var reports = plans.Select(x => new PlansReport
         {
             TargetItemId = x.ItemId,
             StartDate = x.StartDate,
             EndDate = x.EndDate,
-            PlannedQuantity = x.Amount,
-            ActualQuantity = countsTask.Result.GetValueOrDefault(x.ItemId), // GetCounts by period, query for each plan?
+            PlannedCount = x.Count,
+            ActualCount = countsTask.Result.GetValueOrDefault(x.Id),
             ReportDate = DateTime.UtcNow
         }).ToList();
 

@@ -39,7 +39,7 @@ public class CreatePlanRequestValidator : AbstractValidator<CreatePlanRequest>
                     .MustAsync(_clientRepository.ExistsAsync)
                     .WithMessage(Constants.Validation.Client.DoesNotExist);
 
-                child.RuleFor(x => x.Amount)
+                child.RuleFor(x => x.Count)
                     .GreaterThan(0);
 
                 child.RuleFor(x => x.StartDate)

@@ -33,5 +33,7 @@ public interface IInvoiceRepository
 
     Task<Dictionary<Guid, int>> GetClientItemsCountAsync(Guid clientId, CancellationToken cancellationToken);
 
+    Task<Dictionary<Guid, int>> GetPlansActualCountAsync(IEnumerable<Plan> plans, CancellationToken cancellationToken);
+
     Task<InvoicesReport> GetReportAsync(Guid clientId, CancellationToken cancellationToken);
 }
