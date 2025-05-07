@@ -24,7 +24,7 @@ public class CreateUserHandler(IUserRepository userRepository, IMapper mapper) :
         user.NotificationSettings = new NotificationSettings
         {
             ExportFormat = ExportFormat.Excel,
-            Hour = Constants.Validation.NotificationFrequency.DefaultHourValue,
+            Hour = Constants.Validation.NotificationSettings.DefaultHourValue,
             Frequency = NotificationFrequency.Weekly,
             DayOfWeek = DayOfWeek.Monday
         };

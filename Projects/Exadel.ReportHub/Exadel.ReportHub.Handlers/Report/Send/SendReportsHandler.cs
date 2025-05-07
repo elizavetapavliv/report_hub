@@ -6,11 +6,11 @@ using MediatR;
 
 namespace Exadel.ReportHub.Handlers.Report.Send;
 
-public record SendReportsRequest : IRequest<ErrorOr<Unit>>;
+public record SendReportsRequest : IRequest<Unit>;
 
-public class SendReportsHandler(IUserRepository userRepository) : IRequestHandler<SendReportsRequest, ErrorOr<Unit>>
+public class SendReportsHandler(IUserRepository userRepository) : IRequestHandler<SendReportsRequest, Unit>
 {
-    public async Task<ErrorOr<Unit>> Handle(SendReportsRequest request, CancellationToken cancellationToken)
+    public async Task<Unit> Handle(SendReportsRequest request, CancellationToken cancellationToken)
     {
         var now = DateTime.UtcNow;
         var currentHour = now.Hour;

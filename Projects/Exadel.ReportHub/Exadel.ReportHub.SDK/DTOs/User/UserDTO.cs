@@ -11,6 +11,4 @@ public class UserDTO
     public string FullName { get; set; }
 
     public bool IsActive { get; set; }
-
-    public NotificationFrequency NotificationFrequency { get; set; }
 }

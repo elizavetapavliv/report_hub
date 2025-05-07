@@ -7,7 +7,7 @@ using MediatR;
 
 namespace Exadel.ReportHub.Handlers.User.UpdateNotificationFrequency;
 
-public record UpdateUserNotificationSettingsRequest(UpdateUserNotificationSettingsDTO UpdateUserNotificationFrequencyDto) : IRequest<ErrorOr<Updated>>;
+public record UpdateUserNotificationSettingsRequest(NotificationSettingsDTO NotificationSettingsDTO) : IRequest<ErrorOr<Updated>>;
 
 public class UpdateUserNotificationSettingsHandler(
     IUserRepository userRepository,
@@ -17,7 +17,7 @@ public class UpdateUserNotificationSettingsHandler(
     public async Task<ErrorOr<Updated>> Handle(UpdateUserNotificationSettingsRequest request, CancellationToken cancellationToken)
     {
         var id = userProvider.GetUserId();
-        var notificationSettings = mapper.Map<Data.Models.NotificationSettings>(request.UpdateUserNotificationFrequencyDto);
+        var notificationSettings = mapper.Map<Data.Models.NotificationSettings>(request.NotificationSettingsDTO);
         await userRepository.UpdateNotificationSettingsAsync(id, notificationSettings, cancellationToken);
         return Result.Updated;
     }

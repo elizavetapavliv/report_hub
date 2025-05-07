@@ -103,11 +103,7 @@ public class UserRepository(MongoDbContext context) : BaseRepository(context), I
     public Task UpdateNotificationSettingsAsync(Guid id, NotificationSettings notificationSettings, CancellationToken cancellationToken)
     {
         var update = Builders<User>.Update
-            .Set(x => x.NotificationSettings.Frequency, notificationSettings.Frequency)
-            .Set(x => x.NotificationSettings.DayOfMonth, notificationSettings.DayOfMonth)
-            .Set(x => x.NotificationSettings.DayOfWeek, notificationSettings.DayOfWeek)
-            .Set(x => x.NotificationSettings.Hour, notificationSettings.Hour)
-            .Set(x => x.NotificationSettings.ExportFormat, notificationSettings.ExportFormat);
+            .Set(x => x.NotificationSettings, notificationSettings);
         return UpdateAsync(id, update, cancellationToken);
     }
 }

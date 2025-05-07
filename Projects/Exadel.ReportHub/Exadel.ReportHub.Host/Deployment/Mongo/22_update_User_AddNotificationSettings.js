@@ -19,23 +19,64 @@ var updates = users.map(user => {
         DayOfWeek: null,
         DayOfMonth: null,
     };
-
+    const now = new Date();
     const randomFrequency = frequencies[Math.floor(Math.random() * frequencies.length)];
     notificationSettings.Frequency = randomFrequency;
 
 
-    notificationSettings.Hour = hours[Math.floor(Math.random() * hours.length)];
+
+    const reportHour = hours[Math.floor(Math.random() * hours.length)];
+    notificationSettings.Hour = reportHour;
+
+    const end = new Date(now);
+    end.setHours(reportHour - 1, 0, 0, 0);
+
+    const start = new Date(end);
+    start.setDate(start.getDate() - 1);
+
+    notificationSettings.ReportStartDate = start
+    notificationSettings.ReportEndDate = end;
+
 
     if (randomFrequency === "Weekly") {
-        notificationSettings.DayOfWeek = daysOfWeek[Math.floor(Math.random() * daysOfWeek.length)]
+
+        const randomDay = daysOfWeek[Math.floor(Math.random() * daysOfWeek.length)]
+        notificationSettings.DayOfWeek = randomDay;
+
+        const targetDayIndex = daysOfWeek.indexOf(randomDay);
+        const currentDayIndex = now.getDay();
+        const daysSinceLast = (currentDayIndex - targetDayIndex + 7) % 7;
+
+        const endDate = new Date(now);
+        endDate.setDate(now.getDate() - daysSinceLast);
+        endDate.setHours(reportHour - 1, 0, 0, 0);
+
+        const startDate = new Date(endDate);
+        startDate.setDate((endDate.getDate() - daysSinceLast) - 7);
+
+
+        notificationSettings.ReportStartDate = startDate;
+        notificationSettings.ReportEndDate = endDate;
     }
     else if (randomFrequency === "Monthly") {
-        notificationSettings.DayOfMonth = Math.floor(Math.random() * 28) + 1
+
+        const randomDayOfMonth = Math.floor(Math.random() * 28) + 1;
+        notificationSettings.DayOfMonth = randomDayOfMonth;
+
+        const today = new Date();
+        let endDate = new Date(today.getFullYear(), today.getMonth(), randomDayOfMonth, reportHour - 1, 0, 0, 0);
+        if (endDate > today) {
+            endDate = new Date(today.getFullYear(), today.getMonth() - 1, randomDayOfMonth, reportHour - 1, 0, 0, 0);
+        }
+
+        const startDate = new Date(endDate);
+        startDate.setDate(startDate.getDate() - 30);
+
+        notificationSettings.ReportStartDate = startDate;
+        notificationSettings.ReportEndDate = endDate;
     }
 
     notificationSettings.ExportFormat = exportFormats[Math.floor(Math.random() * exportFormats.length)];
-    notificationSettings.ReportStartDate = null;
-    notificationSettings.ReportEndDate = null;
 
     return {
         updateOne: {

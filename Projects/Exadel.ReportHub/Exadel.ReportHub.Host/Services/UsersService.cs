@@ -65,15 +65,15 @@ public class UsersService(ISender sender) : BaseService
     }
 
     [Authorize(Policy = Constants.Authorization.Policy.Read)]
-    [HttpGet("{id:guid}/profile")]
+    [HttpGet("profile")]
     [SwaggerOperation(Summary = "Get user profile", Description = "Retrieves the profile of a user by their unique id.")]
     [SwaggerResponse(StatusCodes.Status200OK, "User profile was retrieved successfully", typeof(ActionResult<UserProfileDTO>))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required to access this endpoint")]
     [SwaggerResponse(StatusCodes.Status404NotFound, "User was not found", typeof(ErrorResponse))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<UserProfileDTO>> GetUserProfileById(Guid id)
+    public async Task<ActionResult<UserProfileDTO>> GetUserProfileById()
     {
-        var result = await sender.Send(new GetUserProfileByIdRequest(id));
+        var result = await sender.Send(new GetUserProfileRequest());
         return FromResult(result);
     }
 
@@ -144,9 +144,9 @@ public class UsersService(ISender sender) : BaseService
     [SwaggerResponse(StatusCodes.Status403Forbidden, "this User does not have permission to update the notification frequency")]
     [SwaggerResponse(StatusCodes.Status404NotFound, "User was not found", typeof(ErrorResponse))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorResponse))]
-    public async Task<ActionResult> UpdateUserNotificationFrequency([FromBody] UpdateUserNotificationSettingsDTO updateUserNotificationFrequencyDTO)
+    public async Task<ActionResult> UpdateUserNotificationFrequency([FromBody] NotificationSettingsDTO notificationSettingsDTO)
     {
-        var result = await sender.Send(new UpdateUserNotificationSettingsRequest(updateUserNotificationFrequencyDTO));
+        var result = await sender.Send(new UpdateUserNotificationSettingsRequest(notificationSettingsDTO));
         return FromResult(result);
     }
 }
