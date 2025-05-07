@@ -65,14 +65,15 @@ public class UsersService(ISender sender) : BaseService
     }
 
     [Authorize(Policy = Constants.Authorization.Policy.Read)]
-    [HttpGet("profiles")]
-    [SwaggerOperation(Summary = "Get user profiles", Description = "Retrieves a list of user profiles, optionally filtered by their active status.")]
-    [SwaggerResponse(StatusCodes.Status200OK, "User profiles were retrieved successfully", typeof(ActionResult<IList<UserProfileDTO>>))]
+    [HttpGet("{id:guid}/profile")]
+    [SwaggerOperation(Summary = "Get user profile", Description = "Retrieves the profile of a user by their unique id.")]
+    [SwaggerResponse(StatusCodes.Status200OK, "User profile was retrieved successfully", typeof(ActionResult<UserProfileDTO>))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required to access this endpoint")]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "User was not found", typeof(ErrorResponse))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<IList<UserProfileDTO>>> GetUsersProfiles([FromQuery] bool? isActive)
+    public async Task<ActionResult<UserProfileDTO>> GetUserProfileById(Guid id)
     {
-        var result = await sender.Send(new GetUsersProfilesRequest(isActive));
+        var result = await sender.Send(new GetUserProfileByIdRequest(id));
         return FromResult(result);
     }
 
