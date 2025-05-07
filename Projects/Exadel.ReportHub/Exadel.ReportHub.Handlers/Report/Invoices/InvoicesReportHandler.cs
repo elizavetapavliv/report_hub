@@ -15,16 +15,21 @@ public class InvoicesReportHandler(IInvoiceRepository invoiceRepository, IExport
     public async Task<ErrorOr<ExportResult>> Handle(InvoicesReportRequest request, CancellationToken cancellationToken)
     {
         var exportStrategyTask = exportStrategyFactory.GetStrategyAsync(request.Format, cancellationToken);
-        var report = invoiceRepository.GetReportAsync(request.ClientId, cancellationToken);
+        var reportTask = invoiceRepository.GetReportAsync(request.ClientId, cancellationToken);
 
-        await Task.WhenAll(exportStrategyTask, report);
+        await Task.WhenAll(exportStrategyTask, reportTask);
 
-        var stream = await exportStrategyTask.Result.ExportAsync(report.Result, cancellationToken);
+        if (reportTask.Result is not null)
+        {
+            reportTask.Result.ReportDate = DateTime.UtcNow;
+        }
+
+        var stream = await exportStrategyTask.Result.ExportAsync(reportTask.Result ?? new Data.Models.InvoicesReport { ReportDate = DateTime.UtcNow }, cancellationToken);
 
         return new ExportResult
         {
             Stream = stream,
-            FileName = $"InvoicesReport_{report.Result.ReportDate.Date.ToString(Export.Abstract.Constants.Format.Date, CultureInfo.InvariantCulture)}" +
+            FileName = $"InvoicesReport_{DateTime.UtcNow.Date.ToString(Export.Abstract.Constants.Format.Date, CultureInfo.InvariantCulture)}" +
                 $"{ExportFormatHelper.GetFileExtension(request.Format)}",
             ContentType = ExportFormatHelper.GetContentType(request.Format)
         };

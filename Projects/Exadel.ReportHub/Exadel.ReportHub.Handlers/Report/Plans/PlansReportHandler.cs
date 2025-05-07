@@ -32,17 +32,12 @@ public class PlansReportHandler(IPlanRepository planRepository, IInvoiceReposito
             ReportDate = DateTime.UtcNow
         }).ToList();
 
-        if (reports.Count == 0)
-        {
-            reports.Add(new PlansReport { StartDate = DateTime.UtcNow, EndDate = DateTime.UtcNow, ReportDate = DateTime.UtcNow });
-        }
-
         var stream = await exportStrategyTask.Result.ExportAsync(reports, cancellationToken);
 
         return new ExportResult
         {
             Stream = stream,
-            FileName = $"PlansReport_{reports[0].ReportDate.Date.ToString(Export.Abstract.Constants.Format.Date, CultureInfo.InvariantCulture)}" +
+            FileName = $"PlansReport_{DateTime.UtcNow.Date.ToString(Export.Abstract.Constants.Format.Date, CultureInfo.InvariantCulture)}" +
                        $"{ExportFormatHelper.GetFileExtension(request.Format)}",
             ContentType = ExportFormatHelper.GetContentType(request.Format)
         };

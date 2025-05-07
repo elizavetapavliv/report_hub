@@ -10,7 +10,7 @@ namespace Exadel.ReportHub.Handlers.Report.Items;
 
 public record ItemsReportRequest(Guid ClientId, ExportFormat Format) : IRequest<ErrorOr<ExportResult>>;
 
-public class ItemsReportHandler(IItemRepository itemRepository, IInvoiceRepository invoiceRepository, IExportStrategyFactory exportStrategyFactory)
+public class ItemsReportHandler(IItemRepository itemRepository, IInvoiceRepository invoiceRepository, IClientRepository clientRepository, IExportStrategyFactory exportStrategyFactory)
     : IRequestHandler<ItemsReportRequest, ErrorOr<ExportResult>>
 {
     public async Task<ErrorOr<ExportResult>> Handle(ItemsReportRequest request, CancellationToken cancellationToken)
@@ -19,16 +19,18 @@ public class ItemsReportHandler(IItemRepository itemRepository, IInvoiceReposito
 
         var itemPricesTask = itemRepository.GetClientItemPricesAsync(request.ClientId, cancellationToken);
         var countsTask = invoiceRepository.GetClientItemsCountAsync(request.ClientId, cancellationToken);
+        var currencyTask = clientRepository.GetCurrencyAsync(request.ClientId, cancellationToken);
 
-        await Task.WhenAll(exportStrategyTask, itemPricesTask, countsTask);
+        await Task.WhenAll(exportStrategyTask, itemPricesTask, countsTask, currencyTask);
         var report = new ItemsReport
         {
             MostSoldItemId = countsTask.Result.Count > 0 ?
-                countsTask.Result.MaxBy(x => x.Value).Key : Guid.Empty,
+                countsTask.Result.MaxBy(x => x.Value).Key : null,
             AveragePrice = itemPricesTask.Result.Count > 0 ?
                 itemPricesTask.Result.Average(x => x.Value) : 0,
             AverageRevenue = countsTask.Result.Count > 0 && itemPricesTask.Result.Count > 0 ?
                 itemPricesTask.Result.Select(x => x.Value * countsTask.Result.GetValueOrDefault(x.Key)).Average() : 0,
+            ClientCurrency = currencyTask.Result,
             ReportDate = DateTime.UtcNow
         };
 

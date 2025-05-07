@@ -12,7 +12,7 @@ public class InvoicesReport : BaseReport
 
     public decimal AverageAmount { get; set; }
 
-    public string Currency { get; set; }
+    public string ClientCurrency { get; set; }
 
     public int UnpaidCount { get; set; }
 

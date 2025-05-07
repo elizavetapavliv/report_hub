@@ -171,28 +171,53 @@ public class InvoiceRepository(MongoDbContext context) : BaseRepository(context)
     public async Task<InvoicesReport> GetReportAsync(Guid clientId, CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.Eq(x => x.ClientId, clientId);
-        var report = await GetCollection<Invoice>().Aggregate().Match(filter)
-            .Group(x => new { x.IssueDate.Year, x.IssueDate.Month }, g => new
+
+        var filteredInvoices = GetCollection<Invoice>().Aggregate().Match(filter);
+
+        var groupedByMonthStatus = filteredInvoices.Group(
+            x => new { x.IssueDate.Year, x.IssueDate.Month, x.PaymentStatus },
+            g => new
             {
+                YearMonth = new { g.Key.Year, g.Key.Month },
+                PaymentStatus = g.Key.PaymentStatus,
                 Count = g.Count(),
                 Amount = g.Sum(x => x.ClientCurrencyAmount),
-                Invoices = g.ToList(),
-                Currency = g.FirstOrDefault().ClientCurrencyCode
-            })
-            .Group(_ => true, g => new InvoicesReport
+                ClientCurrency = g.FirstOrDefault().ClientCurrencyCode
+            });
+
+        var groupedByMonth = groupedByMonthStatus.Group(
+            x => x.YearMonth,
+            g => new
             {
-                TotalCount = g.Sum(x => x.Count),
-                AverageMonthCount = (int)Math.Round(g.Average(x => x.Count)),
-                TotalAmount = g.Sum(x => x.Amount),
-                AverageAmount = g.Sum(x => x.Amount) / g.Sum(x => x.Count),
-                Currency = g.FirstOrDefault().Currency,
-                UnpaidCount = g.Sum(x => x.Invoices.Count(i => i.PaymentStatus == Data.Enums.PaymentStatus.Unpaid)),
-                OverdueCount = g.Sum(x => x.Invoices.Count(i => i.PaymentStatus == Data.Enums.PaymentStatus.Overdue)),
-                PaidOnTimeCount = g.Sum(x => x.Invoices.Count(i => i.PaymentStatus == Data.Enums.PaymentStatus.PaidOnTime)),
-                PaidLateCount = g.Sum(x => x.Invoices.Count(i => i.PaymentStatus == Data.Enums.PaymentStatus.PaidLate)),
-                ReportDate = DateTime.UtcNow
+                MonthCount = g.Sum(x => x.Count),
+                MonthAmount = g.Sum(x => x.Amount),
+                ClientCurrency = g.FirstOrDefault().ClientCurrency,
+                MonthUnpaidCount = g.Where(x => x.PaymentStatus == PaymentStatus.Unpaid).Sum(x => x.Count),
+                MonthOverdueCount = g.Where(x => x.PaymentStatus == PaymentStatus.Overdue).Sum(x => x.Count),
+                MonthPaidOnTimeCount = g.Where(x => x.PaymentStatus == PaymentStatus.PaidOnTime).Sum(x => x.Count),
+                MonthPaidLateCount = g.Where(x => x.PaymentStatus == PaymentStatus.PaidLate).Sum(x => x.Count)
+            });
+
+        var report = await groupedByMonth.Group(
+            _ => true,
+            g => new InvoicesReport
+            {
+                TotalCount = g.Sum(x => x.MonthCount),
+                AverageMonthCount = (int)Math.Round(g.Average(x => x.MonthCount)),
+                TotalAmount = g.Sum(x => x.MonthAmount),
+                ClientCurrency = g.FirstOrDefault().ClientCurrency,
+                UnpaidCount = g.Sum(x => x.MonthUnpaidCount),
+                OverdueCount = g.Sum(x => x.MonthOverdueCount),
+                PaidOnTimeCount = g.Sum(x => x.MonthPaidOnTimeCount),
+                PaidLateCount = g.Sum(x => x.MonthPaidLateCount)
             }).FirstOrDefaultAsync(cancellationToken);
-        return report ?? new InvoicesReport { ReportDate = DateTime.UtcNow };
+
+        if (report is not null)
+        {
+            report.AverageAmount = report.TotalAmount / report.TotalCount;
+        }
+
+        return report;
     }
 
     private sealed record UnwoundInvoice(Guid ItemIds);

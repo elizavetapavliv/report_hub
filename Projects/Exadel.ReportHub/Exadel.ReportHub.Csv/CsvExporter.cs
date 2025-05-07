@@ -16,19 +16,7 @@ public class CsvExporter : IExportStrategy
     public async Task<Stream> ExportAsync<TModel>(TModel exportModel, CancellationToken cancellationToken)
         where TModel : BaseReport
     {
-        var csvStream = new MemoryStream();
-        await using (var writer = new StreamWriter(csvStream, leaveOpen: true))
-        {
-            await using var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
-
-            csv.Context.RegisterClassMap(ClassMapFactory.GetClassMap<TModel>());
-            csv.WriteHeader<TModel>();
-            await csv.NextRecordAsync();
-            csv.WriteRecord(exportModel);
-        }
-
-        csvStream.Seek(0, SeekOrigin.Begin);
-        return csvStream;
+        return await ExportAsync([exportModel], cancellationToken);
     }
 
     public async Task<Stream> ExportAsync<TModel>(IEnumerable<TModel> exportModels, CancellationToken cancellationToken)
