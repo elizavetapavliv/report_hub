@@ -10,6 +10,6 @@ public static class Constants
 {
     public static class ResourcePath
     {
-        public static readonly string EmailTemplates = Path.Combine(AppContext.BaseDirectory, "Deployment", "Resources", "EmailTemplates");
+        public static readonly string EmailTemplates = Path.Combine("Deployment", "Resources", "EmailTemplates");
     }
 }
