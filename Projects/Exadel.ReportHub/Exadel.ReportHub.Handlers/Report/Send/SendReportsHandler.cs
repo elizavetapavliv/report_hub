@@ -25,7 +25,7 @@ public class SendReportsHandler(IUserRepository userRepository, IEmailSender ema
         var currentDayOfWeek = now.DayOfWeek;
         var users = await userRepository.GetUsersByNotificationSettingsAsync(currentDay, currentDayOfWeek, currentHour, cancellationToken);
 
-        foreach (var user in users)
+        await Task.WhenAll(users.Select(async user =>
         {
             try
             {
@@ -46,7 +46,7 @@ public class SendReportsHandler(IUserRepository userRepository, IEmailSender ema
             {
                 logger.LogError(ex, "Failed to send report email to user {UserId} ({Email})", user.Id, user.Email);
             }
-        }
+        }));
 
         return Unit.Value;
     }
