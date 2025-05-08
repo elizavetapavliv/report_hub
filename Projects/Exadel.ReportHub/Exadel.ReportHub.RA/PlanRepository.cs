@@ -20,11 +20,13 @@ public class PlanRepository(MongoDbContext context) : BaseRepository(context), I
         return SoftDeleteAsync<Plan>(id, cancellationToken);
     }
 
-    public Task<IList<Plan>> GetByClientIdAsync(Guid clientId, CancellationToken cancellationToken)
+    public Task<IList<Plan>> GetByClientIdAsync(Guid clientId, DateTime? startDate, DateTime? endDate, CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.And(
             _filterBuilder.Eq(x => x.IsDeleted, false),
             _filterBuilder.Eq(x => x.ClientId, clientId));
+        filter &= startDate.HasValue ? _filterBuilder.Gte(x => x.StartDate, startDate.Value) : _filterBuilder.Empty;
+        filter &= endDate.HasValue ? _filterBuilder.Lte(x => x.EndDate, endDate.Value) : _filterBuilder.Empty;
         return GetAsync(filter, cancellationToken);
     }
 
@@ -42,12 +44,14 @@ public class PlanRepository(MongoDbContext context) : BaseRepository(context), I
         return UpdateAsync(id, update, cancellationToken);
     }
 
-    public async Task<bool> ExistsAsync(Guid itemId, Guid clientId, CancellationToken cancellationToken)
+    public async Task<bool> ExistsForItemByPeriodAsync(Guid itemId, Guid clientId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken)
     {
-        var filter = _filterBuilder.And(
-            _filterBuilder.Eq(x => x.ClientId, clientId),
-            _filterBuilder.Eq(x => x.ItemId, itemId),
-            _filterBuilder.Eq(x => x.IsDeleted, false));
+        var filter =
+            _filterBuilder.Eq(x => x.ClientId, clientId) &
+            _filterBuilder.Eq(x => x.ItemId, itemId) &
+            (_filterBuilder.Gte(x => x.EndDate, startDate) |
+            _filterBuilder.Lte(x => x.StartDate, endDate)) &
+            _filterBuilder.Eq(x => x.IsDeleted, false);
         var count = await GetCollection<Plan>().CountDocumentsAsync(filter, cancellationToken: cancellationToken);
         return count > 0;
     }

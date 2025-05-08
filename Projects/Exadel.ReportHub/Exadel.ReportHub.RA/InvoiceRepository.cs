@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Numerics;
 using Exadel.ReportHub.Data.Enums;
 using Exadel.ReportHub.Data.Models;
 using Exadel.ReportHub.RA.Abstract;
@@ -161,9 +160,12 @@ public class InvoiceRepository(MongoDbContext context) : BaseRepository(context)
         return result;
     }
 
-    public async Task<Dictionary<Guid, int>> GetClientItemsCountAsync(Guid clientId, CancellationToken cancellationToken)
+    public async Task<Dictionary<Guid, int>> GetClientItemsCountAsync(Guid clientId, DateTime? startDate, DateTime? endDate, CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.Eq(x => x.ClientId, clientId);
+        filter &= startDate.HasValue ? _filterBuilder.Gte(x => x.IssueDate, startDate.Value) : _filterBuilder.Empty;
+        filter &= endDate.HasValue ? _filterBuilder.Lte(x => x.IssueDate, endDate.Value) : _filterBuilder.Empty;
+
         var grouping = await GetCollection<Invoice>()
             .Aggregate().
             Match(filter)
@@ -175,12 +177,8 @@ public class InvoiceRepository(MongoDbContext context) : BaseRepository(context)
 
     public async Task<Dictionary<Guid, int>> GetPlansActualCountAsync(IEnumerable<Plan> plans, CancellationToken cancellationToken)
     {
-        if (!plans.Any())
-        {
-            return new();
-        }
-
-        var facets = plans
+        var planList = plans.ToList();
+        var facets = planList
             .Select(plan =>
                 AggregateFacet.Create(
                     plan.Id.ToString(),
@@ -198,23 +196,17 @@ public class InvoiceRepository(MongoDbContext context) : BaseRepository(context)
             .Facet(facets)
             .FirstOrDefaultAsync(cancellationToken);
 
-        return plans.ToDictionary(
-            plan => plan.Id,
-            plan =>
-            {
-                var result = facetResults.Facets.FirstOrDefault(x => x.Name.Equals(plan.Id.ToString(), StringComparison.Ordinal));
-                if (result is null || !result.Output<AggregateCountResult>().Any())
-                {
-                    return 0;
-                }
-
-                return (int)result.Output<AggregateCountResult>()[0].Count;
-            });
+        return facetResults.Facets.ToDictionary(
+            x => Guid.Parse(x.Name),
+            x => x.Output<AggregateCountResult>().Any() ?
+                (int)x.Output<AggregateCountResult>()[0].Count : 0);
     }
 
-    public async Task<InvoicesReport> GetReportAsync(Guid clientId, CancellationToken cancellationToken)
+    public async Task<InvoicesReport> GetReportAsync(Guid clientId, DateTime? startDate, DateTime? endDate, CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.Eq(x => x.ClientId, clientId);
+        filter &= startDate.HasValue ? _filterBuilder.Gte(x => x.IssueDate, startDate.Value) : _filterBuilder.Empty;
+        filter &= endDate.HasValue ? _filterBuilder.Lte(x => x.IssueDate, endDate.Value) : _filterBuilder.Empty;
 
         var facetMainStatistics = AggregateFacet.Create(
             "MainStatistics",
@@ -225,8 +217,7 @@ public class InvoiceRepository(MongoDbContext context) : BaseRepository(context)
                     g => new ReportMainStatistics(
                         g.Count(),
                         g.Sum(x => x.ClientCurrencyAmount),
-                        g.Average(x => x.ClientCurrencyAmount),
-                        g.First().ClientCurrencyCode))
+                        g.Average(x => x.ClientCurrencyAmount)))
             ]));
 
         var facetMonthCount = AggregateFacet.Create(
@@ -253,10 +244,10 @@ public class InvoiceRepository(MongoDbContext context) : BaseRepository(context)
 
         var facetResults = await GetCollection<Invoice>()
             .Aggregate()
-            .Facet(facetMonthCount, facetStatusCount, facetMainStatistics)
+            .Facet(facetMainStatistics, facetMonthCount, facetStatusCount)
             .FirstOrDefaultAsync(cancellationToken);
 
-        var mainStatistics = facetResults.Facets.FirstOrDefault(x => x.Name.Equals(facetMainStatistics.Name, StringComparison.Ordinal))
+        var mainStatistics = facetResults.Facets[0]
             .Output<ReportMainStatistics>()
             .FirstOrDefault();
 
@@ -265,12 +256,12 @@ public class InvoiceRepository(MongoDbContext context) : BaseRepository(context)
             return null;
         }
 
-        var monthCounts = facetResults.Facets.FirstOrDefault(x => x.Name.Equals(facetMonthCount.Name, StringComparison.Ordinal))
+        var monthCounts = facetResults.Facets[1]
             .Output<MonthCount>();
 
-        var statusCounts = facetResults.Facets.FirstOrDefault(x => x.Name.Equals(facetStatusCount.Name, StringComparison.Ordinal))
+        var statusCounts = facetResults.Facets[2]
             .Output<StatusCount>()
-            .ToDictionary(x => x.status, x => x.Count);
+            .ToDictionary(x => x.Status, x => x.Count);
 
         statusCounts.TryGetValue(PaymentStatus.Unpaid, out var unpaidCount);
         statusCounts.TryGetValue(PaymentStatus.Overdue, out var overdueCount);
@@ -284,7 +275,6 @@ public class InvoiceRepository(MongoDbContext context) : BaseRepository(context)
                 (int)Math.Round(monthCounts.Average(x => x.Count)) : 0,
             TotalAmount = mainStatistics.TotalAmount,
             AverageAmount = mainStatistics.AverageAmount,
-            ClientCurrency = mainStatistics.ClientCurrency,
             UnpaidCount = unpaidCount,
             OverdueCount = overdueCount,
             PaidOnTimeCount = paidOnTimeCount,
@@ -294,11 +284,11 @@ public class InvoiceRepository(MongoDbContext context) : BaseRepository(context)
 
     private sealed record UnwoundInvoice(Guid ItemIds, DateTime IssueDate);
 
-    private sealed record ReportMainStatistics(int TotalCount, decimal TotalAmount, decimal AverageAmount, string ClientCurrency);
+    private sealed record ReportMainStatistics(int TotalCount, decimal TotalAmount, decimal AverageAmount);
 
     private sealed record YearMonth(int Year, int Month);
 
     private sealed record MonthCount(YearMonth Month, int Count);
 
-    private sealed record StatusCount(PaymentStatus status, int Count);
+    private sealed record StatusCount(PaymentStatus Status, int Count);
 }

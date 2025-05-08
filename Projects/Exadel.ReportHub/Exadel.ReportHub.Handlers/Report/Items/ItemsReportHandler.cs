@@ -8,7 +8,7 @@ using MediatR;
 
 namespace Exadel.ReportHub.Handlers.Report.Items;
 
-public record ItemsReportRequest(Guid ClientId, ExportFormat Format) : IRequest<ErrorOr<ExportResult>>;
+public record ItemsReportRequest(Guid ClientId, ExportFormat Format, DateTime? StartDate, DateTime? EndDate) : IRequest<ErrorOr<ExportResult>>;
 
 public class ItemsReportHandler(IItemRepository itemRepository, IInvoiceRepository invoiceRepository, IClientRepository clientRepository, IExportStrategyFactory exportStrategyFactory)
     : IRequestHandler<ItemsReportRequest, ErrorOr<ExportResult>>
@@ -18,7 +18,7 @@ public class ItemsReportHandler(IItemRepository itemRepository, IInvoiceReposito
         var exportStrategyTask = exportStrategyFactory.GetStrategyAsync(request.Format, cancellationToken);
 
         var itemPricesTask = itemRepository.GetClientItemPricesAsync(request.ClientId, cancellationToken);
-        var countsTask = invoiceRepository.GetClientItemsCountAsync(request.ClientId, cancellationToken);
+        var countsTask = invoiceRepository.GetClientItemsCountAsync(request.ClientId, request.StartDate, request.EndDate, cancellationToken);
         var currencyTask = clientRepository.GetCurrencyAsync(request.ClientId, cancellationToken);
 
         await Task.WhenAll(exportStrategyTask, itemPricesTask, countsTask, currencyTask);

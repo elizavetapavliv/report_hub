@@ -7,29 +7,29 @@ using MediatR;
 
 namespace Exadel.ReportHub.Handlers.Report.Invoices;
 
-public record InvoicesReportRequest(Guid ClientId, ExportFormat Format) : IRequest<ErrorOr<ExportResult>>;
+public record InvoicesReportRequest(Guid ClientId, ExportFormat Format, DateTime? StartDate, DateTime? EndDate) : IRequest<ErrorOr<ExportResult>>;
 
-public class InvoicesReportHandler(IInvoiceRepository invoiceRepository, IExportStrategyFactory exportStrategyFactory)
+public class InvoicesReportHandler(IInvoiceRepository invoiceRepository, IClientRepository clientRepository, IExportStrategyFactory exportStrategyFactory)
     : IRequestHandler<InvoicesReportRequest, ErrorOr<ExportResult>>
 {
     public async Task<ErrorOr<ExportResult>> Handle(InvoicesReportRequest request, CancellationToken cancellationToken)
     {
         var exportStrategyTask = exportStrategyFactory.GetStrategyAsync(request.Format, cancellationToken);
-        var reportTask = invoiceRepository.GetReportAsync(request.ClientId, cancellationToken);
+        var reportTask = invoiceRepository.GetReportAsync(request.ClientId, request.StartDate, request.EndDate, cancellationToken);
+        var clientCurrencyTask = clientRepository.GetCurrencyAsync(request.ClientId, cancellationToken);
 
-        await Task.WhenAll(exportStrategyTask, reportTask);
+        await Task.WhenAll(exportStrategyTask, reportTask, clientCurrencyTask);
 
-        if (reportTask.Result is not null)
-        {
-            reportTask.Result.ReportDate = DateTime.UtcNow;
-        }
+        var report = reportTask.Result ?? new Data.Models.InvoicesReport();
+        report.ClientCurrency = clientCurrencyTask.Result;
+        report.ReportDate = DateTime.UtcNow;
 
-        var stream = await exportStrategyTask.Result.ExportAsync(reportTask.Result ?? new Data.Models.InvoicesReport { ReportDate = DateTime.UtcNow }, cancellationToken);
+        var stream = await exportStrategyTask.Result.ExportAsync(report, cancellationToken);
 
         return new ExportResult
         {
             Stream = stream,
-            FileName = $"InvoicesReport_{DateTime.UtcNow.Date.ToString(Export.Abstract.Constants.Format.Date, CultureInfo.InvariantCulture)}" +
+            FileName = $"InvoicesReport_{report.ReportDate.Date.ToString(Export.Abstract.Constants.Format.Date, CultureInfo.InvariantCulture)}" +
                 $"{ExportFormatHelper.GetFileExtension(request.Format)}",
             ContentType = ExportFormatHelper.GetContentType(request.Format)
         };

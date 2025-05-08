@@ -8,29 +8,39 @@ using MediatR;
 
 namespace Exadel.ReportHub.Handlers.Report.Plans;
 
-public record PlansReportRequest(Guid ClientId, ExportFormat Format) : IRequest<ErrorOr<ExportResult>>;
+public record PlansReportRequest(Guid ClientId, ExportFormat Format, DateTime? StartDate, DateTime? EndDate) : IRequest<ErrorOr<ExportResult>>;
 
-public class PlansReportHandler(IPlanRepository planRepository, IInvoiceRepository invoiceRepository, IExportStrategyFactory exportStrategyFactory)
+public class PlansReportHandler(IPlanRepository planRepository, IInvoiceRepository invoiceRepository, IItemRepository itemRepository,
+    IClientRepository clientRepository, IExportStrategyFactory exportStrategyFactory)
     : IRequestHandler<PlansReportRequest, ErrorOr<ExportResult>>
 {
     public async Task<ErrorOr<ExportResult>> Handle(PlansReportRequest request, CancellationToken cancellationToken)
     {
-        var plans = await planRepository.GetByClientIdAsync(request.ClientId, cancellationToken);
-
         var exportStrategyTask = exportStrategyFactory.GetStrategyAsync(request.Format, cancellationToken);
-        var countsTask = invoiceRepository.GetPlansActualCountAsync(plans, cancellationToken);
+        var plansTask = planRepository.GetByClientIdAsync(request.ClientId, request.StartDate, request.EndDate, cancellationToken);
+        var reports = new List<PlanReport>();
 
-        await Task.WhenAll(exportStrategyTask, countsTask);
-
-        var reports = plans.Select(x => new PlansReport
+        await Task.WhenAll(exportStrategyTask, plansTask);
+        if (plansTask.Result.Any())
         {
-            TargetItemId = x.ItemId,
-            StartDate = x.StartDate,
-            EndDate = x.EndDate,
-            PlannedCount = x.Count,
-            ActualCount = countsTask.Result.GetValueOrDefault(x.Id),
-            ReportDate = DateTime.UtcNow
-        }).ToList();
+            var countsTask = invoiceRepository.GetPlansActualCountAsync(plansTask.Result, cancellationToken);
+            var itemPricesTask = itemRepository.GetClientItemPricesAsync(request.ClientId, cancellationToken);
+            var clientCurrencyTask = clientRepository.GetCurrencyAsync(request.ClientId, cancellationToken);
+
+            await Task.WhenAll(countsTask, itemPricesTask, clientCurrencyTask);
+
+            reports = plansTask.Result.Select(x => new PlanReport
+            {
+                TargetItemId = x.ItemId,
+                StartDate = x.StartDate,
+                EndDate = x.EndDate,
+                PlannedCount = x.Count,
+                ActualCount = countsTask.Result[x.Id],
+                Revenue = itemPricesTask.Result[x.ItemId] * countsTask.Result[x.Id],
+                ClientCurrency = clientCurrencyTask.Result,
+                ReportDate = DateTime.UtcNow
+            }).ToList();
+        }
 
         var stream = await exportStrategyTask.Result.ExportAsync(reports, cancellationToken);
 

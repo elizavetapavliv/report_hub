@@ -24,9 +24,10 @@ public class ReportsService(ISender sender) : BaseService
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required to access this endpoint")]
     [SwaggerResponse(StatusCodes.Status403Forbidden, "User doesnt have permission to export the report")]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorResponse))]
-    public async Task<ActionResult<ExportResult>> ExportInvoicesReportAsync([FromQuery][Required] Guid clientId, [FromQuery][Required] ExportFormat format)
+    public async Task<ActionResult<ExportResult>> ExportInvoicesReportAsync([FromQuery][Required] Guid clientId, [FromQuery][Required] ExportFormat format,
+        [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
     {
-        var result = await sender.Send(new InvoicesReportRequest(clientId, format));
+        var result = await sender.Send(new InvoicesReportRequest(clientId, format, startDate, endDate));
         return FromResult(result);
     }
 
@@ -37,9 +38,10 @@ public class ReportsService(ISender sender) : BaseService
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required to access this endpoint")]
     [SwaggerResponse(StatusCodes.Status403Forbidden, "User doesnt have permission to export the report")]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorResponse))]
-    public async Task<ActionResult<ExportResult>> ExportItemsReportAsync([FromQuery][Required] Guid clientId, [FromQuery][Required] ExportFormat format)
+    public async Task<ActionResult<ExportResult>> ExportItemsReportAsync([FromQuery][Required] Guid clientId, [FromQuery][Required] ExportFormat format,
+        [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
     {
-        var result = await sender.Send(new ItemsReportRequest(clientId, format));
+        var result = await sender.Send(new ItemsReportRequest(clientId, format, startDate, endDate));
         return FromResult(result);
     }
 
@@ -50,9 +52,10 @@ public class ReportsService(ISender sender) : BaseService
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required to access this endpoint")]
     [SwaggerResponse(StatusCodes.Status403Forbidden, "User doesnt have permission to export the report")]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorResponse))]
-    public async Task<ActionResult<ExportResult>> ExportPlansReportAsync([FromQuery][Required] Guid clientId, [FromQuery][Required] ExportFormat format)
+    public async Task<ActionResult<ExportResult>> ExportPlansReportAsync([FromQuery][Required] Guid clientId, [FromQuery][Required] ExportFormat format,
+        [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
     {
-        var result = await sender.Send(new PlansReportRequest(clientId, format));
+        var result = await sender.Send(new PlansReportRequest(clientId, format, startDate, endDate));
         return FromResult(result);
     }
 }

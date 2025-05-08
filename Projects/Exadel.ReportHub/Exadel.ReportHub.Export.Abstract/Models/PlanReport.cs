@@ -2,7 +2,7 @@
 
 namespace Exadel.ReportHub.Export.Abstract.Models;
 
-public class PlansReport : BaseReport
+public class PlanReport : BaseReport
 {
     public Guid TargetItemId { get; set; }
 
@@ -13,4 +13,8 @@ public class PlansReport : BaseReport
     public int PlannedCount { get; set; }
 
     public int ActualCount { get; set; }
+
+    public decimal Revenue { get; set; }
+
+    public string ClientCurrency { get; set; }
 }

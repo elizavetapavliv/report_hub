@@ -31,9 +31,9 @@ public interface IInvoiceRepository
 
     Task<OverdueCount> GetOverdueAsync(Guid clientId, CancellationToken cancellationToken);
 
-    Task<Dictionary<Guid, int>> GetClientItemsCountAsync(Guid clientId, CancellationToken cancellationToken);
+    Task<Dictionary<Guid, int>> GetClientItemsCountAsync(Guid clientId, DateTime? startDate, DateTime? endDate, CancellationToken cancellationToken);
 
     Task<Dictionary<Guid, int>> GetPlansActualCountAsync(IEnumerable<Plan> plans, CancellationToken cancellationToken);
 
-    Task<InvoicesReport> GetReportAsync(Guid clientId, CancellationToken cancellationToken);
+    Task<InvoicesReport> GetReportAsync(Guid clientId, DateTime? startDate, DateTime? endDate, CancellationToken cancellationToken);
 }
