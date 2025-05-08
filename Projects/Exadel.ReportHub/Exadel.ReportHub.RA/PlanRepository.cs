@@ -20,13 +20,21 @@ public class PlanRepository(MongoDbContext context) : BaseRepository(context), I
         return SoftDeleteAsync<Plan>(id, cancellationToken);
     }
 
-    public Task<IList<Plan>> GetByClientIdAsync(Guid clientId, DateTime? startDate, DateTime? endDate, CancellationToken cancellationToken)
+    public Task<IList<Plan>> GetByClientIdAsync(Guid clientId, DateTime? startDate = null, DateTime? endDate = null, CancellationToken cancellationToken = default)
     {
         var filter = _filterBuilder.And(
             _filterBuilder.Eq(x => x.IsDeleted, false),
             _filterBuilder.Eq(x => x.ClientId, clientId));
-        filter &= startDate.HasValue ? _filterBuilder.Gte(x => x.StartDate, startDate.Value) : _filterBuilder.Empty;
-        filter &= endDate.HasValue ? _filterBuilder.Lte(x => x.EndDate, endDate.Value) : _filterBuilder.Empty;
+        if (startDate.HasValue)
+        {
+            filter &= _filterBuilder.Gte(x => x.StartDate, startDate.Value);
+        }
+
+        if (endDate.HasValue)
+        {
+            filter &= _filterBuilder.Lte(x => x.EndDate, endDate.Value);
+        }
+
         return GetAsync(filter, cancellationToken);
     }
 

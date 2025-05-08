@@ -163,8 +163,15 @@ public class InvoiceRepository(MongoDbContext context) : BaseRepository(context)
     public async Task<Dictionary<Guid, int>> GetClientItemsCountAsync(Guid clientId, DateTime? startDate, DateTime? endDate, CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.Eq(x => x.ClientId, clientId);
-        filter &= startDate.HasValue ? _filterBuilder.Gte(x => x.IssueDate, startDate.Value) : _filterBuilder.Empty;
-        filter &= endDate.HasValue ? _filterBuilder.Lte(x => x.IssueDate, endDate.Value) : _filterBuilder.Empty;
+        if (startDate.HasValue)
+        {
+            filter &= _filterBuilder.Gte(x => x.IssueDate, startDate.Value);
+        }
+
+        if (endDate.HasValue)
+        {
+            filter &= _filterBuilder.Lte(x => x.IssueDate, endDate.Value);
+        }
 
         var grouping = await GetCollection<Invoice>()
             .Aggregate().
@@ -205,8 +212,15 @@ public class InvoiceRepository(MongoDbContext context) : BaseRepository(context)
     public async Task<InvoicesReport> GetReportAsync(Guid clientId, DateTime? startDate, DateTime? endDate, CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.Eq(x => x.ClientId, clientId);
-        filter &= startDate.HasValue ? _filterBuilder.Gte(x => x.IssueDate, startDate.Value) : _filterBuilder.Empty;
-        filter &= endDate.HasValue ? _filterBuilder.Lte(x => x.IssueDate, endDate.Value) : _filterBuilder.Empty;
+        if (startDate.HasValue)
+        {
+            filter &= _filterBuilder.Gte(x => x.IssueDate, startDate.Value);
+        }
+
+        if (endDate.HasValue)
+        {
+            filter &= _filterBuilder.Lte(x => x.IssueDate, endDate.Value);
+        }
 
         var facetMainStatistics = AggregateFacet.Create(
             "MainStatistics",

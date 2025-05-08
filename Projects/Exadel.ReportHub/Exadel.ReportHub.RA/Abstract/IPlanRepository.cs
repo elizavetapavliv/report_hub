@@ -4,7 +4,7 @@ namespace Exadel.ReportHub.RA.Abstract;
 
 public interface IPlanRepository
 {
-    Task<IList<Plan>> GetByClientIdAsync(Guid clientId, DateTime? startDate, DateTime? endDate, CancellationToken cancellationToken);
+    Task<IList<Plan>> GetByClientIdAsync(Guid clientId, DateTime? startDate = null, DateTime? endDate = null, CancellationToken cancellationToken = default);
 
     Task<Plan> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 

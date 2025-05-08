@@ -8,9 +8,6 @@ namespace Exadel.ReportHub.Excel;
 
 public class ExcelExporter : IExportStrategy
 {
-    private Style _dateStyle;
-    private Style _decimalStyle;
-
     public Task<bool> SatisfyAsync(ExportFormat format, CancellationToken cancellationToken)
     {
         return Task.FromResult(format == ExportFormat.Excel);
@@ -27,13 +24,13 @@ public class ExcelExporter : IExportStrategy
     {
         var stream = new MemoryStream();
 
-        var workbook = new Workbook();
-        var worksheet = workbook.Worksheets[0];
+        using var workbook = new Workbook();
+        using var worksheet = workbook.Worksheets[0];
 
-        _dateStyle = workbook.CreateStyle();
-        _dateStyle.Custom = Constants.Format.Date;
-        _decimalStyle = workbook.CreateStyle();
-        _decimalStyle.Custom = Constants.Format.Decimal;
+        var dateStyle = workbook.CreateStyle();
+        dateStyle.Custom = Constants.Format.Date;
+        var decimalStyle = workbook.CreateStyle();
+        decimalStyle.Custom = Constants.Format.Decimal;
 
         var cells = worksheet.Cells;
         var properties = typeof(TModel).GetProperties();
@@ -41,10 +38,10 @@ public class ExcelExporter : IExportStrategy
 
         cells[0, 0].PutValue(nameof(BaseReport.ReportDate));
         cells[0, 1].PutValue(modelList.FirstOrDefault()?.ReportDate ?? DateTime.UtcNow);
-        cells[0, 1].SetStyle(_dateStyle);
+        cells[0, 1].SetStyle(dateStyle);
 
         PutHeaders(cells, properties);
-        PutData(cells, properties, modelList);
+        PutData(cells, properties, modelList, dateStyle, decimalStyle);
 
         worksheet.AutoFitColumns();
         worksheet.AutoFitRows();
@@ -70,7 +67,7 @@ public class ExcelExporter : IExportStrategy
         }
     }
 
-    private void PutData<TModel>(Cells cells, PropertyInfo[] properties, List<TModel> modelList)
+    private void PutData<TModel>(Cells cells, PropertyInfo[] properties, IList<TModel> modelList, Style dateStyle, Style decimalStyle)
     {
         var row = 2;
         foreach (var model in modelList)
@@ -93,12 +90,12 @@ public class ExcelExporter : IExportStrategy
 
                 if (value is DateTime)
                 {
-                    cells[row, column].SetStyle(_dateStyle);
+                    cells[row, column].SetStyle(dateStyle);
                 }
 
                 if (value is decimal)
                 {
-                    cells[row, column].SetStyle(_decimalStyle);
+                    cells[row, column].SetStyle(decimalStyle);
                 }
 
                 column++;
