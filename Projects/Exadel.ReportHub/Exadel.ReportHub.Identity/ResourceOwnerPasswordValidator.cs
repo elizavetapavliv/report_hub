@@ -17,6 +17,12 @@ public class ResourceOwnerPasswordValidator(IUserRepository userRepository) : IR
             return;
         }
 
+        if (!await userRepository.IsActiveAsync(user.Id, CancellationToken.None))
+        {
+            context.Result = new GrantValidationResult(TokenRequestErrors.InvalidGrant, "User is not active.");
+            return;
+        }
+
         var passwordHash = PasswordHasher.GetPasswordHash(context.Password, user.PasswordSalt);
         if (!user.PasswordHash.Equals(passwordHash))
         {
@@ -27,6 +33,5 @@ public class ResourceOwnerPasswordValidator(IUserRepository userRepository) : IR
         context.Result = new GrantValidationResult(
             subject: user.Id.ToString(),
             authenticationMethod: OidcConstants.AuthenticationMethods.Password);
-        return;
     }
 }
