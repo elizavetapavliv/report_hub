@@ -4,8 +4,11 @@ using Exadel.ReportHub.Export.Abstract;
 using Exadel.ReportHub.Handlers.Report.Invoices;
 using Exadel.ReportHub.Handlers.Report.Items;
 using Exadel.ReportHub.Handlers.Report.Plans;
+using Exadel.ReportHub.Handlers.Report.Send;
 using Exadel.ReportHub.Host.Infrastructure.Models;
 using Exadel.ReportHub.Host.Services.Abstract;
+using Exadel.ReportHub.SDK.Abstract;
+using Exadel.ReportHub.SDK.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +18,8 @@ namespace Exadel.ReportHub.Host.Services;
 
 [ExcludeFromCodeCoverage]
 [Route("api/reports")]
-public class ReportsService(ISender sender) : BaseService
+[ApiController]
+public class ReportsService(ISender sender) : BaseService, IReportService
 {
     [Authorize(Policy = Constants.Authorization.Policy.Export)]
     [HttpGet("invoices")]
@@ -40,7 +44,7 @@ public class ReportsService(ISender sender) : BaseService
     [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorResponse))]
     public async Task<ActionResult<ExportResult>> ExportItemsReportAsync([FromQuery][Required] Guid clientId, [FromQuery][Required] ExportFormat format,
         [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
-    {
+{
         var result = await sender.Send(new ItemsReportRequest(clientId, format, startDate, endDate));
         return FromResult(result);
     }
@@ -57,5 +61,11 @@ public class ReportsService(ISender sender) : BaseService
     {
         var result = await sender.Send(new PlansReportRequest(clientId, format, startDate, endDate));
         return FromResult(result);
+    }
+
+    [NonAction]
+    public async Task SendReportsAsync()
+    {
+        await sender.Send(new SendReportsRequest());
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Net.Mime;
+using Exadel.ReportHub.SDK.Enums;
 
 namespace Exadel.ReportHub.Export.Abstract.Helpers;
 
@@ -8,7 +9,7 @@ public static class ExportFormatHelper
     {
         return format switch
         {
-            ExportFormat.Csv => Constants.File.Extension.Csv,
+            ExportFormat.CSV => Constants.File.Extension.Csv,
             ExportFormat.Excel => Constants.File.Extension.Excel,
             _ => throw new ArgumentException($"Unsupported export format: {format}")
         };
@@ -18,7 +19,7 @@ public static class ExportFormatHelper
     {
         return format switch
         {
-            ExportFormat.Csv => MediaTypeNames.Text.Csv,
+            ExportFormat.CSV => MediaTypeNames.Text.Csv,
             ExportFormat.Excel => Constants.File.ContentType.Excel,
             _ => throw new ArgumentException($"Unsupported export format: {format}")
         };

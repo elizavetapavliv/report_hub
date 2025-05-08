@@ -1,4 +1,5 @@
 ﻿using Exadel.ReportHub.Data.Abstract;
+using Exadel.ReportHub.SDK.Enums;
 
 namespace Exadel.ReportHub.Export.Abstract;
 

@@ -3,6 +3,7 @@ using ErrorOr;
 using Exadel.ReportHub.Export.Abstract;
 using Exadel.ReportHub.Export.Abstract.Helpers;
 using Exadel.ReportHub.RA.Abstract;
+using Exadel.ReportHub.SDK.Enums;
 using MediatR;
 
 namespace Exadel.ReportHub.Handlers.Report.Invoices;

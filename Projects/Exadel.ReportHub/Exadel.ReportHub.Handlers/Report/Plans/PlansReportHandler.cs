@@ -4,6 +4,7 @@ using Exadel.ReportHub.Export.Abstract;
 using Exadel.ReportHub.Export.Abstract.Helpers;
 using Exadel.ReportHub.Export.Abstract.Models;
 using Exadel.ReportHub.RA.Abstract;
+using Exadel.ReportHub.SDK.Enums;
 using MediatR;
 
 namespace Exadel.ReportHub.Handlers.Report.Plans;
@@ -48,7 +49,7 @@ public class PlansReportHandler(IPlanRepository planRepository, IInvoiceReposito
         {
             Stream = stream,
             FileName = $"PlansReport_{DateTime.UtcNow.Date.ToString(Export.Abstract.Constants.Format.Date, CultureInfo.InvariantCulture)}" +
-                       $"{ExportFormatHelper.GetFileExtension(request.Format)}",
+                $"{ExportFormatHelper.GetFileExtension(request.Format)}",
             ContentType = ExportFormatHelper.GetContentType(request.Format)
         };
     }

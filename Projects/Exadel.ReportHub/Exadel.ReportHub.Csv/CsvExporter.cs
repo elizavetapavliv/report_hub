@@ -3,6 +3,7 @@ using CsvHelper;
 using Exadel.ReportHub.Csv.ClassMaps;
 using Exadel.ReportHub.Data.Abstract;
 using Exadel.ReportHub.Export.Abstract;
+using Exadel.ReportHub.SDK.Enums;
 
 namespace Exadel.ReportHub.Csv;
 
@@ -10,7 +11,7 @@ public class CsvExporter : IExportStrategy
 {
     public Task<bool> SatisfyAsync(ExportFormat format, CancellationToken cancellationToken)
     {
-        return Task.FromResult(format == ExportFormat.Csv);
+        return Task.FromResult(format == ExportFormat.CSV);
     }
 
     public async Task<Stream> ExportAsync<TModel>(TModel exportModel, CancellationToken cancellationToken)

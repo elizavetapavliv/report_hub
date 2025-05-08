@@ -1,4 +1,6 @@
-﻿namespace Exadel.ReportHub.Export.Abstract;
+﻿using Exadel.ReportHub.SDK.Enums;
+
+namespace Exadel.ReportHub.Export.Abstract;
 
 public class ExportStrategyFactory(IEnumerable<IExportStrategy> strategies) : IExportStrategyFactory
 {
