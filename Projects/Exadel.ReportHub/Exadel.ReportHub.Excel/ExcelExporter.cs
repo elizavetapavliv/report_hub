@@ -67,7 +67,7 @@ public class ExcelExporter : IExportStrategy
         }
     }
 
-    private void PutData<TModel>(Cells cells, PropertyInfo[] properties, IList<TModel> modelList, Style dateStyle, Style decimalStyle)
+    private void PutData<TModel>(Cells cells, IList<PropertyInfo> properties, IList<TModel> modelList, Style dateStyle, Style decimalStyle)
     {
         var row = 2;
         foreach (var model in modelList)

@@ -265,7 +265,7 @@ public class InvoiceRepository(MongoDbContext context) : BaseRepository(context)
             .Output<ReportMainStatistics>()
             .FirstOrDefault();
 
-        if (mainStatistics == null || mainStatistics.TotalCount == 0)
+        if (mainStatistics == null)
         {
             return null;
         }
