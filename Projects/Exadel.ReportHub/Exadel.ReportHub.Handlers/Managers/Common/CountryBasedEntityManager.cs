@@ -14,9 +14,9 @@ public class CountryBasedEntityManager<TDto, TEntity>(
 {
     public async Task<TEntity> GenerateEntityAsync(TDto entityDto, CancellationToken cancellationToken)
     {
-        var client = (await GenerateEntitiesAsync([entityDto], cancellationToken)).Single();
+        var entity = (await GenerateEntitiesAsync([entityDto], cancellationToken)).Single();
 
-        return client;
+        return entity;
     }
 
     public async Task<IList<TEntity>> GenerateEntitiesAsync(IEnumerable<TDto> entityDtos, CancellationToken cancellationToken)
