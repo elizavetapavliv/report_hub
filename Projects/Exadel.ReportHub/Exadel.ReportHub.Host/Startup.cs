@@ -92,15 +92,17 @@ public class Startup(IConfiguration configuration)
             .AddMediatR()
             .AddAutoMapper(typeof(Startup))
             .AddHttpContextAccessor()
-            .AddCsv()
+            .AddImporters()
             .AddPdf()
             .AddExcel()
+            .AddEmailSender(configuration)
             .AddExchangeRate(configuration)
             .AddPing(configuration)
             .AddScheduler()
             .AddJobs()
             .AddHangfire()
-            .AddManagers();
+            .AddManagers()
+            .AddExport();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)
