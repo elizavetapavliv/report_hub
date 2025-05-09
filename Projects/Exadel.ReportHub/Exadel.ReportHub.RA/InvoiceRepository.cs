@@ -201,7 +201,7 @@ public class InvoiceRepository(MongoDbContext context) : BaseRepository(context)
         var facetResults = await GetCollection<Invoice>()
             .Aggregate()
             .Facet(facets)
-            .FirstOrDefaultAsync(cancellationToken);
+            .SingleAsync(cancellationToken);
 
         return facetResults.Facets.ToDictionary(
             x => Guid.Parse(x.Name),
@@ -259,11 +259,11 @@ public class InvoiceRepository(MongoDbContext context) : BaseRepository(context)
         var facetResults = await GetCollection<Invoice>()
             .Aggregate()
             .Facet(facetMainStatistics, facetMonthCount, facetStatusCount)
-            .FirstOrDefaultAsync(cancellationToken);
+            .SingleAsync(cancellationToken);
 
         var mainStatistics = facetResults.Facets[0]
             .Output<ReportMainStatistics>()
-            .FirstOrDefault();
+            .SingleOrDefault();
 
         if (mainStatistics == null)
         {

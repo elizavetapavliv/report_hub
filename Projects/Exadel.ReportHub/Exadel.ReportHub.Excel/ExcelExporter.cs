@@ -52,7 +52,7 @@ public class ExcelExporter : IExportStrategy
         return stream;
     }
 
-    private void PutHeaders(Cells cells, PropertyInfo[] properties)
+    private void PutHeaders(Cells cells, IList<PropertyInfo> properties)
     {
         var column = 0;
         foreach (var propertyName in properties.Select(x => x.Name))
