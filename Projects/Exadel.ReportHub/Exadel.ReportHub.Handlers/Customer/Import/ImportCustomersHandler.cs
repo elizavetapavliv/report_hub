@@ -13,16 +13,22 @@ namespace Exadel.ReportHub.Handlers.Customer.Import;
 public record ImportCustomersRequest(ImportDTO ImportDTO) : IRequest<ErrorOr<ImportResultDTO>>;
 
 public class ImportCustomersHandler(
-    IExcelProcessor excelProcessor,
+    IExcelImporter excelImporter,
     ICustomerRepository customerRepository,
     IValidator<CreateCustomerDTO> createCustomerValidator,
-    ICountryBasedEntityManager<CreateCustomerDTO, Data.Models.Customer> countryBasedEntityManager) : IRequestHandler<ImportCustomersRequest, ErrorOr<ImportResultDTO>>
+    ICountryBasedEntityManager countryBasedEntityManager) : IRequestHandler<ImportCustomersRequest, ErrorOr<ImportResultDTO>>
 {
     public async Task<ErrorOr<ImportResultDTO>> Handle(ImportCustomersRequest request, CancellationToken cancellationToken)
     {
         using var stream = request.ImportDTO.File.OpenReadStream();
 
-        var customerDtos = excelProcessor.ReadCustomers(stream);
+        var customerDtos = excelImporter.ReadFromExcel(stream, x => new CreateCustomerDTO
+        {
+            Name = x[0].StringValue,
+            CountryId = Guid.Parse(x[1].StringValue),
+            Email = x[2].StringValue,
+            ClientId = Guid.Parse(x[3].StringValue),
+        });
 
         var tasks = customerDtos.Select(dto => createCustomerValidator.ValidateAsync(dto, cancellationToken));
         var validationResults = await Task.WhenAll(tasks);
@@ -39,7 +45,7 @@ public class ImportCustomersHandler(
                 .ToList();
         }
 
-        var customers = await countryBasedEntityManager.GenerateEntitiesAsync(customerDtos, cancellationToken);
+        var customers = await countryBasedEntityManager.GenerateEntitiesAsync<CreateCustomerDTO, Data.Models.Customer>(customerDtos, cancellationToken);
         await customerRepository.AddManyAsync(customers, cancellationToken);
 
         return new ImportResultDTO { ImportedCount = customers.Count };

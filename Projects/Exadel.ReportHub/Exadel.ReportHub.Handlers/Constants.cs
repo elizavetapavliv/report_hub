@@ -98,7 +98,7 @@ public static class Constants
 
         public static class Import
         {
-            public const string InvalidFileExtension = "The file must be in CSV format (.csv extension).";
+            public const string InvalidFileExtension = "The file must have a valid extension";
             public const string EmptyFileUpload = "Uploaded file must not be empty.";
         }
 
@@ -141,6 +141,8 @@ public static class Constants
         public static class Extension
         {
             public const string Pdf = ".pdf";
+            public const string Excel = ".xlsx";
+            public const string Csv = ".csv";
         }
     }
 }

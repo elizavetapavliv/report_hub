@@ -3,11 +3,13 @@ using Exadel.ReportHub.SDK.DTOs.Client;
 
 namespace Exadel.ReportHub.Handlers.Managers.Common;
 
-public interface ICountryBasedEntityManager<TDto, TEntity>
-    where TDto : new()
-    where TEntity : IDocument, ICountryBasedDocument
+public interface ICountryBasedEntityManager
 {
-    Task<TEntity> GenerateEntityAsync(TDto entityDto, CancellationToken cancellationToken);
+    Task<TEntity> GenerateEntityAsync<TDto, TEntity>(TDto entityDto, CancellationToken cancellationToken)
+        where TDto : new()
+        where TEntity : IDocument, ICountryBasedDocument;
 
-    Task<IList<TEntity>> GenerateEntitiesAsync(IEnumerable<TDto> entityDtos, CancellationToken cancellationToken);
+    Task<IList<TEntity>> GenerateEntitiesAsync<TDto, TEntity>(IEnumerable<TDto> entityDtos, CancellationToken cancellationToken)
+        where TDto : new()
+        where TEntity : IDocument, ICountryBasedDocument;
 }

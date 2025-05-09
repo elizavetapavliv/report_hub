@@ -11,11 +11,11 @@ public record CreateClientRequest(CreateClientDTO CreateClientDto) : IRequest<Er
 public class CreateClientHandler(
     IClientRepository clientRepository,
     IMapper mapper,
-    ICountryBasedEntityManager<CreateClientDTO, Data.Models.Client> countryBasedEntityManager) : IRequestHandler<CreateClientRequest, ErrorOr<ClientDTO>>
+    ICountryBasedEntityManager countryBasedEntityManager) : IRequestHandler<CreateClientRequest, ErrorOr<ClientDTO>>
 {
     public async Task<ErrorOr<ClientDTO>> Handle(CreateClientRequest request, CancellationToken cancellationToken)
     {
-        var client = await countryBasedEntityManager.GenerateEntityAsync(request.CreateClientDto, cancellationToken);
+        var client = await countryBasedEntityManager.GenerateEntityAsync<CreateClientDTO, Data.Models.Client>(request.CreateClientDto, cancellationToken);
 
         await clientRepository.AddAsync(client, cancellationToken);
 

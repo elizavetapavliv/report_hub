@@ -13,7 +13,7 @@ public static class ManagerRegistrations
     {
         services.AddSingleton<IInvoiceManager, InvoiceManager>();
         services.AddSingleton<IAuditManager, AuditManager>();
-        services.AddSingleton(typeof(ICountryBasedEntityManager<,>), typeof(CountryBasedEntityManager<,>));
+        services.AddSingleton<ICountryBasedEntityManager, CountryBasedEntityManager>();
 
         return services;
     }

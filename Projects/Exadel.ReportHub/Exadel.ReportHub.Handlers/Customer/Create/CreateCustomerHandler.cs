@@ -12,12 +12,12 @@ public record CreateCustomerRequest(CreateCustomerDTO CreateCustomerDTO) : IRequ
 public class CreateCustomerHandler(
     ICustomerRepository customerRepository,
     IMapper mapper,
-    ICountryBasedEntityManager<CreateCustomerDTO, Data.Models.Customer> countryBasedEntityManager)
+    ICountryBasedEntityManager countryBasedEntityManager)
     : IRequestHandler<CreateCustomerRequest, ErrorOr<CustomerDTO>>
 {
     public async Task<ErrorOr<CustomerDTO>> Handle(CreateCustomerRequest request, CancellationToken cancellationToken)
     {
-        var customer = await countryBasedEntityManager.GenerateEntityAsync(request.CreateCustomerDTO, cancellationToken);
+        var customer = await countryBasedEntityManager.GenerateEntityAsync<CreateCustomerDTO, Data.Models.Customer>(request.CreateCustomerDTO, cancellationToken);
 
         await customerRepository.AddAsync(customer, cancellationToken);
         return mapper.Map<CustomerDTO>(customer);

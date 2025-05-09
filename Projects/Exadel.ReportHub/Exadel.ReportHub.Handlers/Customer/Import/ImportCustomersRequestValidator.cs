@@ -9,8 +9,8 @@ public class ImportCustomersRequestValidator : AbstractValidator<ImportCustomers
 
     public ImportCustomersRequestValidator(IValidator<ImportDTO> importDtoValidator)
     {
-        ConfigureRules();
         _importDtoValidator = importDtoValidator;
+        ConfigureRules();
     }
 
     private void ConfigureRules()
@@ -18,7 +18,7 @@ public class ImportCustomersRequestValidator : AbstractValidator<ImportCustomers
         RuleFor(x => x.ImportDTO)
             .SetValidator(_importDtoValidator);
         RuleFor(x => x.ImportDTO.File.FileName)
-            .Must(fileName => string.Equals(Path.GetExtension(fileName), ".xlsx", StringComparison.OrdinalIgnoreCase))
+            .Must(fileName => string.Equals(Path.GetExtension(fileName), Constants.File.Extension.Excel, StringComparison.OrdinalIgnoreCase))
             .WithMessage(Constants.Validation.Import.InvalidFileExtension);
     }
 }

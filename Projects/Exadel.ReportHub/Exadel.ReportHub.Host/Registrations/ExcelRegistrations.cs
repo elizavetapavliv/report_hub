@@ -9,7 +9,7 @@ public static class ExcelRegistrations
 {
     public static IServiceCollection AddExcel(this IServiceCollection services)
     {
-        services.AddSingleton<IExcelProcessor, ExcelProcessor>();
+        services.AddSingleton<IExcelImporter, ExcelImporter>();
 
         return services;
     }

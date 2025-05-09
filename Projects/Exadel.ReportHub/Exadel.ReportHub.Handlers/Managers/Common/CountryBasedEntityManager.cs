@@ -6,20 +6,22 @@ using Exadel.ReportHub.SDK.DTOs.Client;
 
 namespace Exadel.ReportHub.Handlers.Managers.Common;
 
-public class CountryBasedEntityManager<TDto, TEntity>(
+public class CountryBasedEntityManager(
     IMapper mapper,
-    ICountryRepository countryRepository) : ICountryBasedEntityManager<TDto, TEntity>
-    where TDto : new()
-    where TEntity : IDocument, ICountryBasedDocument
+    ICountryRepository countryRepository) : ICountryBasedEntityManager
 {
-    public async Task<TEntity> GenerateEntityAsync(TDto entityDto, CancellationToken cancellationToken)
+    public async Task<TEntity> GenerateEntityAsync<TDto, TEntity>(TDto entityDto, CancellationToken cancellationToken)
+        where TDto : new()
+        where TEntity : IDocument, ICountryBasedDocument
     {
-        var entity = (await GenerateEntitiesAsync([entityDto], cancellationToken)).Single();
+        var entity = (await GenerateEntitiesAsync<TDto, TEntity>([entityDto], cancellationToken)).Single();
 
         return entity;
     }
 
-    public async Task<IList<TEntity>> GenerateEntitiesAsync(IEnumerable<TDto> entityDtos, CancellationToken cancellationToken)
+    public async Task<IList<TEntity>> GenerateEntitiesAsync<TDto, TEntity>(IEnumerable<TDto> entityDtos, CancellationToken cancellationToken)
+        where TDto : new()
+        where TEntity : IDocument, ICountryBasedDocument
     {
         var entities = mapper.Map<IList<TEntity>>(entityDtos);
 
@@ -30,7 +32,7 @@ public class CountryBasedEntityManager<TDto, TEntity>(
 
         foreach (var entity in entities)
         {
-            countries.TryGetValue(entity.CountryId, out var country);
+            var country = countries[entity.CountryId];
 
             entity.Country = country.Name;
             entity.CurrencyId = country.CurrencyId;
