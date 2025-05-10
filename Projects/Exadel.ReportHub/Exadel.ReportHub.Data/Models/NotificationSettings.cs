@@ -12,9 +12,11 @@ public class NotificationSettings
 
     public int Hour { get; set; }
 
+    public Guid ClientId { get; set; }
+
     public ExportFormat ExportFormat { get; set; }
 
-    public DateTime? ReportStartDate { get; set; }
+    public ReportPeriod ReportPeriod { get; set; }
 
-    public DateTime? ReportEndDate { get; set; }
+    public int? DaysCount { get; set; }
 }

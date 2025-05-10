@@ -6,7 +6,7 @@ using Exadel.ReportHub.Handlers.User.GetById;
 using Exadel.ReportHub.Handlers.User.GetProfile;
 using Exadel.ReportHub.Handlers.User.UpdateActivity;
 using Exadel.ReportHub.Handlers.User.UpdateName;
-using Exadel.ReportHub.Handlers.User.UpdateNotificationFrequency;
+using Exadel.ReportHub.Handlers.User.UpdateNotificationSettings;
 using Exadel.ReportHub.Handlers.User.UpdatePassword;
 using Exadel.ReportHub.Host.Infrastructure.Models;
 using Exadel.ReportHub.Host.Services.Abstract;
