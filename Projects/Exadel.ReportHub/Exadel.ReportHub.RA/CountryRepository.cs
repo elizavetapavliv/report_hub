@@ -27,6 +27,7 @@ public class CountryRepository(MongoDbContext context) : BaseRepository(context)
     {
         var filter = _filterBuilder.Eq(x => x.CountryCode, countryCode);
         var count = await GetCollection<Country>().Find(filter).CountDocumentsAsync(cancellationToken);
+
         return count > 0;
     }
 }

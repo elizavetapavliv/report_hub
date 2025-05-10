@@ -28,12 +28,14 @@ public class ClientRepository(MongoDbContext context) : BaseRepository(context),
     public Task<IList<Client>> GetAsync(CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.Eq(x => x.IsDeleted, false);
+
         return GetAsync(filter, cancellationToken);
     }
 
     public async Task<string> GetCurrencyAsync(Guid id, CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.Eq(x => x.Id, id);
+
         return await GetCollection<Client>().Find(filter).Project(x => x.CurrencyCode).SingleOrDefaultAsync(cancellationToken);
     }
 
@@ -45,6 +47,7 @@ public class ClientRepository(MongoDbContext context) : BaseRepository(context),
     public Task UpdateNameAsync(Guid id, string name, CancellationToken cancellationToken)
     {
         var update = Builders<Client>.Update.Set(x => x.Name, name);
+
         return UpdateAsync(id, update, cancellationToken);
     }
 
@@ -57,6 +60,7 @@ public class ClientRepository(MongoDbContext context) : BaseRepository(context),
     {
         var filter = _filterBuilder.Eq(x => x.Name, name);
         var count = await GetCollection<Client>().Find(filter).CountDocumentsAsync(cancellationToken);
+
         return count > 0;
     }
 }

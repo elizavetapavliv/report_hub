@@ -20,6 +20,7 @@ public class CustomerRepository(MongoDbContext context) : BaseRepository(context
     {
         var filter = _filterBuilder.Eq(x => x.Email, email);
         var count = await GetCollection<Customer>().Find(filter).CountDocumentsAsync(cancellationToken);
+
         return count > 0;
     }
 
@@ -30,6 +31,7 @@ public class CustomerRepository(MongoDbContext context) : BaseRepository(context
             _filterBuilder.Eq(x => x.ClientId, clientId),
             _filterBuilder.Eq(x => x.IsDeleted, false));
         var count = await GetCollection<Customer>().CountDocumentsAsync(filter, cancellationToken: cancellationToken);
+
         return count > 0;
     }
 
@@ -38,6 +40,7 @@ public class CustomerRepository(MongoDbContext context) : BaseRepository(context
         var filter = _filterBuilder.And(
             _filterBuilder.Eq(x => x.ClientId, clientId),
             _filterBuilder.Eq(x => x.IsDeleted, false));
+
         return GetAsync(filter, cancellationToken);
     }
 
@@ -49,6 +52,7 @@ public class CustomerRepository(MongoDbContext context) : BaseRepository(context
     public async Task<Guid> GetClientIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.Eq(x => x.Id, id);
+
         return await GetCollection<Customer>().Find(filter).Project(x => x.ClientId).SingleOrDefaultAsync(cancellationToken);
     }
 
