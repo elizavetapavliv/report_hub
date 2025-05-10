@@ -12,6 +12,7 @@ public static class ManagerRegistrations
     {
         services.AddSingleton<IInvoiceManager, InvoiceManager>();
         services.AddSingleton<IAuditManager, AuditManager>();
+        services.AddSingleton<IReportManager, ReportManager>();
 
         return services;
     }

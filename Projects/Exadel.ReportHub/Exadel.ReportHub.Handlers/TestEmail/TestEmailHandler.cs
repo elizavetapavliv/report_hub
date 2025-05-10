@@ -52,12 +52,11 @@ public class TestEmailHandler(
             var reportEmail = new ReportEmailModel
             {
                 UserName = user.FullName,
-                StartDate = DateTime.Now.Date.ToString("dd.MM.yyyy"),
-                EndDate = DateTime.Now.Date.AddDays(2).ToString("dd.MM.yyyy"),
+                Period = $"{DateTime.Now.Date:dd.MM.yyyy} to {DateTime.Now.Date.AddDays(2):dd.MM.yyyy}",
                 IsSuccess = true
             };
 
-            await emailSender.SendAsync(request.Email, request.Subject, attachment, "Report.html", reportEmail, cancellationToken);
+            await emailSender.SendAsync(request.Email, request.Subject, [attachment], "Report.html", reportEmail, cancellationToken);
             return new TestEmailResult { IsSent = true };
         }
         catch
