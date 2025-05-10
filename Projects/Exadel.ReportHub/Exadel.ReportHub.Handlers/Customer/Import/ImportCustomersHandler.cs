@@ -22,13 +22,7 @@ public class ImportCustomersHandler(
     {
         using var stream = request.ImportDTO.File.OpenReadStream();
 
-        var customerDtos = excelImporter.ReadFromExcel(stream, x => new CreateCustomerDTO
-        {
-            Name = x[0].StringValue,
-            CountryId = Guid.Parse(x[1].StringValue),
-            Email = x[2].StringValue,
-            ClientId = Guid.Parse(x[3].StringValue),
-        });
+        var customerDtos = excelImporter.Read<CreateCustomerDTO>(stream);
 
         var tasks = customerDtos.Select(dto => createCustomerValidator.ValidateAsync(dto, cancellationToken));
         var validationResults = await Task.WhenAll(tasks);

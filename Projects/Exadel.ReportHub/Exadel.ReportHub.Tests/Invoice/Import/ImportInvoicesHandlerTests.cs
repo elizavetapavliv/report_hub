@@ -48,7 +48,7 @@ public class ImportInvoicesHandlerTests : BaseTestFixture
         using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes("CSV content"));
 
         _csvProcessorMock
-            .Setup(x => x.ReadInvoices<CreateInvoiceDTO>(It.Is<Stream>(str => str.Length == memoryStream.Length)))
+            .Setup(x => x.Read<CreateInvoiceDTO>(It.Is<Stream>(str => str.Length == memoryStream.Length)))
             .Returns(invoiceDtos);
 
         _invoiceManagerMock
@@ -146,7 +146,7 @@ public class ImportInvoicesHandlerTests : BaseTestFixture
             .ReturnsAsync(new ValidationResult(errorsInvoice));
 
         _csvProcessorMock
-            .Setup(x => x.ReadInvoices<CreateInvoiceDTO>(It.Is<Stream>(str => str.Length == memoryStream.Length)))
+            .Setup(x => x.Read<CreateInvoiceDTO>(It.Is<Stream>(str => str.Length == memoryStream.Length)))
             .Returns(invoiceDtos);
 
         var importDto = new ImportDTO
@@ -207,7 +207,7 @@ public class ImportInvoicesHandlerTests : BaseTestFixture
             .ReturnsAsync(new ValidationResult(errorsInvoice));
 
         _csvProcessorMock
-            .Setup(x => x.ReadInvoices<CreateInvoiceDTO>(It.Is<Stream>(str => str.Length == memoryStream.Length)))
+            .Setup(x => x.Read<CreateInvoiceDTO>(It.Is<Stream>(str => str.Length == memoryStream.Length)))
             .Returns(invoiceDtos);
 
         var importDto = new ImportDTO
