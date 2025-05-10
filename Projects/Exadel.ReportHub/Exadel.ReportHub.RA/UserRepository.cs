@@ -59,7 +59,7 @@ public class UserRepository(MongoDbContext context) : BaseRepository(context), I
     {
         var filter = _filterBuilder.And(
             _filterBuilder.Eq(x => x.Email, email),
-            _filterBuilder.Eq(x => x.IsActive, true);
+            _filterBuilder.Eq(x => x.IsActive, true));
         return await GetCollection<User>().Find(filter).SingleOrDefaultAsync(cancellationToken);
     }
 
