@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Reflection;
+﻿using System.Reflection;
 using Aspose.Cells;
 using Exadel.ReportHub.Excel.Abstract;
 
@@ -7,7 +6,7 @@ namespace Exadel.ReportHub.Excel;
 
 public class ExcelImporter : IExcelImporter
 {
-    public IList<TDto> Read<TDto>(Stream excelStream)
+    public IEnumerable<TDto> Read<TDto>(Stream excelStream)
          where TDto : new()
     {
         using var workbook = new Workbook(excelStream);
@@ -22,45 +21,47 @@ public class ExcelImporter : IExcelImporter
 
     private IDictionary<string, int> GetHeader(Cells cells)
     {
-        var headerMap = new Dictionary<string, int>();
-        for (int column = 0; column <= cells.MaxDataColumn; column++)
-        {
-            var header = cells[0, column].StringValue?.Trim();
-            if (!string.IsNullOrWhiteSpace(header) && !headerMap.ContainsKey(header))
+        var header = Enumerable
+            .Range(0, cells.MaxDataColumn + 1)
+            .Select(column =>
             {
-                headerMap[header] = column;
-            }
-        }
+                var header = cells[0, column].StringValue?.Trim();
+                return new { header, column };
+            })
+            .Where(x => !string.IsNullOrWhiteSpace(x.header))
+            .GroupBy(x => x.header)
+            .Where(x => x.Count() == 1)
+            .ToDictionary(x => x.Key, x => x.First().column);
 
-        return headerMap;
+        return header;
     }
 
-    private IList<TDto> ExtractRows<TDto>(Cells cells, IDictionary<string, int> headerMap, PropertyInfo[] properties)
+    private IEnumerable<TDto> ExtractRows<TDto>(Cells cells, IDictionary<string, int> headerMap, PropertyInfo[] properties)
         where TDto : new()
     {
-        var items = new List<TDto>();
-
-        for (int row = 1; row <= cells.MaxDataRow; row++)
-        {
-            var dto = new TDto();
-            PopulateDto(cells, row, dto, headerMap, properties);
-            items.Add(dto);
-        }
+        var items = Enumerable
+            .Range(1, cells.MaxDataRow)
+            .Select(rowIndex =>
+            {
+                var dto = new TDto();
+                var row = cells.Rows[rowIndex];
+                PopulateDto(row, dto, headerMap, properties);
+                return dto;
+            });
 
         return items;
     }
 
-    private void PopulateDto<TDto>(Cells cells, int row, TDto dto, IDictionary<string, int> headerMap, PropertyInfo[] properties)
+    private void PopulateDto<TDto>(Row row, TDto dto, IDictionary<string, int> headerMap, PropertyInfo[] properties)
     {
         foreach (var property in properties)
         {
-            if (!headerMap.ContainsKey(property.Name))
+            if (!headerMap.TryGetValue(property.Name, out var columnIndex))
             {
                 continue;
             }
 
-            var columnIndex = headerMap[property.Name];
-            var cell = cells[row, columnIndex];
+            var cell = row[columnIndex];
             if (cell?.Value == null)
             {
                 continue;

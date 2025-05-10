@@ -20,7 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Exadel.ReportHub.SDK\Exadel.ReportHub.SDK.csproj" />
     <ProjectReference Include="..\Exadel.ReportHub.Export.Abstract\Exadel.ReportHub.Export.Abstract.csproj" />
   </ItemGroup>
 
