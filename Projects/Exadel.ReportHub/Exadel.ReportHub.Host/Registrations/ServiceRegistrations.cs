@@ -9,8 +9,8 @@ public static class ServiceRegistrations
 {
     public static IServiceCollection AddServices(this IServiceCollection services)
     {
-        services.AddScoped<IInvoiceService, InvoicesService>();
-        services.AddScoped<IReportService, ReportsService>();
+        services.AddTransient<IInvoiceService, InvoicesService>();
+        services.AddTransient<IReportService, ReportsService>();
 
         return services;
     }
