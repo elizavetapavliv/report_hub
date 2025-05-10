@@ -6,7 +6,7 @@ namespace Exadel.ReportHub.Excel;
 
 public class ExcelImporter : IExcelImporter
 {
-    public IEnumerable<TDto> Read<TDto>(Stream excelStream)
+    public IList<TDto> Read<TDto>(Stream excelStream)
          where TDto : new()
     {
         using var workbook = new Workbook(excelStream);
@@ -26,17 +26,16 @@ public class ExcelImporter : IExcelImporter
             .Select(column =>
             {
                 var header = cells[0, column].StringValue?.Trim();
-                return new { header, column };
+                return (Header: header, Column: column );
             })
-            .Where(x => !string.IsNullOrWhiteSpace(x.header))
-            .GroupBy(x => x.header)
-            .Where(x => x.Count() == 1)
-            .ToDictionary(x => x.Key, x => x.First().column);
+            .Where(x => !string.IsNullOrWhiteSpace(x.Header))
+            .DistinctBy(x => x.Header)
+            .ToDictionary(x => x.Header, x => x.Column);
 
         return header;
     }
 
-    private IEnumerable<TDto> ExtractRows<TDto>(Cells cells, IDictionary<string, int> headerMap, PropertyInfo[] properties)
+    private IList<TDto> ExtractRows<TDto>(Cells cells, IDictionary<string, int> headerMap, PropertyInfo[] properties)
         where TDto : new()
     {
         var items = Enumerable
@@ -47,7 +46,7 @@ public class ExcelImporter : IExcelImporter
                 var row = cells.Rows[rowIndex];
                 PopulateDto(row, dto, headerMap, properties);
                 return dto;
-            });
+            }).ToList();
 
         return items;
     }
@@ -62,7 +61,7 @@ public class ExcelImporter : IExcelImporter
             }
 
             var cell = row[columnIndex];
-            if (cell?.Value == null)
+            if (cell.Value == null)
             {
                 continue;
             }
