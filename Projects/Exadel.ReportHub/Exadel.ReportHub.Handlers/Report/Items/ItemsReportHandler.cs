@@ -1,7 +1,5 @@
-﻿using System.Globalization;
-using ErrorOr;
+﻿using ErrorOr;
 using Exadel.ReportHub.Export.Abstract;
-using Exadel.ReportHub.Export.Abstract.Helpers;
 using Exadel.ReportHub.Handlers.Managers;
 using Exadel.ReportHub.SDK.DTOs.Report;
 using MediatR;
@@ -14,14 +12,6 @@ public class ItemsReportHandler(IReportManager reportManager) : IRequestHandler<
 {
     public async Task<ErrorOr<ExportResult>> Handle(ItemsReportRequest request, CancellationToken cancellationToken)
     {
-        var stream = await reportManager.GenerateItemsReportAsync(request.ExportReportDto, cancellationToken);
-
-        return new ExportResult
-        {
-            Stream = stream,
-            FileName = $"ItemsReport_{DateTime.Today.ToString(Export.Abstract.Constants.Format.Date, CultureInfo.InvariantCulture)}" +
-                $"{ExportFormatHelper.GetFileExtension(request.ExportReportDto.Format)}",
-            ContentType = ExportFormatHelper.GetContentType(request.ExportReportDto.Format)
-        };
+        return await reportManager.GenerateItemsReportAsync(request.ExportReportDto, cancellationToken);
     }
 }

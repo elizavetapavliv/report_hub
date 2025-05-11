@@ -1,4 +1,6 @@
-﻿using Exadel.ReportHub.Export.Abstract;
+﻿using System.Globalization;
+using Exadel.ReportHub.Export.Abstract;
+using Exadel.ReportHub.Export.Abstract.Helpers;
 using Exadel.ReportHub.Export.Abstract.Models;
 using Exadel.ReportHub.RA.Abstract;
 using Exadel.ReportHub.SDK.DTOs.Report;
@@ -8,7 +10,7 @@ namespace Exadel.ReportHub.Handlers.Managers;
 public class ReportManager(IInvoiceRepository invoiceRepository, IItemRepository itemRepository, IPlanRepository planRepository,
     IClientRepository clientRepository, IExportStrategyFactory exportStrategyFactory) : IReportManager
 {
-    public async Task<Stream> GenerateInvoicesReportAsync(ExportReportDTO exportReportDto, CancellationToken cancellationToken)
+    public async Task<ExportResult> GenerateInvoicesReportAsync(ExportReportDTO exportReportDto, CancellationToken cancellationToken)
     {
         var exportStrategyTask = exportStrategyFactory.GetStrategyAsync(exportReportDto.Format, cancellationToken);
         var reportTask = invoiceRepository.GetReportAsync(exportReportDto.ClientId,
@@ -21,10 +23,18 @@ public class ReportManager(IInvoiceRepository invoiceRepository, IItemRepository
         report.ClientCurrency = clientCurrencyTask.Result;
         report.ReportDate = DateTime.UtcNow;
 
-        return await exportStrategyTask.Result.ExportAsync(report, cancellationToken);
+        var stream = await exportStrategyTask.Result.ExportAsync(report, cancellationToken);
+
+        return new ExportResult
+        {
+            Stream = stream,
+            FileName = $"InvoicesReport_{DateTime.Today.ToString(Export.Abstract.Constants.Format.Date, CultureInfo.InvariantCulture)}" +
+                       $"{ExportFormatHelper.GetFileExtension(exportReportDto.Format)}",
+            ContentType = ExportFormatHelper.GetContentType(exportReportDto.Format)
+        };
     }
 
-    public async Task<Stream> GenerateItemsReportAsync(ExportReportDTO exportReportDto, CancellationToken cancellationToken)
+    public async Task<ExportResult> GenerateItemsReportAsync(ExportReportDTO exportReportDto, CancellationToken cancellationToken)
     {
         var exportStrategyTask = exportStrategyFactory.GetStrategyAsync(exportReportDto.Format, cancellationToken);
 
@@ -46,10 +56,18 @@ public class ReportManager(IInvoiceRepository invoiceRepository, IItemRepository
             ReportDate = DateTime.UtcNow
         };
 
-        return await exportStrategyTask.Result.ExportAsync(report, cancellationToken);
+        var stream = await exportStrategyTask.Result.ExportAsync(report, cancellationToken);
+
+        return new ExportResult
+        {
+            Stream = stream,
+            FileName = $"ItemsReport_{DateTime.Today.ToString(Export.Abstract.Constants.Format.Date, CultureInfo.InvariantCulture)}" +
+                       $"{ExportFormatHelper.GetFileExtension(exportReportDto.Format)}",
+            ContentType = ExportFormatHelper.GetContentType(exportReportDto.Format)
+        };
     }
 
-    public async Task<Stream> GeneratePlansReportAsync(ExportReportDTO exportReportDto, CancellationToken cancellationToken)
+    public async Task<ExportResult> GeneratePlansReportAsync(ExportReportDTO exportReportDto, CancellationToken cancellationToken)
     {
         var exportStrategyTask = exportStrategyFactory.GetStrategyAsync(exportReportDto.Format, cancellationToken);
         var plansTask = planRepository.GetByClientIdAsync(exportReportDto.ClientId,
@@ -78,6 +96,14 @@ public class ReportManager(IInvoiceRepository invoiceRepository, IItemRepository
             }).ToList();
         }
 
-        return await exportStrategyTask.Result.ExportAsync(reports, cancellationToken);
+        var stream = await exportStrategyTask.Result.ExportAsync(reports, cancellationToken);
+
+        return new ExportResult
+        {
+            Stream = stream,
+            FileName = $"PlansReport_{DateTime.Today.ToString(Export.Abstract.Constants.Format.Date, CultureInfo.InvariantCulture)}" +
+                       $"{ExportFormatHelper.GetFileExtension(exportReportDto.Format)}",
+            ContentType = ExportFormatHelper.GetContentType(exportReportDto.Format)
+        };
     }
 }

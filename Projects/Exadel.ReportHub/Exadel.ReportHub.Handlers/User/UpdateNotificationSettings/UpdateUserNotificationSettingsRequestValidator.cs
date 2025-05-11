@@ -35,10 +35,6 @@ public class UpdateUserNotificationSettingsRequestValidator : AbstractValidator<
                     child.RuleFor(x => x.DayOfMonth)
                         .Null()
                         .WithMessage(Constants.Validation.NotificationSettings.ShouldNotBeSet);
-
-                    child.RuleFor(x => x.ReportPeriod)
-                        .Must(period => period is not(ReportPeriod.LastMonth or ReportPeriod.LastWeek))
-                        .WithMessage(Constants.Validation.NotificationSettings.InvalidPeriod);
                 });
 
                 child.When(x => x.Frequency == NotificationFrequency.Weekly, () =>
@@ -52,10 +48,6 @@ public class UpdateUserNotificationSettingsRequestValidator : AbstractValidator<
                     child.RuleFor(x => x.DayOfMonth)
                         .Null()
                         .WithMessage(Constants.Validation.NotificationSettings.ShouldNotBeSet);
-
-                    child.RuleFor(x => x.ReportPeriod)
-                        .Must(period => period is not ReportPeriod.LastMonth)
-                        .WithMessage(Constants.Validation.NotificationSettings.InvalidPeriod);
                 });
 
                 child.When(x => x.Frequency == NotificationFrequency.Monthly, () =>
@@ -71,11 +63,11 @@ public class UpdateUserNotificationSettingsRequestValidator : AbstractValidator<
                         .WithMessage(Constants.Validation.NotificationSettings.MonthDayRange);
 
                     child.RuleFor(x => x.ReportPeriod)
-                        .Must(period => period is not(ReportPeriod.LastWeek or ReportPeriod.Week))
+                        .Must(period => period is not ReportPeriod.Week)
                         .WithMessage(Constants.Validation.NotificationSettings.InvalidPeriod);
                 });
 
-                child.When(x => x.ReportPeriod is ReportPeriod.CustomPeriod, () =>
+                child.When(x => x.ReportPeriod is ReportPeriod.Custom, () =>
                 {
                     child.RuleFor(x => x.DaysCount)
                         .NotNull()

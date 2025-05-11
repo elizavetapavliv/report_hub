@@ -131,7 +131,7 @@ public static class Constants
             public const string InvalidPeriod = "Invalid period for the selected frequency.";
             public const string ShouldNotBeSet = "This field should not be set for the selected notification settings.";
             public const string ShouldBeSet = "This field is required for the selected notification settings.";
-            public const string ZeroDaysCount = "Must be set atleast 1 day.";
+            public const string ZeroDaysCount = "Must be set at least 1 day.";
         }
     }
 

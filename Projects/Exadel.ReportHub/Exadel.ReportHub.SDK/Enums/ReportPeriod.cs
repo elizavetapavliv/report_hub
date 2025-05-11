@@ -2,10 +2,8 @@
 
 public enum ReportPeriod
 {
-    WholePeriod,
-    LastMonth,
+    Whole,
     Month,
-    LastWeek,
     Week,
-    CustomPeriod
+    Custom
 }

@@ -1,8 +1,6 @@
-﻿using System.Globalization;
-using System.Net.Mail;
+﻿using System.Net.Mail;
 using Exadel.ReportHub.Email.Abstract;
 using Exadel.ReportHub.Email.Models;
-using Exadel.ReportHub.Export.Abstract.Helpers;
 using Exadel.ReportHub.Handlers.Managers;
 using Exadel.ReportHub.RA.Abstract;
 using Exadel.ReportHub.SDK.DTOs.Report;
@@ -14,13 +12,14 @@ namespace Exadel.ReportHub.Handlers.Report.Send;
 
 public record SendReportsRequest : IRequest<Unit>;
 
-public class SendReportsHandler(IReportManager reportManager, IUserRepository userRepository, IEmailSender emailSender, ILogger<SendReportsHandler> logger)
+public class SendReportsHandler(IReportManager reportManager, IUserRepository userRepository, IClientRepository clientRepository, IEmailSender emailSender, ILogger<SendReportsHandler> logger)
     : IRequestHandler<SendReportsRequest, Unit>
 {
     public async Task<Unit> Handle(SendReportsRequest request, CancellationToken cancellationToken)
     {
         const int daysInWeek = 7;
-        const int sundayOfWeek = 7;
+        const string subject = "Report";
+
         var now = DateTime.UtcNow;
         var currentHour = now.Hour;
         var currentDay = now.Day;
@@ -32,14 +31,10 @@ public class SendReportsHandler(IReportManager reportManager, IUserRepository us
         {
             var (startDate, endDate) = user.NotificationSettings.ReportPeriod switch
             {
-                Data.Enums.ReportPeriod.WholePeriod => (null, null),
-                Data.Enums.ReportPeriod.LastMonth => (today.AddMonths(-1).AddDays(-today.Day + 1), today.AddDays(-today.Day)),
+                Data.Enums.ReportPeriod.Whole => (null, null),
                 Data.Enums.ReportPeriod.Month => (today.AddMonths(-1).AddDays(1), today),
-                Data.Enums.ReportPeriod.LastWeek => today.DayOfWeek is DayOfWeek.Sunday ?
-                    (today.AddDays(-(daysInWeek + sundayOfWeek - 1)), today.AddDays(-(sundayOfWeek - 1))) :
-                    (today.AddDays(-(daysInWeek + (int)today.DayOfWeek - 1)), today.AddDays(-((int)today.DayOfWeek - 1))),
                 Data.Enums.ReportPeriod.Week => (today.AddDays(-daysInWeek), today),
-                Data.Enums.ReportPeriod.CustomPeriod => (today.AddDays(-(user.NotificationSettings.DaysCount!.Value - 1)), today),
+                Data.Enums.ReportPeriod.Custom => (today.AddDays(-(user.NotificationSettings.DaysCount!.Value - 1)), today),
                 _ => ((DateTime?)null, (DateTime?)null)
             };
 
@@ -51,10 +46,13 @@ public class SendReportsHandler(IReportManager reportManager, IUserRepository us
                 EndDate = endDate
             };
 
-            var reportEmail = new ReportEmailModel
+            var clientName = await clientRepository.GetNameAsync(exportReportDto.ClientId, cancellationToken);
+
+            var reportEmail = new EmailReportData
             {
                 UserName = user.FullName,
-                Period = user.NotificationSettings.ReportPeriod is Data.Enums.ReportPeriod.WholePeriod ?
+                ClientName = clientName,
+                Period = user.NotificationSettings.ReportPeriod is Data.Enums.ReportPeriod.Whole ?
                     "whole period" :
                     $"{FormatDate(exportReportDto.StartDate.Value)} to {FormatDate(exportReportDto.EndDate.Value)}"
             };
@@ -62,20 +60,14 @@ public class SendReportsHandler(IReportManager reportManager, IUserRepository us
             var attachments = new List<Attachment>();
             try
             {
-                var invoicesStreamTask = reportManager.GenerateInvoicesReportAsync(exportReportDto, cancellationToken);
-                var itemsStreamTask = reportManager.GenerateItemsReportAsync(exportReportDto, cancellationToken);
-                var plansStreamTask = reportManager.GeneratePlansReportAsync(exportReportDto, cancellationToken);
+                var invoicesReportTask = reportManager.GenerateInvoicesReportAsync(exportReportDto, cancellationToken);
+                var itemsReportTask = reportManager.GenerateItemsReportAsync(exportReportDto, cancellationToken);
+                var plansReportTask = reportManager.GeneratePlansReportAsync(exportReportDto, cancellationToken);
 
-                await Task.WhenAll(invoicesStreamTask, itemsStreamTask, plansStreamTask);
-                attachments.Add(new Attachment(invoicesStreamTask.Result,
-                    $"InvoicesReport_{DateTime.Today.ToString(Export.Abstract.Constants.Format.Date, CultureInfo.InvariantCulture)}" +
-                    $"{ExportFormatHelper.GetFileExtension(exportReportDto.Format)}"));
-                attachments.Add(new Attachment(itemsStreamTask.Result,
-                    $"ItemsReport_{DateTime.Today.ToString(Export.Abstract.Constants.Format.Date, CultureInfo.InvariantCulture)}" +
-                    $"{ExportFormatHelper.GetFileExtension(exportReportDto.Format)}"));
-                attachments.Add(new Attachment(plansStreamTask.Result,
-                    $"PlansReport_{DateTime.Today.ToString(Export.Abstract.Constants.Format.Date, CultureInfo.InvariantCulture)}" +
-                    $"{ExportFormatHelper.GetFileExtension(exportReportDto.Format)}"));
+                await Task.WhenAll(invoicesReportTask, itemsReportTask, plansReportTask);
+                attachments.Add(new Attachment(invoicesReportTask.Result.Stream, invoicesReportTask.Result.FileName));
+                attachments.Add(new Attachment(itemsReportTask.Result.Stream, itemsReportTask.Result.FileName));
+                attachments.Add(new Attachment(plansReportTask.Result.Stream, plansReportTask.Result.FileName));
                 reportEmail.IsSuccess = true;
             }
             catch (Exception ex)
@@ -86,7 +78,7 @@ public class SendReportsHandler(IReportManager reportManager, IUserRepository us
 
             try
             {
-                await emailSender.SendAsync(user.Email, "Report", attachments, "Report.html", reportEmail, cancellationToken);
+                await emailSender.SendAsync(user.Email, subject, attachments, Email.Constants.ResourcePath.TemplateName, reportEmail, cancellationToken);
             }
             catch (Exception ex)
             {
