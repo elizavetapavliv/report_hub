@@ -26,7 +26,9 @@ public class CreateUserHandler(IUserRepository userRepository, IMapper mapper) :
             ExportFormat = ExportFormat.Excel,
             Hour = Constants.Validation.NotificationSettings.DefaultHourValue,
             Frequency = NotificationFrequency.Weekly,
-            DayOfWeek = DayOfWeek.Monday
+            DayOfWeek = DayOfWeek.Monday,
+            ReportPeriod = ReportPeriod.Week,
+            //ClientId = default accessible
         };
 
         await userRepository.AddAsync(user, cancellationToken);

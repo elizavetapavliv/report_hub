@@ -10,7 +10,9 @@ public class NotificationSettingsDTO
 
     public DayOfWeek? DayOfWeek { get; set; }
 
-    public int? Hour { get; set; }
+    public int Hour { get; set; }
+
+    public Guid ClientId { get; set; }
 
     public ExportFormat ExportFormat { get; set; }
 
