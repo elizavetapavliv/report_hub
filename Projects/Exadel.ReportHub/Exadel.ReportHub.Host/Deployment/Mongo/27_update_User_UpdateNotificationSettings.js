@@ -31,10 +31,10 @@ const updates = assignments.Map(assignment => {
     if (assignment.ClientInfo) {
         notificationSettings =
         {
-            ClientId = assignment.ClientInfo._id,
-            ClientName = assignment.ClientInfo.Name,
-            ReportPeriod = reportPeriod,
-            DaysCount = reportPeriod === "Custom" ? Math.floor(Math.random() * 60) + 1 : null
+            ClientId: assignment.ClientInfo._id,
+            ClientName: assignment.ClientInfo.Name,
+            ReportPeriod: reportPeriod,
+            DaysCount: reportPeriod === "Custom" ? Math.floor(Math.random() * 60) + 1 : null
         };
     }
 
