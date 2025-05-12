@@ -21,7 +21,7 @@ const assignments = db.UserAssignment.aggregate([
             ]
         }
     },
-    { $unwind: { path: "$ClientInfo", preserveNullAndEmptyArrays: true } }
+    { $unwind: "$ClientInfo" }
 ]).toArray();
 
 const updates = assignments.Map(assignment => {

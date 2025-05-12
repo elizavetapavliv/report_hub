@@ -31,9 +31,7 @@ public class UpdateUserNotificationSettingsRequestValidator : AbstractValidator<
                     .NotEmpty()
                     .MustAsync(_clientRepository.ExistsAsync)
                     .WithMessage(Constants.Validation.Client.DoesNotExist)
-                    .MustAsync(async (clientId, cancellationToken) =>
-                        Permissions.GetAllowedRoles(Common.Constants.Authorization.Resource.Reports, Permission.Export).Contains(
-                            await _userAssignmentRepository.GetUserRoleByClientIdAsync(_userProvider.GetUserId(), clientId, cancellationToken)))
+                    .MustAsync(HavePermissionAsync)
                     .WithMessage(Constants.Validation.NotificationSettings.NoPermissions);
 
                 child.RuleFor(x => x.Hour)
@@ -96,5 +94,13 @@ public class UpdateUserNotificationSettingsRequestValidator : AbstractValidator<
                 });
             })
             .When(x => x.UpdateNotificationSettingsDto is not null);
+    }
+
+    private async Task<bool> HavePermissionAsync(Guid clientId, CancellationToken cancellationToken)
+    {
+        var role = await _userAssignmentRepository.GetUserRoleByClientIdAsync(_userProvider.GetUserId(), clientId, cancellationToken);
+        var allowedRoles = Permissions.GetAllowedRoles(Common.Constants.Authorization.Resource.Reports, Permission.Export);
+
+        return role.HasValue && allowedRoles.Contains(role.Value);
     }
 }
