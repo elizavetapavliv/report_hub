@@ -1,7 +1,6 @@
 ﻿using AutoFixture;
 using Exadel.ReportHub.Handlers;
 using Exadel.ReportHub.Handlers.Validators;
-using Exadel.ReportHub.SDK.DTOs.Client;
 using Exadel.ReportHub.SDK.DTOs.Import;
 using Exadel.ReportHub.Tests.Abstracts;
 using FluentValidation.TestHelper;
@@ -10,6 +9,7 @@ using Moq;
 
 namespace Exadel.ReportHub.Tests.Validators;
 
+[TestFixture]
 public class ImportDtoValidatorTests : BaseTestFixture
 {
     private ImportDtoValidator _validator;

@@ -8,8 +8,9 @@ using FluentValidation.TestHelper;
 using Microsoft.AspNetCore.Http;
 using Moq;
 
-namespace Exadel.ReportHub.Tests;
+namespace Exadel.ReportHub.Tests.Customer.Import;
 
+[TestFixture]
 public class ImportCustomersRequestValidatorTests : BaseTestFixture
 {
     private ImportCustomersRequestValidator _validator;
