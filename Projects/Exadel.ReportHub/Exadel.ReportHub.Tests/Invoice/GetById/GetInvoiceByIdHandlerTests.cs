@@ -71,5 +71,4 @@ public class GetInvoiceByIdHandlerTests : BaseTestFixture
 
         _invoiceRepositoryMock.Verify(r => r.GetByIdAsync(id, clientId, CancellationToken.None), Times.Once);
     }
-
 }
