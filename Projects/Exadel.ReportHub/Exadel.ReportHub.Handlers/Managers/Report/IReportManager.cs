@@ -1,7 +1,7 @@
 ﻿using Exadel.ReportHub.Export.Abstract;
 using Exadel.ReportHub.SDK.DTOs.Report;
 
-namespace Exadel.ReportHub.Handlers.Managers;
+namespace Exadel.ReportHub.Handlers.Managers.Report;
 
 public interface IReportManager
 {

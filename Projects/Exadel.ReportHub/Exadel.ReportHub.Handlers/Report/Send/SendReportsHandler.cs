@@ -1,7 +1,7 @@
 ﻿using System.Net.Mail;
 using Exadel.ReportHub.Email.Abstract;
 using Exadel.ReportHub.Email.Models;
-using Exadel.ReportHub.Handlers.Managers;
+using Exadel.ReportHub.Handlers.Managers.Report;
 using Exadel.ReportHub.RA.Abstract;
 using Exadel.ReportHub.SDK.DTOs.Report;
 using Exadel.ReportHub.SDK.Enums;

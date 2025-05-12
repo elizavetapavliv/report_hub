@@ -1,6 +1,6 @@
 ﻿using ErrorOr;
 using Exadel.ReportHub.Export.Abstract;
-using Exadel.ReportHub.Handlers.Managers;
+using Exadel.ReportHub.Handlers.Managers.Report;
 using Exadel.ReportHub.SDK.DTOs.Report;
 using MediatR;
 

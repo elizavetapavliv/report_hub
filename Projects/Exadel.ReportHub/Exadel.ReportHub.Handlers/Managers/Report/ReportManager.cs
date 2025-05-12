@@ -5,7 +5,7 @@ using Exadel.ReportHub.Export.Abstract.Models;
 using Exadel.ReportHub.RA.Abstract;
 using Exadel.ReportHub.SDK.DTOs.Report;
 
-namespace Exadel.ReportHub.Handlers.Managers;
+namespace Exadel.ReportHub.Handlers.Managers.Report;
 
 public class ReportManager(IInvoiceRepository invoiceRepository, IItemRepository itemRepository, IPlanRepository planRepository,
     IClientRepository clientRepository, IExportStrategyFactory exportStrategyFactory) : IReportManager
