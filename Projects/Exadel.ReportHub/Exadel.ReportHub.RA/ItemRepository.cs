@@ -6,14 +6,9 @@ using MongoDB.Driver;
 namespace Exadel.ReportHub.RA;
 
 [ExcludeFromCodeCoverage]
-public class ItemRepository : BaseRepository, IItemRepository
+public class ItemRepository(MongoDbContext context) : BaseRepository(context), IItemRepository
 {
     private static readonly FilterDefinitionBuilder<Item> _filterBuilder = Builders<Item>.Filter;
-
-    public ItemRepository(MongoDbContext context)
-        : base(context)
-    {
-    }
 
     public Task AddAsync(Item item, CancellationToken cancellationToken)
     {
@@ -43,10 +38,9 @@ public class ItemRepository : BaseRepository, IItemRepository
         return GetByIdAsync<Item>(id, cancellationToken);
     }
 
-    public async Task<IList<Item>> GetByIdsAsync(IEnumerable<Guid> ids, CancellationToken cancellationToken)
+    public Task<IList<Item>> GetByIdsAsync(IEnumerable<Guid> ids, CancellationToken cancellationToken)
     {
-        var filter = _filterBuilder.In(x => x.Id, ids);
-        return await GetAsync(filter, cancellationToken);
+        return GetByIdsAsync<Item>(ids, cancellationToken);
     }
 
     public async Task<Guid?> GetClientIdAsync(Guid id, CancellationToken cancellationToken)
@@ -58,6 +52,13 @@ public class ItemRepository : BaseRepository, IItemRepository
     public Task SoftDeleteAsync(Guid id, CancellationToken cancellationToken)
     {
         return SoftDeleteAsync<Item>(id, cancellationToken);
+    }
+
+    public async Task<Dictionary<Guid, decimal>> GetClientItemPricesAsync(Guid clientId, CancellationToken cancellationToken)
+    {
+        var filter = _filterBuilder.Eq(x => x.ClientId, clientId);
+        var projections = await GetCollection<Item>().Find(filter).Project(x => new { x.Id, x.Price }).ToListAsync(cancellationToken);
+        return projections.ToDictionary(x => x.Id, x => x.Price);
     }
 
     public Task UpdateAsync(Item item, CancellationToken cancellationToken)

@@ -1,11 +1,10 @@
 ﻿const scriptName = "05_create_Client";
-const version = NumberInt(3);
+const version = NumberInt(6);
 
 if (db.MigrationHistory.findOne({ ScriptName: scriptName, Version: version })) {
     print(`${scriptName} v${version} is already applied`);
     quit();
 }
-
 
 db.createCollection("Client", {
     collation: {
@@ -41,6 +40,19 @@ const customerIds = [
     UUID("802c97bd-2828-42bd-a640-1114eed702e8"),
     UUID("f3e0620c-5bd5-44ba-9ce3-77a6ef5be83d"),
     UUID("1f59b609-adf5-4fd0-94f7-b9c74e6e9572"),
+]
+
+const bankAccountNumbers = [
+    "PL61109010140000071219812874",
+    "IT60X0542811101000000123456",
+    "FR1420041010050500013M02606",
+    "CZ6508000000192000145399",
+    "BG80BNBG96611020345678",
+    "DK5000400440116243",
+    "GB29NWBK60161331926819",
+    "RO72INGB8472K3L1N709824",
+    "SE4578900019823745612389",
+    "HU45123456789876543212345676"
 ]
 
 const clientNames = [
@@ -82,6 +94,7 @@ for (let i = 0; i < clientCount; i++) {
     clients.push({
         _id: clientIds[i],
         Name: clientNames[i],
+        BankAccountNumber: bankAccountNumbers[i],
         CustomerIds: randomCustomerIds(i),
         IsDeleted: false
     });

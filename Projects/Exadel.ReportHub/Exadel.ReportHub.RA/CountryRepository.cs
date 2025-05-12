@@ -1,14 +1,12 @@
 ﻿using Exadel.ReportHub.Data.Models;
 using Exadel.ReportHub.RA.Abstract;
+using MongoDB.Driver;
 
 namespace Exadel.ReportHub.RA;
 
-public class CountryRepository : BaseRepository, ICountryRepository
+public class CountryRepository(MongoDbContext context) : BaseRepository(context), ICountryRepository
 {
-    public CountryRepository(MongoDbContext context)
-        : base(context)
-    {
-    }
+    private static readonly FilterDefinitionBuilder<Country> _filterBuilder = Builders<Country>.Filter;
 
     public Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken)
     {
@@ -23,5 +21,17 @@ public class CountryRepository : BaseRepository, ICountryRepository
     public Task<Country> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return GetByIdAsync<Country>(id, cancellationToken);
+    }
+
+    public Task<IList<Country>> GetByIdsAsync(IEnumerable<Guid> ids, CancellationToken cancellationToken)
+    {
+        return GetByIdsAsync<Country>(ids, cancellationToken);
+    }
+
+    public async Task<bool> CountryCodeExistsAsync(string countryCode, CancellationToken cancellationToken)
+    {
+        var filter = _filterBuilder.Eq(x => x.CountryCode, countryCode);
+        var count = await GetCollection<Country>().Find(filter).CountDocumentsAsync(cancellationToken);
+        return count > 0;
     }
 }

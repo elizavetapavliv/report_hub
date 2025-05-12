@@ -30,27 +30,18 @@ public class InvoiceValidatorTests : BaseTestFixture
             updateInvoiceValidator.RuleFor(x => x.IssueDate)
                 .NotEmpty()
                 .LessThan(DateTime.UtcNow)
-                .WithMessage(Constants.Validation.Invoice.IssueDateErrorMessage);
+                .WithMessage(Constants.Validation.Invoice.IssueDateInFuture);
             updateInvoiceValidator.RuleFor(x => x.IssueDate.TimeOfDay)
                 .Equal(TimeSpan.Zero)
-                .WithMessage(Constants.Validation.Invoice.TimeComponentErrorMassage);
+                .WithMessage(Constants.Validation.Date.TimeComponentNotAllowed);
 
             updateInvoiceValidator.RuleFor(x => x.DueDate)
                 .NotEmpty()
                 .GreaterThan(x => x.IssueDate)
-                .WithMessage(Constants.Validation.Invoice.DueDateErrorMessage);
+                .WithMessage(Constants.Validation.Invoice.DueDateBeforeIssueDate);
             updateInvoiceValidator.RuleFor(x => x.DueDate.TimeOfDay)
                 .Equal(TimeSpan.Zero)
-                .WithMessage(Constants.Validation.Invoice.TimeComponentErrorMassage);
-
-            updateInvoiceValidator.RuleFor(x => x.PaymentStatus)
-                .IsInEnum();
-
-            updateInvoiceValidator.RuleFor(x => x.BankAccountNumber)
-                .NotEmpty()
-                .Length(Constants.Validation.Invoice.BankAccountNumberMinLength, Constants.Validation.Invoice.BankAccountNumberMaxLength)
-                .Matches(@"^[A-Z]{2}\d+$")
-                .WithMessage(Constants.Validation.Invoice.BankAccountNumberErrorMessage);
+                .WithMessage(Constants.Validation.Date.TimeComponentNotAllowed);
         });
 
         _invoiceRepositoryMock = new Mock<IInvoiceRepository>();
@@ -164,25 +155,6 @@ public class InvoiceValidatorTests : BaseTestFixture
     }
 
     [Test]
-    [TestCase("")]
-    [TestCase(null)]
-    public async Task ValidateAsync_BankAccountNumberIsNullOrEmpty_ErrorReturned(string value)
-    {
-        // Arrange
-        var invoice = GetValidInvoice();
-        invoice.BankAccountNumber = value;
-
-        // Act
-        var result = await _invoiceValidator.TestValidateAsync(invoice);
-
-        // Assert
-        Assert.That(result.IsValid, Is.False);
-        Assert.That(result.Errors.Count, Is.EqualTo(1));
-        Assert.That(result.Errors.Any(x => x.PropertyName == nameof(CreateInvoiceDTO.BankAccountNumber)), Is.True);
-        Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo("'Bank Account Number' must not be empty."));
-    }
-
-    [Test]
     public async Task ValidateAsync_ItemIdsIsEmpty_ErrorReturned()
     {
         // Arrange
@@ -217,7 +189,7 @@ public class InvoiceValidatorTests : BaseTestFixture
         Assert.That(result.IsValid, Is.False);
         Assert.That(result.Errors.Count, Is.EqualTo(1));
         Assert.That(result.Errors[0].PropertyName, Is.EqualTo(nameof(CreateInvoiceDTO.ClientId)));
-        Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo(Constants.Validation.Invoice.ClientDoesntExistsErrorMessage));
+        Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo(Constants.Validation.Client.DoesNotExist));
     }
 
     [Test]
@@ -227,7 +199,7 @@ public class InvoiceValidatorTests : BaseTestFixture
         var invoice = GetValidInvoice();
         var customerId = Guid.NewGuid();
         invoice.CustomerId = customerId;
-        _customerRepositoryMock.Setup(x => x.ExistsAsync(customerId, CancellationToken.None))
+        _customerRepositoryMock.Setup(x => x.ExistsAsync(customerId, invoice.ClientId, CancellationToken.None))
             .ReturnsAsync(false);
 
         // Act
@@ -237,7 +209,7 @@ public class InvoiceValidatorTests : BaseTestFixture
         Assert.That(result.IsValid, Is.False);
         Assert.That(result.Errors.Count, Is.EqualTo(1));
         Assert.That(result.Errors[0].PropertyName, Is.EqualTo(nameof(CreateInvoiceDTO.CustomerId)));
-        Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo(Constants.Validation.Invoice.CustomerDoesntExistsErrorMessage));
+        Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo(Constants.Validation.Customer.DoesNotExist));
     }
 
     [Test]
@@ -255,7 +227,7 @@ public class InvoiceValidatorTests : BaseTestFixture
         Assert.That(result.IsValid, Is.False);
         Assert.That(result.Errors.Count, Is.EqualTo(1));
         Assert.That(result.Errors[0].PropertyName, Is.EqualTo(nameof(CreateInvoiceDTO.ItemIds)));
-        Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo(Constants.Validation.Invoice.ItemDoesNotExistsErrorMessage));
+        Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo(Constants.Validation.Item.DoesNotExist));
     }
 
     // InvoiceNumber tests
@@ -274,7 +246,7 @@ public class InvoiceValidatorTests : BaseTestFixture
         Assert.That(result.Errors.Count, Is.EqualTo(1));
         Assert.That(result.Errors[0].PropertyName, Is.EqualTo(nameof(CreateInvoiceDTO.InvoiceNumber)));
         Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo($"The length of 'Invoice Number' must be " +
-            $"{Constants.Validation.Invoice.InvoiceMaximumNumberLength} characters or fewer. You entered {invoice.InvoiceNumber.Length} characters."));
+            $"{Constants.Validation.Invoice.InvoiceNumberMaxLength} characters or fewer. You entered {invoice.InvoiceNumber.Length} characters."));
     }
 
     [Test]
@@ -291,7 +263,7 @@ public class InvoiceValidatorTests : BaseTestFixture
         Assert.That(result.IsValid, Is.False);
         Assert.That(result.Errors.Count, Is.EqualTo(1));
         Assert.That(result.Errors[0].PropertyName, Is.EqualTo(nameof(CreateInvoiceDTO.InvoiceNumber)));
-        Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo(Constants.Validation.Invoice.InvoiceNumberErrorMessage));
+        Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo(Constants.Validation.Invoice.InvalidInvoiceNumberFormat));
     }
 
     [Test]
@@ -309,7 +281,7 @@ public class InvoiceValidatorTests : BaseTestFixture
         Assert.That(result.IsValid, Is.False);
         Assert.That(result.Errors.Count, Is.EqualTo(1));
         Assert.That(result.Errors[0].PropertyName, Is.EqualTo(nameof(CreateInvoiceDTO.InvoiceNumber)));
-        Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo(Constants.Validation.Invoice.InvoiceNumberExistsMessage));
+        Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo(Constants.Validation.Invoice.DuplicateInvoice));
     }
 
     // IssueDate and DueDate tests
@@ -327,7 +299,7 @@ public class InvoiceValidatorTests : BaseTestFixture
         Assert.That(result.IsValid, Is.False);
         Assert.That(result.Errors, Has.Count.EqualTo(1));
         Assert.That(result.Errors[0].PropertyName, Is.EqualTo(nameof(CreateInvoiceDTO.IssueDate)));
-        Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo(Constants.Validation.Invoice.IssueDateErrorMessage));
+        Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo(Constants.Validation.Invoice.IssueDateInFuture));
     }
 
     [Test]
@@ -345,63 +317,7 @@ public class InvoiceValidatorTests : BaseTestFixture
         Assert.That(result.IsValid, Is.False);
         Assert.That(result.Errors, Has.Count.EqualTo(1));
         Assert.That(result.Errors[0].PropertyName, Is.EqualTo(nameof(CreateInvoiceDTO.DueDate)));
-        Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo(Constants.Validation.Invoice.DueDateErrorMessage));
-    }
-
-    // BankAccountNumber tests
-    [Test]
-    public async Task ValidateAsync_BankAccountNumberIsNotNumericAndNotDash_ErrorReturned()
-    {
-        // Arrange
-        var invoice = GetValidInvoice();
-        invoice.BankAccountNumber = "234432423432432432";
-
-        // Act
-        var result = await _invoiceValidator.TestValidateAsync(invoice);
-
-        // Assert
-        Assert.That(result.IsValid, Is.False);
-        Assert.That(result.Errors, Has.Count.EqualTo(1));
-        Assert.That(result.Errors[0].PropertyName, Is.EqualTo(nameof(CreateInvoiceDTO.BankAccountNumber)));
-        Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo(Constants.Validation.Invoice.BankAccountNumberErrorMessage));
-    }
-
-    [Test]
-    [TestCase("2232323-322323-322323-234234233424-23423423")]
-    [TestCase("2332-23")]
-    public async Task ValidateAsync_BankAccountNumberNotCorrectLength_ErrorReturned(string bankAccountNumber)
-    {
-        // Arrange
-        var invoice = GetValidInvoice();
-        invoice.BankAccountNumber = bankAccountNumber;
-
-        // Act
-        var result = await _invoiceValidator.TestValidateAsync(invoice);
-
-        // Assert
-        Assert.That(result.IsValid, Is.False);
-        Assert.That(result.Errors, Has.Count.EqualTo(1));
-        Assert.That(result.Errors[0].PropertyName, Is.EqualTo(nameof(CreateInvoiceDTO.BankAccountNumber)));
-        Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo($"'Bank Account Number' must be between {Constants.Validation.Invoice.BankAccountNumberMinLength} and " +
-            $"{Constants.Validation.Invoice.BankAccountNumberMaxLength} characters. You entered {bankAccountNumber.Length} characters."));
-    }
-
-    // PaymentStatus tests
-    [Test]
-    public async Task ValidateAsync_PaymentStatusIsInvalid_ErrorReturned()
-    {
-        // Arrange
-        var invoice = GetValidInvoice();
-        invoice.PaymentStatus = (PaymentStatus)100;
-
-        // Act
-        var result = await _invoiceValidator.TestValidateAsync(invoice);
-
-        // Assert
-        Assert.That(result.IsValid, Is.False);
-        Assert.That(result.Errors, Has.Count.EqualTo(1));
-        Assert.That(result.Errors[0].PropertyName, Is.EqualTo(nameof(CreateInvoiceDTO.PaymentStatus)));
-        Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo($"'Payment Status' has a range of values which does not include '{(int)invoice.PaymentStatus}'."));
+        Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo(Constants.Validation.Invoice.DueDateBeforeIssueDate));
     }
 
     private CreateInvoiceDTO GetValidInvoice()
@@ -417,8 +333,10 @@ public class InvoiceValidatorTests : BaseTestFixture
 
         _clientRepositoryMock.Setup(x => x.ExistsAsync(clientId, CancellationToken.None))
             .ReturnsAsync(true);
-        _customerRepositoryMock.Setup(x => x.ExistsAsync(customerId, CancellationToken.None))
+        _customerRepositoryMock.Setup(x => x.ExistsAsync(customerId, clientId, CancellationToken.None))
             .ReturnsAsync(true);
+        _customerRepositoryMock.Setup(x => x.GetClientIdAsync(customerId, CancellationToken.None))
+            .ReturnsAsync(clientId);
         _invoiceRepositoryMock.Setup(x => x.ExistsAsync(invoiceNumber, CancellationToken.None))
             .ReturnsAsync(false);
         _itemRepositoryMock.Setup(x => x.AllExistAsync(itemIds, CancellationToken.None))
@@ -430,7 +348,6 @@ public class InvoiceValidatorTests : BaseTestFixture
                 .With(x => x.InvoiceNumber, invoiceNumber)
                 .With(x => x.IssueDate, DateTime.UtcNow.Date.AddDays(-5))
                 .With(x => x.DueDate, DateTime.UtcNow.Date.AddDays(30))
-                .With(x => x.BankAccountNumber, "GE359459402653871205990733")
                 .With(x => x.ItemIds, itemIds)
                 .Create();
     }

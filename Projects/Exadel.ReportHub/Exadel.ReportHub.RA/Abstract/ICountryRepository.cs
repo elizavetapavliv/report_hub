@@ -9,4 +9,8 @@ public interface ICountryRepository
     Task<IList<Country>> GetAllAsync(CancellationToken cancellationToken);
 
     Task<Country> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+
+    Task<IList<Country>> GetByIdsAsync(IEnumerable<Guid> ids, CancellationToken cancellationToken);
+
+    Task<bool> CountryCodeExistsAsync(string countryCode, CancellationToken cancellationToken);
 }

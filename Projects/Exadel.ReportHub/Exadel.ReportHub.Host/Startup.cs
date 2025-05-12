@@ -24,7 +24,6 @@ public class Startup(IConfiguration configuration)
             {
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
-
         services.AddSwaggerGen(c =>
         {
             const string apiVersion = "v1";
@@ -69,6 +68,7 @@ public class Startup(IConfiguration configuration)
                     new[] { Constants.Authorization.ScopeName }
                 }
             });
+            c.EnableAnnotations();
         });
 
         services.AddAuthentication(options =>
@@ -88,17 +88,21 @@ public class Startup(IConfiguration configuration)
         services
             .AddIdentity()
             .AddMongo()
+            .AddRepositories()
             .AddMediatR()
+            .AddServices()
             .AddAutoMapper(typeof(Startup))
             .AddHttpContextAccessor()
-            .AddCsv()
+            .AddImporters()
             .AddPdf()
+            .AddEmailSender(configuration)
             .AddExchangeRate(configuration)
             .AddPing(configuration)
             .AddScheduler()
             .AddJobs()
             .AddHangfire()
-            .AddManagers();
+            .AddManagers()
+            .AddExport();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)

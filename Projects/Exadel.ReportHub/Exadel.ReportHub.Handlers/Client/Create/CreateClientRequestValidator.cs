@@ -1,17 +1,15 @@
-﻿using Exadel.ReportHub.RA.Abstract;
+﻿using Exadel.ReportHub.SDK.DTOs.Client;
 using FluentValidation;
 
 namespace Exadel.ReportHub.Handlers.Client.Create;
 
 public class CreateClientRequestValidator : AbstractValidator<CreateClientRequest>
 {
-    private readonly IClientRepository _clientRepository;
-    private readonly IValidator<string> _stringValidator;
+    private readonly IValidator<CreateClientDTO> _createClientValidator;
 
-    public CreateClientRequestValidator(IClientRepository clientRepository, IValidator<string> stringValidator)
+    public CreateClientRequestValidator(IValidator<CreateClientDTO> createClientValidator)
     {
-        _clientRepository = clientRepository;
-        _stringValidator = stringValidator;
+        _createClientValidator = createClientValidator;
         ConfigureRules();
     }
 
@@ -19,18 +17,6 @@ public class CreateClientRequestValidator : AbstractValidator<CreateClientReques
     {
         RuleFor(x => x.CreateClientDto)
             .NotEmpty()
-            .ChildRules(child =>
-            {
-                child.RuleFor(x => x.Name)
-                    .SetValidator(_stringValidator, Constants.Validation.RuleSet.Names)
-                    .MustAsync(NameMustNotExistsAsync)
-                    .WithMessage(Constants.Validation.Client.NameTakenMessage);
-            });
-    }
-
-    private async Task<bool> NameMustNotExistsAsync(string name, CancellationToken cancellationToken)
-    {
-        var nameExists = await _clientRepository.NameExistsAsync(name, cancellationToken);
-        return !nameExists;
+            .SetValidator(_createClientValidator);
     }
 }

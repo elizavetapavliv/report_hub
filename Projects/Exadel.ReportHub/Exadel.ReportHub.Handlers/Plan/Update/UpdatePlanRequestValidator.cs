@@ -9,25 +9,25 @@ public class UpdatePlanRequestValidator : AbstractValidator<UpdatePlanRequest>
         ConfigureRules();
     }
 
-    public void ConfigureRules()
+    private void ConfigureRules()
     {
         RuleFor(x => x.UpdatePlanDatedto)
             .ChildRules(child =>
             {
                 child.RuleLevelCascadeMode = CascadeMode.Stop;
 
-                child.RuleFor(x => x.Amount)
+                child.RuleFor(x => x.Count)
                     .GreaterThan(0);
 
                 child.RuleFor(x => x.StartDate)
                     .NotEmpty()
                     .LessThan(x => x.EndDate)
-                    .WithMessage(Constants.Validation.Plan.PlanStartDateErrorMessage);
+                    .WithMessage(Constants.Validation.Date.InvalidStartDate);
 
                 child.RuleFor(x => x.EndDate)
                     .NotEmpty()
                     .GreaterThan(DateTime.UtcNow)
-                    .WithMessage(Constants.Validation.Plan.PlandEndDateInThePastErrorMessage);
+                    .WithMessage(Constants.Validation.Date.EndDateInPast);
             });
     }
 }

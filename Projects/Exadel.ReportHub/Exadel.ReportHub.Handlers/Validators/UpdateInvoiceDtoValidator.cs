@@ -20,27 +20,18 @@ public class UpdateInvoiceDtoValidator : AbstractValidator<UpdateInvoiceDTO>
               child.RuleFor(x => x.IssueDate)
                   .NotEmpty()
                   .LessThan(DateTime.UtcNow)
-                  .WithMessage(Constants.Validation.Invoice.IssueDateErrorMessage);
+                  .WithMessage(Constants.Validation.Invoice.IssueDateInFuture);
               child.RuleFor(x => x.IssueDate.TimeOfDay)
                   .Equal(TimeSpan.Zero)
-                  .WithMessage(Constants.Validation.Invoice.TimeComponentErrorMassage);
+                  .WithMessage(Constants.Validation.Date.TimeComponentNotAllowed);
 
               child.RuleFor(x => x.DueDate)
                   .NotEmpty()
                   .GreaterThan(x => x.IssueDate)
-                  .WithMessage(Constants.Validation.Invoice.DueDateErrorMessage);
+                  .WithMessage(Constants.Validation.Invoice.DueDateBeforeIssueDate);
               child.RuleFor(x => x.DueDate.TimeOfDay)
                   .Equal(TimeSpan.Zero)
-                  .WithMessage(Constants.Validation.Invoice.TimeComponentErrorMassage);
-
-              child.RuleFor(x => x.PaymentStatus)
-                  .IsInEnum();
-
-              child.RuleFor(x => x.BankAccountNumber)
-                  .NotEmpty()
-                  .Length(Constants.Validation.Invoice.BankAccountNumberMinLength, Constants.Validation.Invoice.BankAccountNumberMaxLength)
-                  .Matches(@"^[A-Z]{2}\d+$")
-                  .WithMessage(Constants.Validation.Invoice.BankAccountNumberErrorMessage);
+                  .WithMessage(Constants.Validation.Date.TimeComponentNotAllowed);
           });
     }
 }

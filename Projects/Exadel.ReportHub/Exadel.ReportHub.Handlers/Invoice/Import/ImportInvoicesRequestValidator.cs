@@ -1,31 +1,24 @@
-﻿using FluentValidation;
+﻿using Exadel.ReportHub.SDK.DTOs.Import;
+using FluentValidation;
 
 namespace Exadel.ReportHub.Handlers.Invoice.Import;
 
 public class ImportInvoicesRequestValidator : AbstractValidator<ImportInvoicesRequest>
 {
-    public ImportInvoicesRequestValidator()
+    private readonly IValidator<ImportDTO> _importDtoValidator;
+
+    public ImportInvoicesRequestValidator(IValidator<ImportDTO> importDtoValidator)
     {
+        _importDtoValidator = importDtoValidator;
         ConfigureRules();
     }
 
     private void ConfigureRules()
     {
         RuleFor(x => x.ImportDTO)
-                .NotNull();
-
-        RuleFor(x => x.ImportDTO.File)
-                .NotNull()
-                .ChildRules(file =>
-                {
-                    file.RuleFor(x => x.Length)
-                        .GreaterThan(0)
-                        .WithMessage(Constants.Validation.Import.UploadedFileLengthError);
-
-                    file.RuleFor(x => x.FileName)
-                        .NotEmpty()
-                        .Must(fileName => string.Equals(Path.GetExtension(fileName), ".csv", StringComparison.OrdinalIgnoreCase))
-                        .WithMessage(Constants.Validation.Import.FileExtentionError);
-                });
+            .SetValidator(_importDtoValidator);
+        RuleFor(x => x.ImportDTO.File.FileName)
+            .Must(fileName => string.Equals(Path.GetExtension(fileName), Constants.File.Extension.Csv, StringComparison.OrdinalIgnoreCase))
+            .WithMessage(Constants.Validation.Import.InvalidFileExtension);
     }
 }

@@ -6,18 +6,18 @@ using MongoDB.Driver;
 namespace Exadel.ReportHub.RA;
 
 [ExcludeFromCodeCoverage]
-public class ClientRepository : BaseRepository, IClientRepository
+public class ClientRepository(MongoDbContext context) : BaseRepository(context), IClientRepository
 {
     private static readonly FilterDefinitionBuilder<Client> _filterBuilder = Builders<Client>.Filter;
-
-    public ClientRepository(MongoDbContext context)
-        : base(context)
-    {
-    }
 
     public Task AddAsync(Client client, CancellationToken cancellationToken)
     {
         return base.AddAsync(client, cancellationToken);
+    }
+
+    public Task AddManyAsync(IEnumerable<Client> clients, CancellationToken cancellationToken)
+    {
+        return base.AddManyAsync(clients, cancellationToken);
     }
 
     public Task<Client> GetByIdAsync(Guid id, CancellationToken cancellationToken)
@@ -25,10 +25,21 @@ public class ClientRepository : BaseRepository, IClientRepository
         return GetByIdAsync<Client>(id, cancellationToken);
     }
 
+    public Task<IList<Client>> GetByIdsAsync(IEnumerable<Guid> ids, CancellationToken cancellationToken)
+    {
+        return GetByIdsAsync<Client>(ids, cancellationToken);
+    }
+
     public Task<IList<Client>> GetAsync(CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.Eq(x => x.IsDeleted, false);
         return GetAsync(filter, cancellationToken);
+    }
+
+    public async Task<string> GetCurrencyAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var filter = _filterBuilder.Eq(x => x.Id, id);
+        return await GetCollection<Client>().Find(filter).Project(x => x.CurrencyCode).SingleOrDefaultAsync(cancellationToken);
     }
 
     public Task SoftDeleteAsync(Guid id, CancellationToken cancellationToken)

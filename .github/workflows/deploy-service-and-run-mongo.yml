@@ -16,12 +16,15 @@ jobs:
        Render_Service_Id: ${{ secrets.RENDER_SERVICE_ID }}
        ReportHubService_ClientSecret: ${{ secrets.REPORT_HUB_SERVICE_CLIENT_SECRET }}
        Mongo_Connection_String: ${{secrets.MONGO_CONNECTION_STRING}}
+       TZ: "UTC"
        
        Updates: |
          Authority: ${{ vars.AUTHORITY }}
-         ConnectionStrings__Mongo: ${{secrets.MONGO_CONNECTION_STRING}}
-         EcbConfig__Host: ${{vars.ECB_CONFIG_HOST}}
-         ReportHubConfig__Host: ${{vars.REPORTHUB_CONFIG_HOST}}
+         ConnectionStrings__Mongo: ${{ secrets.MONGO_CONNECTION_STRING }}
+         EcbConfig__Host: ${{ vars.ECB_CONFIG_HOST }}
+         ReportHubConfig__Host: ${{ vars.REPORTHUB_CONFIG_HOST }}
+         SmtpConfig__Email: ${{ vars.SMTP_Email }}
+         SmtpConfig__Password: ${{ secrets.SMTP_PASSWORD }}
          
     steps:
     - name: Checkout

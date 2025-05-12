@@ -17,15 +17,21 @@ public class Invoice : IDocument, ISoftDeletable
 
     public DateTime DueDate { get; set; }
 
-    public decimal Amount { get; set; }
+    public string ClientBankAccountNumber { get; set; }
 
-    public Guid CurrencyId { get; set; }
+    public Guid ClientCurrencyId { get; set; }
 
-    public string CurrencyCode { get; set; }
+    public string ClientCurrencyCode { get; set; }
+
+    public decimal ClientCurrencyAmount { get; set; }
+
+    public Guid CustomerCurrencyId { get; set; }
+
+    public string CustomerCurrencyCode { get; set; }
+
+    public decimal CustomerCurrencyAmount { get; set; }
 
     public PaymentStatus PaymentStatus { get; set; }
-
-    public string BankAccountNumber { get; set; }
 
     public IList<Guid> ItemIds { get; set; }
 

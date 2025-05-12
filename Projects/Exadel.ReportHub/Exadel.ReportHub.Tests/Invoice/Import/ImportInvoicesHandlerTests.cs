@@ -3,8 +3,9 @@ using AutoFixture;
 using ErrorOr;
 using Exadel.ReportHub.Csv.Abstract;
 using Exadel.ReportHub.Handlers.Invoice.Import;
-using Exadel.ReportHub.Handlers.Managers;
+using Exadel.ReportHub.Handlers.Managers.Invoice;
 using Exadel.ReportHub.RA.Abstract;
+using Exadel.ReportHub.SDK.DTOs.Import;
 using Exadel.ReportHub.SDK.DTOs.Invoice;
 using Exadel.ReportHub.Tests.Abstracts;
 using FluentValidation;
@@ -16,7 +17,7 @@ namespace Exadel.ReportHub.Tests.Invoice.Import;
 
 public class ImportInvoicesHandlerTests : BaseTestFixture
 {
-    private Mock<ICsvProcessor> _csvProcessorMock;
+    private Mock<ICsvImporter> _csvProcessorMock;
     private Mock<IInvoiceRepository> _invoiceRepositoryMock;
     private Mock<IInvoiceManager> _invoiceManagerMock;
     private Mock<IValidator<CreateInvoiceDTO>> _invoiceValidatorMock;
@@ -26,7 +27,7 @@ public class ImportInvoicesHandlerTests : BaseTestFixture
     [SetUp]
     public void Setup()
     {
-        _csvProcessorMock = new Mock<ICsvProcessor>();
+        _csvProcessorMock = new Mock<ICsvImporter>();
         _invoiceRepositoryMock = new Mock<IInvoiceRepository>();
         _invoiceManagerMock = new Mock<IInvoiceManager>();
         _invoiceValidatorMock = new Mock<IValidator<CreateInvoiceDTO>>();
@@ -47,7 +48,7 @@ public class ImportInvoicesHandlerTests : BaseTestFixture
         using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes("CSV content"));
 
         _csvProcessorMock
-            .Setup(x => x.ReadInvoices(It.Is<Stream>(str => str.Length == memoryStream.Length)))
+            .Setup(x => x.Read<CreateInvoiceDTO>(It.Is<Stream>(str => str.Length == memoryStream.Length)))
             .Returns(invoiceDtos);
 
         _invoiceManagerMock
@@ -89,11 +90,11 @@ public class ImportInvoicesHandlerTests : BaseTestFixture
                         x.InvoiceNumber == invoices[0].InvoiceNumber &&
                         x.IssueDate == invoices[0].IssueDate &&
                         x.DueDate == invoices[0].DueDate &&
-                        x.Amount == invoices[0].Amount &&
-                        x.CurrencyId == invoices[0].CurrencyId &&
-                        x.CurrencyCode == invoices[0].CurrencyCode &&
+                        x.CustomerCurrencyAmount == invoices[0].CustomerCurrencyAmount &&
+                        x.CustomerCurrencyId == invoices[0].CustomerCurrencyId &&
+                        x.CustomerCurrencyCode == invoices[0].CustomerCurrencyCode &&
                         (int)x.PaymentStatus == (int)invoices[0].PaymentStatus &&
-                        x.BankAccountNumber == invoices[0].BankAccountNumber) &&
+                        x.ClientBankAccountNumber == invoices[0].ClientBankAccountNumber) &&
 
                         inv.Any(x =>
                         x.ClientId == invoices[1].ClientId &&
@@ -101,11 +102,11 @@ public class ImportInvoicesHandlerTests : BaseTestFixture
                         x.InvoiceNumber == invoices[1].InvoiceNumber &&
                         x.IssueDate == invoices[1].IssueDate &&
                         x.DueDate == invoices[1].DueDate &&
-                        x.Amount == invoices[1].Amount &&
-                        x.CurrencyId == invoices[1].CurrencyId &&
-                        x.CurrencyCode == invoices[1].CurrencyCode &&
+                        x.CustomerCurrencyAmount == invoices[1].CustomerCurrencyAmount &&
+                        x.CustomerCurrencyId == invoices[1].CustomerCurrencyId &&
+                        x.CustomerCurrencyCode == invoices[1].CustomerCurrencyCode &&
                         (int)x.PaymentStatus == (int)invoices[1].PaymentStatus &&
-                        x.BankAccountNumber == invoices[1].BankAccountNumber)),
+                        x.ClientBankAccountNumber == invoices[1].ClientBankAccountNumber)),
                     CancellationToken.None),
                 Times.Once);
     }
@@ -145,7 +146,7 @@ public class ImportInvoicesHandlerTests : BaseTestFixture
             .ReturnsAsync(new ValidationResult(errorsInvoice));
 
         _csvProcessorMock
-            .Setup(x => x.ReadInvoices(It.Is<Stream>(str => str.Length == memoryStream.Length)))
+            .Setup(x => x.Read<CreateInvoiceDTO>(It.Is<Stream>(str => str.Length == memoryStream.Length)))
             .Returns(invoiceDtos);
 
         var importDto = new ImportDTO
@@ -206,7 +207,7 @@ public class ImportInvoicesHandlerTests : BaseTestFixture
             .ReturnsAsync(new ValidationResult(errorsInvoice));
 
         _csvProcessorMock
-            .Setup(x => x.ReadInvoices(It.Is<Stream>(str => str.Length == memoryStream.Length)))
+            .Setup(x => x.Read<CreateInvoiceDTO>(It.Is<Stream>(str => str.Length == memoryStream.Length)))
             .Returns(invoiceDtos);
 
         var importDto = new ImportDTO

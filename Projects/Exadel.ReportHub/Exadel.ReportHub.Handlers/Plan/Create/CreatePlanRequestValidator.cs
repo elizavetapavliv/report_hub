@@ -18,7 +18,7 @@ public class CreatePlanRequestValidator : AbstractValidator<CreatePlanRequest>
         ConfigureRules();
     }
 
-    public void ConfigureRules()
+    private void ConfigureRules()
     {
         RuleFor(x => x.CreatePlanDto)
             .ChildRules(child =>
@@ -27,36 +27,37 @@ public class CreatePlanRequestValidator : AbstractValidator<CreatePlanRequest>
 
                 child.RuleFor(x => x)
                     .MustAsync(IsUniquePlanAsync)
-                    .WithMessage(Constants.Validation.Plan.PlanAlreadyExistsForItemAndClient);
+                    .WithMessage(Constants.Validation.Plan.AlreadyExistsForItemAndClient);
 
                 child.RuleFor(x => x.ItemId)
                     .NotEmpty()
                     .MustAsync(_itemRepository.ExistsAsync)
-                    .WithMessage(Constants.Validation.Plan.ItemDoesNotExistMessage);
+                    .WithMessage(Constants.Validation.Item.DoesNotExist);
 
                 child.RuleFor(x => x.ClientId)
                     .NotEmpty()
                     .MustAsync(_clientRepository.ExistsAsync)
-                    .WithMessage(Constants.Validation.Plan.ClientDoesNotExistMessage);
+                    .WithMessage(Constants.Validation.Client.DoesNotExist);
 
-                child.RuleFor(x => x.Amount)
+                child.RuleFor(x => x.Count)
                     .GreaterThan(0);
 
                 child.RuleFor(x => x.StartDate)
                     .NotEmpty()
                     .LessThan(x => x.EndDate)
-                    .WithMessage(Constants.Validation.Plan.PlanStartDateErrorMessage);
+                    .WithMessage(Constants.Validation.Date.InvalidStartDate);
 
                 child.RuleFor(x => x.EndDate)
                     .NotEmpty()
                     .GreaterThan(DateTime.UtcNow)
-                    .WithMessage(Constants.Validation.Plan.PlandEndDateInThePastErrorMessage);
+                    .WithMessage(Constants.Validation.Date.EndDateInPast);
             });
     }
 
-    private async Task<bool> IsUniquePlanAsync(CreatePlanDTO createPlanDTO, CancellationToken cancellationToken)
+    private async Task<bool> IsUniquePlanAsync(CreatePlanDTO createPlanDto, CancellationToken cancellationToken)
     {
-        var isExists = await _planRepository.ExistsAsync(createPlanDTO.ItemId, createPlanDTO.ClientId, cancellationToken);
+        var isExists = await _planRepository.ExistsForItemByPeriodAsync(
+            createPlanDto.ItemId, createPlanDto.ClientId, createPlanDto.StartDate, createPlanDto.EndDate, cancellationToken);
         return !isExists;
     }
 }

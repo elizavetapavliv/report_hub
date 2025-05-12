@@ -11,12 +11,12 @@ public static class Constants
         public static class Label
         {
             public const string Invoice = "Invoice";
-            public const string InvoiceNumber = "Invoice Number";
             public const string IssueDate = "Issue Date";
             public const string DueDate = "Due Date";
+            public const string PaymentStatus = "Payment Status";
             public const string ClientName = "Client Name";
             public const string CustomerName = "Customer Name";
-            public const string BankAccountNumber = "Bank Account Number";
+            public const string ClientBankAccountNumber = "Client Bank Account Number";
             public const string Total = "Total";
         }
 

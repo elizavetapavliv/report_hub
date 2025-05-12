@@ -16,7 +16,7 @@ public class UpdateCustomerValidator : AbstractValidator<UpdateCustomerDTO>
         ConfigureRules();
     }
 
-    public void ConfigureRules()
+    private void ConfigureRules()
     {
         RuleLevelCascadeMode = CascadeMode.Stop;
 
@@ -26,6 +26,6 @@ public class UpdateCustomerValidator : AbstractValidator<UpdateCustomerDTO>
         RuleFor(x => x.CountryId)
             .NotEmpty()
             .MustAsync(_countryRepository.ExistsAsync)
-            .WithMessage(Constants.Validation.Customer.CountryDoesNotExistMessage);
+            .WithMessage(Constants.Validation.Country.DoesNotExist);
     }
 }
