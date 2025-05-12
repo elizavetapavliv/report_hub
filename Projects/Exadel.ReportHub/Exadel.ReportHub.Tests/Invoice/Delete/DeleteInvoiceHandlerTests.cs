@@ -21,40 +21,44 @@ public class DeleteInvoiceHandlerTests
     [Test]
     public async Task DeleteInvoice_WhenExists_ReturnsDeleted()
     {
+        // Arrange
         var id = Guid.NewGuid();
+        var clientId = Guid.NewGuid();
 
         _invoiceRepositoryMock
-            .Setup(r => r.ExistsAsync(id, CancellationToken.None))
+            .Setup(r => r.ExistsAsync(id, clientId, CancellationToken.None))
             .ReturnsAsync(true);
 
         // Act
-        var result = await _handler.Handle(new DeleteInvoiceRequest(id), CancellationToken.None);
+        var result = await _handler.Handle(new DeleteInvoiceRequest(id, clientId), CancellationToken.None);
 
         // Assert
         Assert.That(result.IsError, Is.False);
         Assert.That(result.Value, Is.EqualTo(Result.Deleted));
 
-        _invoiceRepositoryMock.Verify(r => r.ExistsAsync(id, CancellationToken.None), Times.Once);
+        _invoiceRepositoryMock.Verify(r => r.ExistsAsync(id, clientId, CancellationToken.None), Times.Once);
         _invoiceRepositoryMock.Verify(r => r.SoftDeleteAsync(id, CancellationToken.None), Times.Once);
     }
 
     [Test]
     public async Task DeleteInvoice_WhenNotExist_ReturnsNotFound()
     {
+        // Arrange
         var id = Guid.NewGuid();
+        var clientId = Guid.NewGuid();
 
         _invoiceRepositoryMock
-            .Setup(r => r.ExistsAsync(id, CancellationToken.None))
+            .Setup(r => r.ExistsAsync(id, clientId, CancellationToken.None))
             .ReturnsAsync(false);
 
         // Act
-        var result = await _handler.Handle(new DeleteInvoiceRequest(id), CancellationToken.None);
+        var result = await _handler.Handle(new DeleteInvoiceRequest(id, clientId), CancellationToken.None);
 
         // Assert
         Assert.That(result.Errors, Has.Count.EqualTo(1), "Should contains the only error");
         Assert.That(result.FirstError.Type, Is.EqualTo(ErrorType.NotFound));
 
-        _invoiceRepositoryMock.Verify(r => r.ExistsAsync(id, CancellationToken.None), Times.Once);
+        _invoiceRepositoryMock.Verify(r => r.ExistsAsync(id, clientId, CancellationToken.None), Times.Once);
         _invoiceRepositoryMock.Verify(r => r.SoftDeleteAsync(id, It.IsAny<CancellationToken>()), Times.Never);
     }
 }

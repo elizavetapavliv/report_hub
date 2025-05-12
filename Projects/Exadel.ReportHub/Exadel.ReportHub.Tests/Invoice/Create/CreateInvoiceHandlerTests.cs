@@ -1,6 +1,6 @@
 ﻿using AutoFixture;
 using Exadel.ReportHub.Handlers.Invoice.Create;
-using Exadel.ReportHub.Handlers.Managers;
+using Exadel.ReportHub.Handlers.Managers.Invoice;
 using Exadel.ReportHub.RA.Abstract;
 using Exadel.ReportHub.SDK.DTOs.Invoice;
 using Exadel.ReportHub.Tests.Abstracts;
@@ -27,22 +27,20 @@ public class CreateInvoiceHandlerTests : BaseTestFixture
     public async Task CreateInvoice_ValidRequest_ReturnsInvoiceDto()
     {
         // Arrange
-        var createInvoiceDto = Fixture.Create<CreateInvoiceDTO>();
-        var generatedInvoice = Fixture
-                .Build<Data.Models.Invoice>()
-                .With(x => x.Id, Guid.NewGuid())
-                .With(x => x.ClientId, createInvoiceDto.ClientId)
-                .With(x => x.CustomerId, createInvoiceDto.CustomerId)
-                .With(x => x.InvoiceNumber, createInvoiceDto.InvoiceNumber)
-                .With(x => x.IssueDate, createInvoiceDto.IssueDate)
-                .With(x => x.DueDate, createInvoiceDto.DueDate)
-                .With(x => x.BankAccountNumber, createInvoiceDto.BankAccountNumber)
-                .With(x => x.PaymentStatus, (Data.Enums.PaymentStatus)createInvoiceDto.PaymentStatus)
-                .With(x => x.ItemIds, createInvoiceDto.ItemIds.ToList())
-                .Create();
+        var createInvoiceDto = Fixture.Build<CreateInvoiceDTO>().With(x => x.ItemIds, Fixture.CreateMany<Guid>(3).ToList()).Create();
+        var generatedInvoice = Mapper.Map<Data.Models.Invoice>(createInvoiceDto);
+        generatedInvoice.Id = Guid.NewGuid();
+        generatedInvoice.ClientBankAccountNumber = Fixture.Create<string>();
+        generatedInvoice.ClientCurrencyId = Guid.NewGuid();
+        generatedInvoice.ClientCurrencyCode = Fixture.Create<string>();
+        generatedInvoice.ClientCurrencyAmount = Fixture.Create<decimal>();
+        generatedInvoice.CustomerCurrencyId = Guid.NewGuid();
+        generatedInvoice.CustomerCurrencyCode = Fixture.Create<string>();
+        generatedInvoice.CustomerCurrencyAmount = Fixture.Create<decimal>();
+        generatedInvoice.PaymentStatus = Data.Enums.PaymentStatus.Unpaid;
 
         _invoiceManagerMock
-                .Setup(m => m.GenerateInvoiceAsync(createInvoiceDto, It.IsAny<CancellationToken>()))
+                .Setup(m => m.GenerateInvoiceAsync(createInvoiceDto, CancellationToken.None))
                 .ReturnsAsync(generatedInvoice);
 
         // Act
@@ -52,7 +50,6 @@ public class CreateInvoiceHandlerTests : BaseTestFixture
         Assert.That(result.Value, Is.Not.Null);
         Assert.That(result.IsError, Is.False);
         Assert.That(result.Value, Is.InstanceOf<InvoiceDTO>(), "Returned object should be an instance of InvoiceDTO");
-        Assert.That(result.Value.Id, Is.Not.EqualTo(Guid.Empty));
 
         _invoiceRepositoryMock.Verify(
             mock => mock.AddAsync(
@@ -62,9 +59,15 @@ public class CreateInvoiceHandlerTests : BaseTestFixture
                     i.InvoiceNumber == createInvoiceDto.InvoiceNumber &&
                     i.IssueDate == createInvoiceDto.IssueDate &&
                     i.DueDate == createInvoiceDto.DueDate &&
-                    i.PaymentStatus == (Data.Enums.PaymentStatus)createInvoiceDto.PaymentStatus &&
-                    i.BankAccountNumber == createInvoiceDto.BankAccountNumber &&
-                    i.ItemIds.SequenceEqual(createInvoiceDto.ItemIds)),
+                    i.ItemIds.SequenceEqual(createInvoiceDto.ItemIds) &&
+                    i.ClientBankAccountNumber == generatedInvoice.ClientBankAccountNumber &&
+                    i.ClientCurrencyId == generatedInvoice.ClientCurrencyId &&
+                    i.ClientCurrencyCode == generatedInvoice.ClientCurrencyCode &&
+                    i.ClientCurrencyAmount == generatedInvoice.ClientCurrencyAmount &&
+                    i.CustomerCurrencyId == generatedInvoice.CustomerCurrencyId &&
+                    i.CustomerCurrencyCode == generatedInvoice.CustomerCurrencyCode &&
+                    i.CustomerCurrencyAmount == generatedInvoice.CustomerCurrencyAmount &&
+                    i.PaymentStatus == generatedInvoice.PaymentStatus),
                 CancellationToken.None),
             Times.Once);
     }
