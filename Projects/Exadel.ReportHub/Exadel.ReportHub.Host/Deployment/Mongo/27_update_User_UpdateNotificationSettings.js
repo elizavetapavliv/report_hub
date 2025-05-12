@@ -24,10 +24,10 @@ const assignments = db.UserAssignment.aggregate([
     { $unwind: "$ClientInfo" }
 ]).toArray();
 
-const updates = assignments.Map(assignment => {
+const updates = assignments.map(assignment => {
     const reportPeriod = reportPeriods[Math.floor(Math.random() * reportPeriods.length)];
 
-    const notificationSettings = null;
+    var notificationSettings = null;
     if (assignment.ClientInfo) {
         notificationSettings =
         {
