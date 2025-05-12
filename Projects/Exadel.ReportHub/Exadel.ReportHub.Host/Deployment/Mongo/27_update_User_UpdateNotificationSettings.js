@@ -26,24 +26,21 @@ const assignments = db.UserAssignment.aggregate([
 
 const updates = assignments.map(assignment => {
     const reportPeriod = reportPeriods[Math.floor(Math.random() * reportPeriods.length)];
-
-    var notificationSettings = null;
-    if (assignment.ClientInfo) {
-        notificationSettings =
-        {
-            ClientId: assignment.ClientInfo._id,
-            ClientName: assignment.ClientInfo.Name,
-            ReportPeriod: reportPeriod,
-            DaysCount: reportPeriod === "Custom" ? Math.floor(Math.random() * 60) + 1 : null
-        };
-    }
+    const daysCount = reportPeriod === "Custom" ? Math.floor(Math.random() * 60) + 1 : null;
 
     return {
         updateOne: {
             filter: { _id: assignment.UserId },
             update: {
                 $set: {
-                    NotificationSettings: notificationSettings
+                    "NotificationSettings.ClientId": assignment.ClientInfo._id,
+                    "NotificationSettings.ClientName": assignment.ClientInfo.Name,
+                    "NotificationSettings.ReportPeriod": reportPeriod,
+                    "NotificationSettings.DaysCount": daysCount
+                },
+                $unset: {
+                    "NotificationSettings.ReportStartDate": "",
+                    "NotificationSettings.ReportEndDate": ""
                 }
             }
         }
