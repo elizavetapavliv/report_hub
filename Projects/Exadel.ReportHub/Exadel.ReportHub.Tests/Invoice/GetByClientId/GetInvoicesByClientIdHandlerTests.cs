@@ -21,7 +21,7 @@ public class GetInvoicesByClientIdHandlerTests : BaseTestFixture
     }
 
     [Test]
-    public async Task GetInvoices_ValidRequest_ReturnsInvoiceDtos()
+    public async Task GetInvoicesByClientId_ValidRequest_ReturnsInvoiceDtos()
     {
         // Arrange
         var clientId = Guid.NewGuid();
@@ -73,7 +73,7 @@ public class GetInvoicesByClientIdHandlerTests : BaseTestFixture
     }
 
     [Test]
-    public async Task GetInvoices_WhenNoInvoicesExist_ReturnsEmpty()
+    public async Task GetInvoicesByClientId_WhenNoInvoicesExist_ReturnsEmpty()
     {
         // Arrange
         var clientId = Guid.NewGuid();
