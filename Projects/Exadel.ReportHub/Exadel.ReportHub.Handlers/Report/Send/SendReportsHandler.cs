@@ -12,7 +12,7 @@ namespace Exadel.ReportHub.Handlers.Report.Send;
 
 public record SendReportsRequest : IRequest<Unit>;
 
-public class SendReportsHandler(IReportManager reportManager, IUserRepository userRepository, IClientRepository clientRepository, IEmailSender emailSender, ILogger<SendReportsHandler> logger)
+public class SendReportsHandler(IReportManager reportManager, IUserRepository userRepository, IEmailSender emailSender, ILogger<SendReportsHandler> logger)
     : IRequestHandler<SendReportsRequest, Unit>
 {
     public async Task<Unit> Handle(SendReportsRequest request, CancellationToken cancellationToken)
@@ -46,12 +46,10 @@ public class SendReportsHandler(IReportManager reportManager, IUserRepository us
                 EndDate = endDate
             };
 
-            var clientName = await clientRepository.GetNameAsync(exportReportDto.ClientId, cancellationToken);
-
             var reportEmail = new EmailReportData
             {
                 UserName = user.FullName,
-                ClientName = clientName,
+                ClientName = user.NotificationSettings.ClientName,
                 Period = user.NotificationSettings.ReportPeriod is Data.Enums.ReportPeriod.Whole ?
                     "whole period" :
                     $"{FormatDate(exportReportDto.StartDate.Value)} to {FormatDate(exportReportDto.EndDate.Value)}"
