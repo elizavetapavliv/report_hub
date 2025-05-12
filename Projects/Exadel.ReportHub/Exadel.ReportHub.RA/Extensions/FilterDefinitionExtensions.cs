@@ -2,9 +2,9 @@
 using MongoDB.Bson;
 using MongoDB.Driver;
 
-namespace Exadel.ReportHub.RA.Abstract.Extensions;
+namespace Exadel.ReportHub.RA.Extensions;
 
-public static class FilterDefinitionExtension
+public static class FilterDefinitionExtensions
 {
     public static FilterDefinition<TDocument> NotDeleted<TDocument>(this FilterDefinition<TDocument> filter)
     {
@@ -26,8 +26,7 @@ public static class FilterDefinitionExtension
         return filter;
     }
 
-    public static FilterDefinition<TDocument> WithSoftDeleteAndActive<TDocument>(
-            this FilterDefinition<TDocument> filter)
+    public static FilterDefinition<TDocument> NotDeletedAndActive<TDocument>(this FilterDefinition<TDocument> filter)
     {
         return filter.NotDeleted().Active();
     }

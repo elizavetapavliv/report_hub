@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Exadel.ReportHub.Data.Models;
 using Exadel.ReportHub.RA.Abstract;
-using Exadel.ReportHub.RA.Abstract.Extensions;
+using Exadel.ReportHub.RA.Extensions;
 using MongoDB.Driver;
 
 namespace Exadel.ReportHub.RA;

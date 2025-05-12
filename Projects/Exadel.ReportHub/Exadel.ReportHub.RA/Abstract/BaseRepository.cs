@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Exadel.ReportHub.Data.Abstract;
-using Exadel.ReportHub.RA.Abstract.Extensions;
+using Exadel.ReportHub.RA.Extensions;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
@@ -24,7 +24,7 @@ public abstract class BaseRepository(MongoDbContext context)
     public async Task<TDocument> GetByIdAsync<TDocument>(Guid id, CancellationToken cancellationToken)
         where TDocument : IDocument
     {
-        var filter = Builders<TDocument>.Filter.Eq(x => x.Id, id).WithSoftDeleteAndActive();
+        var filter = Builders<TDocument>.Filter.Eq(x => x.Id, id).NotDeletedAndActive();
 
         return await GetCollection<TDocument>().Find(filter).SingleOrDefaultAsync(cancellationToken);
     }
@@ -32,7 +32,7 @@ public abstract class BaseRepository(MongoDbContext context)
     public async Task<IList<TDocument>> GetByIdsAsync<TDocument>(IEnumerable<Guid> ids, CancellationToken cancellationToken)
         where TDocument : IDocument
     {
-        var filter = Builders<TDocument>.Filter.In(x => x.Id, ids).WithSoftDeleteAndActive();
+        var filter = Builders<TDocument>.Filter.In(x => x.Id, ids).NotDeletedAndActive();
 
         return await GetAsync(filter, cancellationToken);
     }
@@ -40,7 +40,7 @@ public abstract class BaseRepository(MongoDbContext context)
     public async Task<bool> ExistsAsync<TDocument>(Guid id, CancellationToken cancellationToken)
         where TDocument : IDocument
     {
-        var filter = Builders<TDocument>.Filter.Eq(x => x.Id, id).WithSoftDeleteAndActive();
+        var filter = Builders<TDocument>.Filter.Eq(x => x.Id, id).NotDeletedAndActive();
 
         var count = await GetCollection<TDocument>().CountDocumentsAsync(filter, cancellationToken: cancellationToken);
 
