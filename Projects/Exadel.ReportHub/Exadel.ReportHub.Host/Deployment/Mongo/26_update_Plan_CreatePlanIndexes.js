@@ -7,7 +7,7 @@ if (db.MigrationHistory.findOne({ ScriptName: scriptName, Version: version })) {
 }
 
 db.Plan.createIndex(
-    { ClientId: 1, StartDate: 1, EndDate: 1 },
+    { ClientId: 1, ItemId: 1, StartDate: 1, EndDate: 1 },
     {
         partialFilterExpression: { IsDeleted: false },
         background: true
@@ -16,14 +16,6 @@ db.Plan.createIndex(
 
 db.Plan.createIndex(
     { ClientId: 1, ItemId: 1, EndDate: 1},
-    {
-        partialFilterExpression: { IsDeleted: false },
-        background: true
-    }
-);
-
-db.Plan.createIndex(
-    { ClientId: 1, ItemId: 1, StartDate: 1, IsDeleted: 1 },
     {
         partialFilterExpression: { IsDeleted: false },
         background: true

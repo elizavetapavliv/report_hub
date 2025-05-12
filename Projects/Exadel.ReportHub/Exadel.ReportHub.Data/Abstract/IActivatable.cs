@@ -1,6 +1,6 @@
 ﻿namespace Exadel.ReportHub.Data.Abstract;
 
-public interface IActivable
+public interface IActivatable
 {
     public bool IsActive { get; set; }
 }

@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Duende.IdentityServer.Models;
 using Exadel.ReportHub.Data.Models;
 using Exadel.ReportHub.RA.Abstract;
+using Exadel.ReportHub.RA.Abstract.Extensions;
 using MongoDB.Driver;
 
 namespace Exadel.ReportHub.RA;
@@ -18,9 +18,8 @@ public class ItemRepository(MongoDbContext context) : BaseRepository(context), I
 
     public async Task<bool> AllExistAsync(IEnumerable<Guid> ids, CancellationToken cancellationToken)
     {
-        var filter = _filterBuilder.And(
-           _filterBuilder.In(x => x.Id, ids),
-           _filterBuilder.Eq(x => x.IsDeleted, false));
+        var filter = _filterBuilder.In(x => x.Id, ids).NotDeleted();
+
         var count = await GetCollection<Item>().CountDocumentsAsync(filter, cancellationToken: cancellationToken);
 
         return count == ids.Count();
@@ -33,9 +32,7 @@ public class ItemRepository(MongoDbContext context) : BaseRepository(context), I
 
     public Task<IList<Item>> GetByClientIdAsync(Guid clientId, CancellationToken cancellationToken)
     {
-        var filter = _filterBuilder.And(
-            _filterBuilder.Eq(x => x.ClientId, clientId),
-            _filterBuilder.Eq(x => x.IsDeleted, false));
+        var filter = _filterBuilder.Eq(x => x.ClientId, clientId).NotDeleted();
 
         return GetAsync(filter, cancellationToken);
     }
@@ -52,9 +49,7 @@ public class ItemRepository(MongoDbContext context) : BaseRepository(context), I
 
     public async Task<Guid?> GetClientIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var filter = _filterBuilder.And(
-            _filterBuilder.Eq(x => x.Id, id),
-            _filterBuilder.Eq(x => x.IsDeleted, false));
+        var filter = _filterBuilder.Eq(x => x.Id, id).NotDeleted();
 
         return await GetCollection<Item>().Find(filter).Project(x => (Guid?)x.ClientId).SingleOrDefaultAsync(cancellationToken);
     }
@@ -66,9 +61,7 @@ public class ItemRepository(MongoDbContext context) : BaseRepository(context), I
 
     public async Task<Dictionary<Guid, decimal>> GetClientItemPricesAsync(Guid clientId, CancellationToken cancellationToken)
     {
-        var filter = _filterBuilder.And(
-            _filterBuilder.Eq(x => x.ClientId, clientId),
-            _filterBuilder.Eq(x => x.IsDeleted, false));
+        var filter = _filterBuilder.Eq(x => x.ClientId, clientId).NotDeleted();
 
         var projections = await GetCollection<Item>().Find(filter).Project(x => new { x.Id, x.Price }).ToListAsync(cancellationToken);
         return projections.ToDictionary(x => x.Id, x => x.Price);

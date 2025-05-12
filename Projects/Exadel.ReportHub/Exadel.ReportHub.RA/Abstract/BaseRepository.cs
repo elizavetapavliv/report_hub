@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Exadel.ReportHub.Data.Abstract;
+using Exadel.ReportHub.RA.Abstract.Extensions;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
@@ -23,8 +24,7 @@ public abstract class BaseRepository(MongoDbContext context)
     public async Task<TDocument> GetByIdAsync<TDocument>(Guid id, CancellationToken cancellationToken)
         where TDocument : IDocument
     {
-        var filter = Builders<TDocument>.Filter.Eq(x => x.Id, id);
-        WithSoftDeleteAndActive(ref filter);
+        var filter = Builders<TDocument>.Filter.Eq(x => x.Id, id).WithSoftDeleteAndActive();
 
         return await GetCollection<TDocument>().Find(filter).SingleOrDefaultAsync(cancellationToken);
     }
@@ -32,8 +32,7 @@ public abstract class BaseRepository(MongoDbContext context)
     public async Task<IList<TDocument>> GetByIdsAsync<TDocument>(IEnumerable<Guid> ids, CancellationToken cancellationToken)
         where TDocument : IDocument
     {
-        var filter = Builders<TDocument>.Filter.In(x => x.Id, ids);
-        WithSoftDeleteAndActive(ref filter);
+        var filter = Builders<TDocument>.Filter.In(x => x.Id, ids).WithSoftDeleteAndActive();
 
         return await GetAsync(filter, cancellationToken);
     }
@@ -41,8 +40,7 @@ public abstract class BaseRepository(MongoDbContext context)
     public async Task<bool> ExistsAsync<TDocument>(Guid id, CancellationToken cancellationToken)
         where TDocument : IDocument
     {
-        var filter = Builders<TDocument>.Filter.Eq(x => x.Id, id);
-        WithSoftDeleteAndActive(ref filter);
+        var filter = Builders<TDocument>.Filter.Eq(x => x.Id, id).WithSoftDeleteAndActive();
 
         var count = await GetCollection<TDocument>().CountDocumentsAsync(filter, cancellationToken: cancellationToken);
 
@@ -94,18 +92,5 @@ public abstract class BaseRepository(MongoDbContext context)
     public async Task AddManyAsync<TDocument>(IEnumerable<TDocument> entities, CancellationToken cancellationToken)
     {
         await GetCollection<TDocument>().InsertManyAsync(entities, cancellationToken: cancellationToken);
-    }
-
-    public static void WithSoftDeleteAndActive<TDocument>(ref FilterDefinition<TDocument> filter)
-    {
-        if (typeof(ISoftDeletable).IsAssignableFrom(typeof(TDocument)))
-        {
-            filter &= Builders<TDocument>.Filter.Eq(nameof(ISoftDeletable.IsDeleted), BsonValue.Create(false));
-        }
-
-        if (typeof(IActivable).IsAssignableFrom(typeof(TDocument)))
-        {
-            filter &= Builders<TDocument>.Filter.Eq(nameof(IActivable.IsActive), BsonValue.Create(true));
-        }
     }
 }
