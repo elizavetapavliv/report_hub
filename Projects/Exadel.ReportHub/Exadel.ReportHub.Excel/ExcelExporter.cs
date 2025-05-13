@@ -1,7 +1,9 @@
 ﻿using System.Reflection;
 using Aspose.Cells;
+using Aspose.Cells.Charts;
 using Exadel.ReportHub.Data.Abstract;
 using Exadel.ReportHub.Export.Abstract;
+using Exadel.ReportHub.Export.Abstract.Models;
 using Exadel.ReportHub.SDK.Enums;
 
 namespace Exadel.ReportHub.Excel;
@@ -23,9 +25,11 @@ public class ExcelExporter : IExportStrategy
         where TModel : BaseReport
     {
         var stream = new MemoryStream();
+        const string worksheetName = "Report";
 
         using var workbook = new Workbook();
         using var worksheet = workbook.Worksheets[0];
+        worksheet.Name = worksheetName;
 
         var dateStyle = workbook.CreateStyle();
         dateStyle.Custom = Constants.Format.Date;
@@ -42,6 +46,11 @@ public class ExcelExporter : IExportStrategy
 
         PutHeaders(cells, properties);
         PutData(cells, properties, modelList, dateStyle, decimalStyle);
+
+        if (typeof(TModel) == typeof(PlanReport) && modelList.Count > 0)
+        {
+            PutChart(workbook, worksheet, modelList.Cast<PlanReport>().ToList(), decimalStyle);
+        }
 
         worksheet.AutoFitColumns();
         worksheet.AutoFitRows();
@@ -103,5 +112,47 @@ public class ExcelExporter : IExportStrategy
 
             row++;
         }
+    }
+
+    private void PutChart<TModel>(Workbook workbook, Worksheet worksheet, IList<TModel> models, Style decimalStyle)
+        where TModel : PlanReport
+    {
+        const string worksheetName = "ChartData";
+        const int chartWidth = 10;
+        const int chartHeight = 20;
+
+        var dataSheet = workbook.Worksheets.Add(worksheetName);
+        dataSheet.IsVisible = false;
+
+        var dataCells = dataSheet.Cells;
+        var itemRevenues = models.GroupBy(x => x.TargetItemId, x => x.Revenue).ToDictionary(x => x.Key, g => g.Sum());
+
+        var row = 1;
+        foreach (var itemRevenue in itemRevenues)
+        {
+            dataCells[$"A{row}"].PutValue(itemRevenue.Value);
+            dataCells[$"A{row}"].SetStyle(decimalStyle);
+            row++;
+        }
+
+        var chartIndex = worksheet.Charts.Add(ChartType.Column,
+            0, worksheet.Cells.MaxDataColumn + 2,
+            chartHeight, worksheet.Cells.MaxDataColumn + 2 + chartWidth);
+        var chart = worksheet.Charts[chartIndex];
+        chart.Title.Text = $"Revenue Trend ({models[0].ClientCurrency})";
+
+        int i = 0;
+        foreach (var itemRevenue in itemRevenues)
+        {
+            string cell = $"{worksheetName}!A{i + 1}";
+            chart.NSeries.Add(cell, true);
+            chart.NSeries[i].Name = $"{i + 1}: {itemRevenue.Key}";
+            chart.NSeries[i].DataLabels.ShowValue = true;
+            i++;
+        }
+
+        chart.NSeries.CategoryData = $"{worksheetName}!B1:B{itemRevenues.Count}";
+        chart.CategoryAxis.Title.Text = "Item";
+        chart.ValueAxis.Title.Text = "Amount";
     }
 }
