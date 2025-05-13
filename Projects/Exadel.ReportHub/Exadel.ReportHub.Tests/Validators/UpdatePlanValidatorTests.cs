@@ -7,6 +7,7 @@ using FluentValidation.TestHelper;
 
 namespace Exadel.ReportHub.Tests.Validators;
 
+[TestFixture]
 public class UpdatePlanValidatorTests : BaseTestFixture
 {
     private UpdatePlanValidator _validator;

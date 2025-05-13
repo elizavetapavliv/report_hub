@@ -6,6 +6,7 @@ using Moq;
 
 namespace Exadel.ReportHub.Tests.Country.GetAll;
 
+[TestFixture]
 public class GetAllCountriesHandlerTests : BaseTestFixture
 {
     private GetAllCountriesHandler _handler;

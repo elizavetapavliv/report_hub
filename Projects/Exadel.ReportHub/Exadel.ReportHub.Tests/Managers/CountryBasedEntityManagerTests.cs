@@ -8,6 +8,7 @@ using Moq;
 
 namespace Exadel.ReportHub.Tests.Managers;
 
+[TestFixture]
 public class CountryBasedEntityManagerTests : BaseTestFixture
 {
     private Mock<ICountryRepository> _countryRepositoryMock;

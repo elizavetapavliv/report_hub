@@ -10,6 +10,7 @@ using Moq;
 
 namespace Exadel.ReportHub.Tests.Validators;
 
+[TestFixture]
 public class CreatePlanValidatorTests : BaseTestFixture
 {
     private Mock<IClientRepository> _clientRepositoryMock;

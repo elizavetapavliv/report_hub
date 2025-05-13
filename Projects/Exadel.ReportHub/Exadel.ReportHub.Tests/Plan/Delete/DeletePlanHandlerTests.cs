@@ -5,6 +5,7 @@ using Moq;
 
 namespace Exadel.ReportHub.Tests.Plan.Delete;
 
+[TestFixture]
 public class DeletePlanHandlerTests
 {
     private Mock<IPlanRepository> _planRepositoryMock;

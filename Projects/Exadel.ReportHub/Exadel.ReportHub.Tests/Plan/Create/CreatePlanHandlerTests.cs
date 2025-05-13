@@ -7,6 +7,7 @@ using Moq;
 
 namespace Exadel.ReportHub.Tests.Plan.Create;
 
+[TestFixture]
 public class CreatePlanHandlerTests : BaseTestFixture
 {
     private Mock<IPlanRepository> _planRepositoryMock;

@@ -7,6 +7,7 @@ using Moq;
 
 namespace Exadel.ReportHub.Tests.Plan.GetById;
 
+[TestFixture]
 public class GetPlanByIdHandlerTests : BaseTestFixture
 {
     private Mock<IPlanRepository> _planRepositoryMock;
