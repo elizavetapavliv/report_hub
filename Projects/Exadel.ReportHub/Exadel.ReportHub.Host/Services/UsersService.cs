@@ -6,7 +6,7 @@ using Exadel.ReportHub.Handlers.User.GetById;
 using Exadel.ReportHub.Handlers.User.GetProfile;
 using Exadel.ReportHub.Handlers.User.UpdateActivity;
 using Exadel.ReportHub.Handlers.User.UpdateName;
-using Exadel.ReportHub.Handlers.User.UpdateNotificationFrequency;
+using Exadel.ReportHub.Handlers.User.UpdateNotificationSettings;
 using Exadel.ReportHub.Handlers.User.UpdatePassword;
 using Exadel.ReportHub.Host.Infrastructure.Models;
 using Exadel.ReportHub.Host.Services.Abstract;
@@ -137,15 +137,26 @@ public class UsersService(ISender sender) : BaseService
 
     [Authorize]
     [HttpPut("notification-settings")]
-    [SwaggerOperation(Summary = "Update user notification frequency", Description = "Updates the notification frequency of the user specified by id.")]
+    [SwaggerOperation(Summary = "Update user notification settings", Description = "Updates the notification settings of the authorized user.")]
     [SwaggerResponse(StatusCodes.Status204NoContent, Constants.SwaggerSummary.User.Status204UpdateDescription)]
     [SwaggerResponse(StatusCodes.Status400BadRequest, Constants.SwaggerSummary.Common.Status400Description, typeof(ErrorResponse))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, Constants.SwaggerSummary.Common.Status401Description)]
-    [SwaggerResponse(StatusCodes.Status404NotFound, Constants.SwaggerSummary.User.Status404Description, typeof(ErrorResponse))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, Constants.SwaggerSummary.Common.Status500Description, typeof(ErrorResponse))]
-    public async Task<ActionResult> UpdateUserNotificationFrequency([FromBody] NotificationSettingsDTO notificationSettingsDto)
+    public async Task<ActionResult> UpdateUserNotificationSettings([FromBody] UpdateNotificationSettingsDTO updateNotificationSettingsDto)
     {
-        var result = await sender.Send(new UpdateUserNotificationSettingsRequest(notificationSettingsDto));
+        var result = await sender.Send(new UpdateUserNotificationSettingsRequest(updateNotificationSettingsDto));
+        return FromResult(result);
+    }
+
+    [Authorize]
+    [HttpPut("notification-settings/turn-off")]
+    [SwaggerOperation(Summary = "Turn user notifications off", Description = "Turns notifications off for the authorized user.")]
+    [SwaggerResponse(StatusCodes.Status204NoContent, Constants.SwaggerSummary.User.Status204UpdateDescription)]
+    [SwaggerResponse(StatusCodes.Status401Unauthorized, Constants.SwaggerSummary.Common.Status401Description)]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, Constants.SwaggerSummary.Common.Status500Description, typeof(ErrorResponse))]
+    public async Task<ActionResult> TurnOffUserNotificationSettings()
+    {
+        var result = await sender.Send(new UpdateUserNotificationSettingsRequest(null));
         return FromResult(result);
     }
 }
