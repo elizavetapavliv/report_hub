@@ -31,7 +31,7 @@ public class UpdateCustomerHandlerTests : BaseTestFixture
         var customerId = Guid.NewGuid();
         var clientId = Guid.NewGuid();
         var updateDto = Fixture.Create<UpdateCustomerDTO>();
-        var country = Fixture.Build<Country>().With(x => x.Id, updateDto.CountryId).Create();
+        var country = Fixture.Build<Data.Models.Country>().With(x => x.Id, updateDto.CountryId).Create();
 
         _countryRepositoryMock
             .Setup(x => x.GetByIdAsync(updateDto.CountryId, CancellationToken.None))
