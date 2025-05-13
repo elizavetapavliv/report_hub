@@ -26,12 +26,12 @@ public class PlanRepository(MongoDbContext context) : BaseRepository(context), I
         var filter = _filterBuilder.Eq(x => x.ClientId, clientId).NotDeleted();
         if (startDate.HasValue)
         {
-            filter &= _filterBuilder.Gte(x => x.StartDate, startDate.Value);
+            filter &= _filterBuilder.Gte(x => x.EndDate, startDate.Value);
         }
 
         if (endDate.HasValue)
         {
-            filter &= _filterBuilder.Lte(x => x.EndDate, endDate.Value);
+            filter &= _filterBuilder.Lte(x => x.StartDate, endDate.Value);
         }
 
         return GetAsync(filter, cancellationToken);
