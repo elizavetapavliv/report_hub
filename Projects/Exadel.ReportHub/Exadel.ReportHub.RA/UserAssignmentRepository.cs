@@ -44,7 +44,6 @@ public class UserAssignmentRepository(MongoDbContext context) : BaseRepository(c
     {
         var filter = _filterBuilder.Eq(x => x.UserId, userId);
         var field = new ExpressionFieldDefinition<UserAssignment, UserRole>(x => x.Role);
-        
         var userRoles = await GetCollection<UserAssignment>().DistinctAsync(field, filter, cancellationToken: cancellationToken);
         return await userRoles.ToListAsync(cancellationToken);
     }
