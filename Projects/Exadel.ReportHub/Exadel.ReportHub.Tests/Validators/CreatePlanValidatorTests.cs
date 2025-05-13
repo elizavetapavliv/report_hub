@@ -150,7 +150,6 @@ public class CreatePlanValidatorTests : BaseTestFixture
     {
         var clientId = Guid.NewGuid();
         var itemId = Guid.NewGuid();
-        var count = Random.Shared.Next(1, 100);
         var startDate = DateTime.UtcNow.AddDays(-1);
         var endDate = startDate.AddDays(Random.Shared.Next(1, 7));
 
@@ -169,7 +168,6 @@ public class CreatePlanValidatorTests : BaseTestFixture
         return Fixture.Build<CreatePlanDTO>()
             .With(x => x.ClientId, clientId)
             .With(x => x.ItemId, itemId)
-            .With(x => x.Count, count)
             .With(x => x.StartDate, startDate)
             .With(x => x.EndDate, endDate)
             .Create();

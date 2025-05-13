@@ -37,20 +37,9 @@ public class UpdateCustomerHandlerTests : BaseTestFixture
             .Setup(x => x.GetByIdAsync(updateDto.CountryId, CancellationToken.None))
             .ReturnsAsync(country);
 
-        var customer = Fixture.Build<Data.Models.Customer>()
-            .With(x => x.Name, updateDto.Name)
-            .With(x => x.CountryId, updateDto.CountryId)
-            .With(x => x.Country, country.Name)
-            .With(x => x.CurrencyId, country.CurrencyId)
-            .With(x => x.CurrencyCode, country.CurrencyCode)
-            .Create();
-
         _customerRepositoryMock
             .Setup(x => x.ExistsAsync(customerId, clientId, CancellationToken.None))
             .ReturnsAsync(true);
-
-        _customerRepositoryMock
-            .Setup(x => x.UpdateAsync(customer, CancellationToken.None));
 
         // Act
         var request = new UpdateCustomerRequest(customerId, clientId, updateDto);
@@ -88,8 +77,6 @@ public class UpdateCustomerHandlerTests : BaseTestFixture
         var customer = Fixture.Create<Data.Models.Customer>();
         var updateDto = Fixture.Create<UpdateCustomerDTO>();
 
-        _customerRepositoryMock
-            .Setup(x => x.UpdateAsync(customer, CancellationToken.None));
         _customerRepositoryMock
             .Setup(x => x.ExistsAsync(customer.Id, customer.ClientId, CancellationToken.None))
             .ReturnsAsync(false);

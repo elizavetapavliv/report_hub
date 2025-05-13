@@ -29,18 +29,9 @@ public class UpdatePlanHandlerTests : BaseTestFixture
         var planId = Guid.NewGuid();
         var updateDto = Fixture.Create<UpdatePlanDTO>();
 
-        var customer = Fixture.Build<Data.Models.Plan>()
-            .With(x => x.StartDate, updateDto.StartDate)
-            .With(x => x.EndDate, updateDto.EndDate)
-            .With(x => x.Count, updateDto.Count)
-            .Create();
-
         _planRepositoryMock
             .Setup(x => x.ExistsAsync(planId, CancellationToken.None))
             .ReturnsAsync(true);
-
-        _planRepositoryMock
-            .Setup(x => x.UpdateAsync(planId, customer, CancellationToken.None));
 
         // Act
         var request = new UpdatePlanRequest(planId, updateDto);
@@ -72,8 +63,6 @@ public class UpdatePlanHandlerTests : BaseTestFixture
         var plan = Fixture.Create<Data.Models.Plan>();
         var updateDto = Fixture.Create<UpdatePlanDTO>();
 
-        _planRepositoryMock
-            .Setup(x => x.UpdateAsync(plan.Id, plan, CancellationToken.None));
         _planRepositoryMock
             .Setup(x => x.ExistsAsync(plan.Id, CancellationToken.None))
             .ReturnsAsync(false);
