@@ -20,7 +20,7 @@ public class ImportCustomersHandlerTests : BaseTestFixture
     private Mock<IExcelImporter> _excelImporter;
     private Mock<ICustomerRepository> _customerRepositoryMock;
     private Mock<ICountryBasedEntityManager> _countryBasedEntityManagerMock;
-    private Mock<IValidator<CreateCustomerDTO>> _validatorMock;
+    private Mock<IValidator<ImportCustomerDTO>> _validatorMock;
 
     private ImportCustomersHandler _handler;
 
@@ -30,7 +30,7 @@ public class ImportCustomersHandlerTests : BaseTestFixture
         _excelImporter = new Mock<IExcelImporter>();
         _customerRepositoryMock = new Mock<ICustomerRepository>();
         _countryBasedEntityManagerMock = new Mock<ICountryBasedEntityManager>();
-        _validatorMock = new Mock<IValidator<CreateCustomerDTO>>();
+        _validatorMock = new Mock<IValidator<ImportCustomerDTO>>();
         _handler = new ImportCustomersHandler(
             _excelImporter.Object,
             _customerRepositoryMock.Object,
@@ -42,17 +42,18 @@ public class ImportCustomersHandlerTests : BaseTestFixture
     public async Task ImportCustomers_ValidRequest_ReturnsCreated()
     {
         // Arrange
-        var customerDtos = Fixture.Build<CreateCustomerDTO>().CreateMany(2).ToList();
+        var customerDtos = Fixture.Build<ImportCustomerDTO>().CreateMany(2).ToList();
         var customers = Fixture.Build<Data.Models.Customer>().CreateMany(2).ToList();
+        var clientId = Guid.NewGuid();
 
         using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes("Excel content"));
 
         _excelImporter
-            .Setup(x => x.Read<CreateCustomerDTO>(It.Is<Stream>(str => str.Length == memoryStream.Length)))
+            .Setup(x => x.Read<ImportCustomerDTO>(It.Is<Stream>(str => str.Length == memoryStream.Length)))
             .Returns(customerDtos);
 
         _countryBasedEntityManagerMock
-            .Setup(x => x.GenerateEntitiesAsync<CreateCustomerDTO, Data.Models.Customer>(customerDtos, CancellationToken.None))
+            .Setup(x => x.GenerateEntitiesAsync<ImportCustomerDTO, Data.Models.Customer>(customerDtos, CancellationToken.None))
             .ReturnsAsync(customers);
 
         _validatorMock
@@ -73,7 +74,7 @@ public class ImportCustomersHandlerTests : BaseTestFixture
         };
 
         // Act
-        var request = new ImportCustomersRequest(importDto);
+        var request = new ImportCustomersRequest(clientId, importDto);
         var result = await _handler.Handle(request, CancellationToken.None);
 
         // Assert

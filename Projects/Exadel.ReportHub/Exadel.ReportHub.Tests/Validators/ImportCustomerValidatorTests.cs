@@ -11,30 +11,29 @@ using Moq;
 namespace Exadel.ReportHub.Tests.Validators;
 
 [TestFixture]
-public class CreateCustomerValidatorTests : BaseTestFixture
+public class ImportCustomerValidatorTests : BaseTestFixture
 {
-    private CreateCustomerValidator _validator;
+    private ImportCustomerValidator _validator;
     private Mock<ICustomerRepository> _customerRepositoryMock;
-    private Mock<IClientRepository> _clientRepositoryMock;
+    private Mock<ICountryRepository> _countryRepositoryMock;
 
     [SetUp]
     public void Setup()
     {
         _customerRepositoryMock = new Mock<ICustomerRepository>();
-        var updateCustomerDtoValidator = new InlineValidator<ImportCustomerDTO>();
+        _countryRepositoryMock = new Mock<ICountryRepository>();
+        var updateCustomerDtoValidator = new InlineValidator<UpdateCustomerDTO>();
         updateCustomerDtoValidator.RuleSet("Default", () =>
         {
             updateCustomerDtoValidator.RuleLevelCascadeMode = CascadeMode.Stop;
 
-            updateCustomerDtoValidator.RuleFor(x => x.Email)
+            updateCustomerDtoValidator.RuleFor(x => x.CountryId)
                 .NotEmpty()
-                .EmailAddress()
-                .WithMessage(Constants.Validation.Email.IsInvalid)
-                .MustAsync(async (email, cancellationToken) => !await _customerRepositoryMock.Object.EmailExistsAsync(email, cancellationToken))
-                .WithMessage(Constants.Validation.Email.IsTaken);
+                .MustAsync(async (countryId, cancellationToken) =>
+                    await _countryRepositoryMock.Object.ExistsAsync(countryId, cancellationToken))
+                .WithMessage(Constants.Validation.Country.DoesNotExist);
         });
-        _clientRepositoryMock = new Mock<IClientRepository>();
-        _validator = new CreateCustomerValidator(_clientRepositoryMock.Object, updateCustomerDtoValidator);
+        _validator = new ImportCustomerValidator(_customerRepositoryMock.Object, updateCustomerDtoValidator);
     }
 
     [Test]
@@ -66,7 +65,7 @@ public class CreateCustomerValidatorTests : BaseTestFixture
         // Assert
         Assert.That(result.IsValid, Is.False);
         Assert.That(result.Errors, Has.Exactly(1).Items);
-        Assert.That(result.Errors[0].PropertyName, Is.EqualTo(nameof(CreateCustomerDTO.Email)));
+        Assert.That(result.Errors[0].PropertyName, Is.EqualTo(nameof(ImportCustomerDTO.Email)));
         Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo($"'{nameof(customer.Email)}' must not be empty."));
     }
 
@@ -83,7 +82,7 @@ public class CreateCustomerValidatorTests : BaseTestFixture
         // Assert
         Assert.That(result.IsValid, Is.False);
         Assert.That(result.Errors, Has.Exactly(1).Items);
-        Assert.That(result.Errors[0].PropertyName, Is.EqualTo(nameof(CreateCustomerDTO.Email)));
+        Assert.That(result.Errors[0].PropertyName, Is.EqualTo(nameof(ImportCustomerDTO.Email)));
         Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo(Constants.Validation.Email.IsInvalid));
     }
 
@@ -102,16 +101,16 @@ public class CreateCustomerValidatorTests : BaseTestFixture
         // Assert
         Assert.That(result.IsValid, Is.False);
         Assert.That(result.Errors, Has.Exactly(1).Items);
-        Assert.That(result.Errors[0].PropertyName, Is.EqualTo(nameof(CreateCustomerDTO.Email)));
+        Assert.That(result.Errors[0].PropertyName, Is.EqualTo(nameof(ImportCustomerDTO.Email)));
         Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo(Constants.Validation.Email.IsTaken));
     }
 
     [Test]
-    public async Task ValidateAsync_EmptyCliendId_ErrorReturned()
+    public async Task ValidateAsync_EmptyCountryId_ErrorReturned()
     {
         // Arrange
         var customer = GetValidCustomer();
-        customer.ClientId = Guid.Empty;
+        customer.CountryId = Guid.Empty;
 
         // Act
         var result = await _validator.TestValidateAsync(customer);
@@ -119,17 +118,18 @@ public class CreateCustomerValidatorTests : BaseTestFixture
         // Assert
         Assert.That(result.IsValid, Is.False);
         Assert.That(result.Errors, Has.Exactly(1).Items);
-        Assert.That(result.Errors[0].PropertyName, Is.EqualTo(nameof(CreateCustomerDTO.ClientId)));
-        Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo("'Client Id' must not be empty."));
+        Assert.That(result.Errors[0].PropertyName, Is.EqualTo(nameof(ImportCustomerDTO.CountryId)));
+        Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo("'Country Id' must not be empty."));
     }
 
     [Test]
-    public async Task ValidateAsync_ClientIdDoesNotExist_ErrorReturned()
+    public async Task ValidateAsync_CountryIdDoesNotExist_ErrorReturned()
     {
         // Arrange
         var customer = GetValidCustomer();
-        _clientRepositoryMock
-            .Setup(x => x.ExistsAsync(customer.ClientId, CancellationToken.None))
+
+        _countryRepositoryMock
+            .Setup(x => x.ExistsAsync(customer.CountryId, CancellationToken.None))
             .ReturnsAsync(false);
 
         // Act
@@ -138,28 +138,28 @@ public class CreateCustomerValidatorTests : BaseTestFixture
         // Assert
         Assert.That(result.IsValid, Is.False);
         Assert.That(result.Errors, Has.Exactly(1).Items);
-        Assert.That(result.Errors[0].PropertyName, Is.EqualTo(nameof(CreateCustomerDTO.ClientId)));
-        Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo(Constants.Validation.Client.DoesNotExist));
+        Assert.That(result.Errors[0].PropertyName, Is.EqualTo(nameof(ImportCustomerDTO.CountryId)));
+        Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo(Constants.Validation.Country.DoesNotExist));
     }
 
-    private CreateCustomerDTO GetValidCustomer()
+    private ImportCustomerDTO GetValidCustomer()
     {
         var name = "Customer name";
         var email = "customer@test.com";
-        var clientId = Guid.NewGuid();
+        var countryId = Guid.NewGuid();
 
-        _clientRepositoryMock
-            .Setup(x => x.ExistsAsync(clientId, CancellationToken.None))
+        _countryRepositoryMock
+            .Setup(x => x.ExistsAsync(countryId, CancellationToken.None))
             .ReturnsAsync(true);
 
         _customerRepositoryMock
             .Setup(x => x.EmailExistsAsync(email, CancellationToken.None))
             .ReturnsAsync(false);
 
-        return Fixture.Build<CreateCustomerDTO>()
+        return Fixture.Build<ImportCustomerDTO>()
             .With(x => x.Name, name)
             .With(x => x.Email, email)
-            .With(x => x.ClientId, clientId)
+            .With(x => x.CountryId, countryId)
             .Create();
     }
 }
