@@ -53,8 +53,8 @@ public class InvoiceRepository(MongoDbContext context) : BaseRepository(context)
     {
         var filter = _filterBuilder.And(
             _filterBuilder.Eq(x => x.Id, id),
-            _filterBuilder.Eq(x => x.ClientId, clientId),
-            _filterBuilder.Eq(x => x.IsDeleted, false));
+            _filterBuilder.Eq(x => x.ClientId, clientId))
+            .NotDeleted();
 
         return await GetCollection<Invoice>().Find(filter).SingleOrDefaultAsync(cancellationToken);
     }
