@@ -49,7 +49,7 @@ public class ImportCustomersRequestValidatorTests : BaseTestFixture
         // Assert
         Assert.That(result.IsValid, Is.False);
         Assert.That(result.Errors, Has.Exactly(1).Items);
-        Assert.That(result.Errors[0].PropertyName, Is.EqualTo("ImportDTO.File.FileName"));
+        Assert.That(result.Errors[0].PropertyName, Is.EqualTo("ImportDto.File.FileName"));
         Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo(Constants.Validation.Import.InvalidFileExtension));
     }
 

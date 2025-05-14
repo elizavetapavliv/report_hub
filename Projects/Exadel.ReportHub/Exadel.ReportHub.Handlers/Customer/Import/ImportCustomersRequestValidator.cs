@@ -23,10 +23,10 @@ public class ImportCustomersRequestValidator : AbstractValidator<ImportCustomers
             .MustAsync(_clientRepository.ExistsAsync)
             .WithMessage(Constants.Validation.Client.DoesNotExist);
 
-        RuleFor(x => x.ImportDTO)
+        RuleFor(x => x.ImportDto)
             .SetValidator(_importDtoValidator);
 
-        RuleFor(x => x.ImportDTO.File.FileName)
+        RuleFor(x => x.ImportDto.File.FileName)
             .Must(fileName => string.Equals(Path.GetExtension(fileName), Constants.File.Extension.Excel, StringComparison.OrdinalIgnoreCase))
             .WithMessage(Constants.Validation.Import.InvalidFileExtension);
     }

@@ -21,12 +21,12 @@ public class CreateCustomerValidatorTests : BaseTestFixture
     public void Setup()
     {
         _customerRepositoryMock = new Mock<ICustomerRepository>();
-        var updateCustomerDtoValidator = new InlineValidator<ImportCustomerDTO>();
-        updateCustomerDtoValidator.RuleSet("Default", () =>
+        var importCustomerDtoValidator = new InlineValidator<ImportCustomerDTO>();
+        importCustomerDtoValidator.RuleSet("Default", () =>
         {
-            updateCustomerDtoValidator.RuleLevelCascadeMode = CascadeMode.Stop;
+            importCustomerDtoValidator.RuleLevelCascadeMode = CascadeMode.Stop;
 
-            updateCustomerDtoValidator.RuleFor(x => x.Email)
+            importCustomerDtoValidator.RuleFor(x => x.Email)
                 .NotEmpty()
                 .EmailAddress()
                 .WithMessage(Constants.Validation.Email.IsInvalid)
@@ -34,7 +34,7 @@ public class CreateCustomerValidatorTests : BaseTestFixture
                 .WithMessage(Constants.Validation.Email.IsTaken);
         });
         _clientRepositoryMock = new Mock<IClientRepository>();
-        _validator = new CreateCustomerValidator(_clientRepositoryMock.Object, updateCustomerDtoValidator);
+        _validator = new CreateCustomerValidator(_clientRepositoryMock.Object, importCustomerDtoValidator);
     }
 
     [Test]

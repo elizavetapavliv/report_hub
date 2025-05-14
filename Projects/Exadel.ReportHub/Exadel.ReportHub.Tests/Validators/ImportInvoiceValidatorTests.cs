@@ -3,7 +3,6 @@ using Exadel.ReportHub.Handlers;
 using Exadel.ReportHub.Handlers.Validators;
 using Exadel.ReportHub.RA.Abstract;
 using Exadel.ReportHub.SDK.DTOs.Invoice;
-using Exadel.ReportHub.SDK.Enums;
 using Exadel.ReportHub.Tests.Abstracts;
 using FluentValidation;
 using FluentValidation.TestHelper;
@@ -11,11 +10,11 @@ using Moq;
 
 namespace Exadel.ReportHub.Tests.Validators;
 
-public class InvoiceValidatorTests : BaseTestFixture
+[TestFixture]
+public class ImportInvoiceValidatorTests : BaseTestFixture
 {
-    private IValidator<CreateInvoiceDTO> _invoiceValidator;
+    private IValidator<ImportInvoiceDTO> _invoiceValidator;
     private Mock<IInvoiceRepository> _invoiceRepositoryMock;
-    private Mock<IClientRepository> _clientRepositoryMock;
     private Mock<ICustomerRepository> _customerRepositoryMock;
     private Mock<IItemRepository> _itemRepositoryMock;
 
@@ -45,11 +44,10 @@ public class InvoiceValidatorTests : BaseTestFixture
         });
 
         _invoiceRepositoryMock = new Mock<IInvoiceRepository>();
-        _clientRepositoryMock = new Mock<IClientRepository>();
         _customerRepositoryMock = new Mock<ICustomerRepository>();
         _itemRepositoryMock = new Mock<IItemRepository>();
 
-        _invoiceValidator = new CreateInvoiceDtoValidator(_invoiceRepositoryMock.Object, _clientRepositoryMock.Object,
+        _invoiceValidator = new ImportInvoiceDtoValidator(_invoiceRepositoryMock.Object,
             _customerRepositoryMock.Object, _itemRepositoryMock.Object, updateInvoiceValidator);
     }
 
@@ -65,23 +63,6 @@ public class InvoiceValidatorTests : BaseTestFixture
         // Assert
         Assert.That(result.IsValid, Is.True);
         Assert.That(result.Errors, Has.Count.EqualTo(0));
-    }
-
-    [Test]
-    public async Task ValidateAsync_ClientIdIsEmpty_ErrorReturned()
-    {
-        // Arrange
-        var invoice = GetValidInvoice();
-        invoice.ClientId = Guid.Empty;
-
-        // Act
-        var result = await _invoiceValidator.TestValidateAsync(invoice);
-
-        // Assert
-        Assert.That(result.IsValid, Is.False);
-        Assert.That(result.Errors.Count, Is.EqualTo(1));
-        Assert.That(result.Errors[0].PropertyName, Is.EqualTo(nameof(CreateInvoiceDTO.ClientId)));
-        Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo("'Client Id' must not be empty."));
     }
 
     [Test]
@@ -171,27 +152,6 @@ public class InvoiceValidatorTests : BaseTestFixture
         Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo("'Item Ids' must not be empty."));
     }
 
-    // Client and Customer tests
-    [Test]
-    public async Task ValidateAsync_ClientDoesntExists_ErrorReturned()
-    {
-        // Arrange
-        var invoice = GetValidInvoice();
-        var clientId = Guid.NewGuid();
-        invoice.ClientId = clientId;
-        _clientRepositoryMock.Setup(x => x.ExistsAsync(clientId, CancellationToken.None))
-            .ReturnsAsync(false);
-
-        // Act
-        var result = await _invoiceValidator.TestValidateAsync(invoice);
-
-        // Assert
-        Assert.That(result.IsValid, Is.False);
-        Assert.That(result.Errors.Count, Is.EqualTo(1));
-        Assert.That(result.Errors[0].PropertyName, Is.EqualTo(nameof(CreateInvoiceDTO.ClientId)));
-        Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo(Constants.Validation.Client.DoesNotExist));
-    }
-
     [Test]
     public async Task ValidateAsync_CustomerDoesntExists_ErrorReturned()
     {
@@ -199,7 +159,7 @@ public class InvoiceValidatorTests : BaseTestFixture
         var invoice = GetValidInvoice();
         var customerId = Guid.NewGuid();
         invoice.CustomerId = customerId;
-        _customerRepositoryMock.Setup(x => x.ExistsAsync(customerId, invoice.ClientId, CancellationToken.None))
+        _customerRepositoryMock.Setup(x => x.ExistsAsync(customerId, CancellationToken.None))
             .ReturnsAsync(false);
 
         // Act
@@ -230,7 +190,6 @@ public class InvoiceValidatorTests : BaseTestFixture
         Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo(Constants.Validation.Item.DoesNotExist));
     }
 
-    // InvoiceNumber tests
     [Test]
     public async Task ValidateAsync_InvoiceNumberBigLength_ErrorReturned()
     {
@@ -284,7 +243,6 @@ public class InvoiceValidatorTests : BaseTestFixture
         Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo(Constants.Validation.Invoice.DuplicateInvoice));
     }
 
-    // IssueDate and DueDate tests
     [Test]
     public async Task ValidateAsync_IssueDateIsInFuture_ErrorReturned()
     {
@@ -320,9 +278,8 @@ public class InvoiceValidatorTests : BaseTestFixture
         Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo(Constants.Validation.Invoice.DueDateBeforeIssueDate));
     }
 
-    private CreateInvoiceDTO GetValidInvoice()
+    private ImportInvoiceDTO GetValidInvoice()
     {
-        var clientId = Guid.Parse("ba18cc29-c7ff-48c4-9b7b-456bcef231d0");
         var customerId = Guid.Parse("6d024627-568b-4d57-b477-2274c9d807b9");
         var invoiceNumber = "INV20230051";
         var itemIds = new List<Guid>
@@ -330,10 +287,7 @@ public class InvoiceValidatorTests : BaseTestFixture
             Guid.Parse("76fb1a23-2f77-4c26-bf45-fc655f7432e6"),
             Guid.Parse("5c98227f-e9b7-45dd-bfdb-22dddf384598")
         };
-
-        _clientRepositoryMock.Setup(x => x.ExistsAsync(clientId, CancellationToken.None))
-            .ReturnsAsync(true);
-        _customerRepositoryMock.Setup(x => x.ExistsAsync(customerId, clientId, CancellationToken.None))
+        _customerRepositoryMock.Setup(x => x.ExistsAsync(customerId, CancellationToken.None))
             .ReturnsAsync(true);
         _invoiceRepositoryMock.Setup(x => x.ExistsAsync(invoiceNumber, CancellationToken.None))
             .ReturnsAsync(false);
@@ -341,7 +295,6 @@ public class InvoiceValidatorTests : BaseTestFixture
             .ReturnsAsync(true);
 
         return Fixture.Build<CreateInvoiceDTO>()
-                .With(x => x.ClientId, clientId)
                 .With(x => x.CustomerId, customerId)
                 .With(x => x.InvoiceNumber, invoiceNumber)
                 .With(x => x.IssueDate, DateTime.UtcNow.Date.AddDays(-5))
