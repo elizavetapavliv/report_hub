@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using Exadel.ReportHub.Data.Models;
 using Exadel.ReportHub.Export.Abstract;
 using Exadel.ReportHub.Export.Abstract.Helpers;
 using Exadel.ReportHub.Export.Abstract.Models;
@@ -19,7 +20,7 @@ public class ReportManager(IInvoiceRepository invoiceRepository, IItemRepository
 
         await Task.WhenAll(exportStrategyTask, reportTask, clientCurrencyTask);
 
-        var report = reportTask.Result ?? new Data.Models.InvoicesReport();
+        var report = reportTask.Result ?? new InvoicesReport();
         report.ClientCurrency = clientCurrencyTask.Result;
         report.ReportDate = DateTime.UtcNow;
 
@@ -44,14 +45,18 @@ public class ReportManager(IInvoiceRepository invoiceRepository, IItemRepository
         var currencyTask = clientRepository.GetCurrencyAsync(exportReportDto.ClientId, cancellationToken);
 
         await Task.WhenAll(exportStrategyTask, itemPricesTask, countsTask, currencyTask);
+
         var report = new ItemsReport
         {
-            MostSoldItemId = countsTask.Result.Count > 0 ?
-                countsTask.Result.MaxBy(x => x.Value).Key : null,
+            MostSoldItemName = countsTask.Result.Count > 0 ?
+                await itemRepository.GetNameAsync(countsTask.Result.MaxBy(x => x.Value).Key, cancellationToken) :
+                "-",
             AveragePrice = itemPricesTask.Result.Count > 0 ?
-                itemPricesTask.Result.Average(x => x.Value) : 0,
+                itemPricesTask.Result.Average(x => x.Value) :
+                0,
             AverageRevenue = countsTask.Result.Count > 0 && itemPricesTask.Result.Count > 0 ?
-                itemPricesTask.Result.Select(x => x.Value * countsTask.Result.GetValueOrDefault(x.Key)).Average() : 0,
+                itemPricesTask.Result.Select(x => x.Value * countsTask.Result.GetValueOrDefault(x.Key)).Average() :
+                0,
             ClientCurrency = currencyTask.Result,
             ReportDate = DateTime.UtcNow
         };
@@ -75,25 +80,46 @@ public class ReportManager(IInvoiceRepository invoiceRepository, IItemRepository
         var reports = new List<PlanReport>();
 
         await Task.WhenAll(exportStrategyTask, plansTask);
-        if (plansTask.Result.Any())
+        var plans = plansTask.Result;
+
+        if (plans.Any())
         {
-            var countsTask = invoiceRepository.GetPlansActualCountAsync(plansTask.Result, cancellationToken);
-            var itemPricesTask = itemRepository.GetClientItemPricesAsync(exportReportDto.ClientId, cancellationToken);
+            var countsTask = invoiceRepository.GetPlansActualCountAsync(plans, cancellationToken);
+            var itemsTask = itemRepository.GetByClientIdAsync(exportReportDto.ClientId, cancellationToken);
             var clientCurrencyTask = clientRepository.GetCurrencyAsync(exportReportDto.ClientId, cancellationToken);
 
-            await Task.WhenAll(countsTask, itemPricesTask, clientCurrencyTask);
+            await Task.WhenAll(countsTask, itemsTask, clientCurrencyTask);
+            var items = itemsTask.Result;
+            var counts = countsTask.Result;
+            var clientCurrency = clientCurrencyTask.Result;
 
-            reports = plansTask.Result.Select(x => new PlanReport
+            reports = plans.Select(x =>
             {
-                TargetItemId = x.ItemId,
-                StartDate = x.StartDate,
-                EndDate = x.EndDate,
-                PlannedCount = x.Count,
-                ActualCount = countsTask.Result[x.Id],
-                Revenue = itemPricesTask.Result[x.ItemId] * countsTask.Result[x.Id],
-                ClientCurrency = clientCurrencyTask.Result,
-                ReportDate = DateTime.UtcNow
-            }).ToList();
+                var item = items.Single(i => i.Id == x.ItemId);
+
+                return new PlanReport
+                {
+                    TargetItemName = item.Name,
+                    StartDate = x.StartDate,
+                    EndDate = x.EndDate,
+                    PlannedCount = x.Count,
+                    ActualCount = counts[x.Id],
+                    Revenue = item.Price * counts[x.Id],
+                    ClientCurrency = clientCurrency,
+                    ReportDate = DateTime.UtcNow
+                };
+            }).OrderByDescending(x => x.StartDate)
+                .ToList();
+
+            var chartData = new ChartData
+            {
+                ChartTitle = string.Format(Export.Abstract.Constants.ChartInfo.PlansChartTitle, clientCurrencyTask.Result),
+                NamesTitle = Export.Abstract.Constants.ChartInfo.PlansNamesTitle,
+                ValuesTitle = Export.Abstract.Constants.ChartInfo.PlansValuesTitle,
+                NameValues = reports.GroupBy(x => x.TargetItemName, x => x.Revenue).ToDictionary(x => x.Key, g => g.Sum())
+            };
+
+            reports[0].ChartData = chartData;
         }
 
         var stream = await exportStrategyTask.Result.ExportAsync(reports, cancellationToken);

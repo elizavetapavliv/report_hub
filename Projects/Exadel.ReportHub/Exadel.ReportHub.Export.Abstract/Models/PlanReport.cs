@@ -4,7 +4,7 @@ namespace Exadel.ReportHub.Export.Abstract.Models;
 
 public class PlanReport : BaseReport
 {
-    public Guid TargetItemId { get; set; }
+    public string TargetItemName { get; set; }
 
     public DateTime StartDate { get; set; }
 
