@@ -4,7 +4,7 @@ namespace Exadel.ReportHub.Handlers.Managers.Client;
 
 public interface IClientManager
 {
-    Task<ClientDTO> GenerateClientAsync(CreateClientDTO createClientDto, CancellationToken cancellationToken);
+    Task<ClientDTO> CreateClientAsync(CreateClientDTO createClientDto, CancellationToken cancellationToken);
 
-    Task<IList<ClientDTO>> GenerateClientsAsync(IEnumerable<CreateClientDTO> createClientDtos, CancellationToken cancellationToken);
+    Task<IList<ClientDTO>> CreateClientsAsync(IEnumerable<CreateClientDTO> createClientDtos, CancellationToken cancellationToken);
 }

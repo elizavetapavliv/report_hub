@@ -38,7 +38,7 @@ public class CreatePlanValidatorTests : BaseTestFixture
     public async Task ValidateAsync_ValidPlan_NoErrorReturned()
     {
         // Arrange
-        var plan = GetValidPlan();
+        var plan = SetupValidPlan();
 
         // Act
         var result = await _validator.TestValidateAsync(plan);
@@ -52,7 +52,7 @@ public class CreatePlanValidatorTests : BaseTestFixture
     public async Task ValidateAsync_EmptyPlanId_ErrorReturned()
     {
         // Arrange
-        var plan = GetValidPlan();
+        var plan = SetupValidPlan();
         plan.ClientId = Guid.Empty;
 
         // Act
@@ -69,7 +69,7 @@ public class CreatePlanValidatorTests : BaseTestFixture
     public async Task ValidateAsync_PlanIsNotUnique_ErrorReturned()
     {
         // Arrange
-        var plan = GetValidPlan();
+        var plan = SetupValidPlan();
 
         _planRepositoryMock
             .Setup(x => x.ExistsForItemByPeriodAsync(
@@ -93,7 +93,7 @@ public class CreatePlanValidatorTests : BaseTestFixture
     public async Task ValidateAsync_EmptyItemId_ErrorReturned()
     {
         // Arrange
-        var plan = GetValidPlan();
+        var plan = SetupValidPlan();
         plan.ItemId = Guid.Empty;
 
         // Act
@@ -110,7 +110,7 @@ public class CreatePlanValidatorTests : BaseTestFixture
     public async Task ValidateAsync_ItemDoesNotExist_ErrorReturned()
     {
         // Arrange
-        var plan = GetValidPlan();
+        var plan = SetupValidPlan();
 
         _itemRepositoryMock
             .Setup(x => x.ExistsAsync(plan.ItemId, CancellationToken.None))
@@ -130,7 +130,7 @@ public class CreatePlanValidatorTests : BaseTestFixture
     public async Task ValidateAsync_ClientDoesNotExist_ErrorReturned()
     {
         // Arrange
-        var plan = GetValidPlan();
+        var plan = SetupValidPlan();
 
         _clientRepositoryMock
             .Setup(x => x.ExistsAsync(plan.ClientId, CancellationToken.None))
@@ -146,7 +146,7 @@ public class CreatePlanValidatorTests : BaseTestFixture
         Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo(Constants.Validation.Client.DoesNotExist));
     }
 
-    private CreatePlanDTO GetValidPlan()
+    private CreatePlanDTO SetupValidPlan()
     {
         var clientId = Guid.NewGuid();
         var itemId = Guid.NewGuid();

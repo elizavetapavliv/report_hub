@@ -7,14 +7,14 @@ using Exadel.ReportHub.SDK.DTOs.Customer;
 
 namespace Exadel.ReportHub.Handlers.Managers.Customer;
 
-public class CustomerManager(ICustomerRepository customerRepository, ICountryBasedHelper countryBasedHelper, IMapper mapper) : ICustomerManager
+public class CustomerManager(ICustomerRepository customerRepository, ICountryDataFiller countryBasedHelper, IMapper mapper) : ICustomerManager
 {
-    public async Task<CustomerDTO> GenerateCustomerAsync(CreateCustomerDTO createCustomerDto, CancellationToken cancellationToken)
+    public async Task<CustomerDTO> CreateCustomerAsync(CreateCustomerDTO createCustomerDto, CancellationToken cancellationToken)
     {
-        return (await GenerateCustomersAsync([createCustomerDto], cancellationToken)).Single();
+        return (await CreateCustomersAsync([createCustomerDto], cancellationToken)).Single();
     }
 
-    public async Task<IList<CustomerDTO>> GenerateCustomersAsync(IEnumerable<CreateCustomerDTO> createCustomerDtos, CancellationToken cancellationToken)
+    public async Task<IList<CustomerDTO>> CreateCustomersAsync(IEnumerable<CreateCustomerDTO> createCustomerDtos, CancellationToken cancellationToken)
     {
         var customers = mapper.Map<IList<Data.Models.Customer>>(createCustomerDtos);
 

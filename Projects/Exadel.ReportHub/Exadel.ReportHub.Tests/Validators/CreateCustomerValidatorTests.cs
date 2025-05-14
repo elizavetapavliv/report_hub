@@ -41,7 +41,7 @@ public class CreateCustomerValidatorTests : BaseTestFixture
     public async Task ValidateAsync_ValidCustomer_NoErrorReturned()
     {
         // Arrange
-        var customer = GetValidCustomer();
+        var customer = SetupValidCustomer();
 
         // Act
         var result = await _validator.TestValidateAsync(customer);
@@ -57,7 +57,7 @@ public class CreateCustomerValidatorTests : BaseTestFixture
     public async Task ValidateAsync_EmptyEmail_ErrorReturned(string email)
     {
         // Arrange
-        var customer = GetValidCustomer();
+        var customer = SetupValidCustomer();
         customer.Email = email;
 
         // Act
@@ -74,7 +74,7 @@ public class CreateCustomerValidatorTests : BaseTestFixture
     public async Task ValidateAsync_InvalidEmailFormat_ErrorReturned()
     {
         // Arrange
-        var customer = GetValidCustomer();
+        var customer = SetupValidCustomer();
         customer.Email = "customer";
 
         // Act
@@ -91,7 +91,7 @@ public class CreateCustomerValidatorTests : BaseTestFixture
     public async Task ValidateAsync_EmailIsTaken_ErrorReturned()
     {
         // Arrange
-        var customer = GetValidCustomer();
+        var customer = SetupValidCustomer();
 
         _customerRepositoryMock.Setup(x => x.EmailExistsAsync(customer.Email, CancellationToken.None))
             .ReturnsAsync(true);
@@ -110,7 +110,7 @@ public class CreateCustomerValidatorTests : BaseTestFixture
     public async Task ValidateAsync_EmptyCliendId_ErrorReturned()
     {
         // Arrange
-        var customer = GetValidCustomer();
+        var customer = SetupValidCustomer();
         customer.ClientId = Guid.Empty;
 
         // Act
@@ -127,7 +127,7 @@ public class CreateCustomerValidatorTests : BaseTestFixture
     public async Task ValidateAsync_ClientIdDoesNotExist_ErrorReturned()
     {
         // Arrange
-        var customer = GetValidCustomer();
+        var customer = SetupValidCustomer();
         _clientRepositoryMock
             .Setup(x => x.ExistsAsync(customer.ClientId, CancellationToken.None))
             .ReturnsAsync(false);
@@ -142,7 +142,7 @@ public class CreateCustomerValidatorTests : BaseTestFixture
         Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo(Constants.Validation.Client.DoesNotExist));
     }
 
-    private CreateCustomerDTO GetValidCustomer()
+    private CreateCustomerDTO SetupValidCustomer()
     {
         var email = "customer@test.com";
         var clientId = Guid.NewGuid();

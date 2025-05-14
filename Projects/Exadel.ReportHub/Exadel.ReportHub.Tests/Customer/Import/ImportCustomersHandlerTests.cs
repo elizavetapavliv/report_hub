@@ -17,7 +17,7 @@ namespace Exadel.ReportHub.Tests.Customer.Import;
 [TestFixture]
 public class ImportCustomersHandlerTests : BaseTestFixture
 {
-    private Mock<IExcelImporter> _excelImporter;
+    private Mock<IExcelImporter> _excelImporterMock;
     private Mock<ICustomerManager> _customerManagerMock;
     private Mock<IValidator<ImportCustomerDTO>> _validatorMock;
     private Mock<IMapper> _mapperMock;
@@ -27,12 +27,12 @@ public class ImportCustomersHandlerTests : BaseTestFixture
     [SetUp]
     public void Setup()
     {
-        _excelImporter = new Mock<IExcelImporter>();
+        _excelImporterMock = new Mock<IExcelImporter>();
         _customerManagerMock = new Mock<ICustomerManager>();
         _validatorMock = new Mock<IValidator<ImportCustomerDTO>>();
         _mapperMock = new Mock<IMapper>();
         _handler = new ImportCustomersHandler(
-            _excelImporter.Object,
+            _excelImporterMock.Object,
             _customerManagerMock.Object,
             _validatorMock.Object,
             _mapperMock.Object);
@@ -58,12 +58,12 @@ public class ImportCustomersHandlerTests : BaseTestFixture
 
         using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes("Excel content"));
 
-        _excelImporter
+        _excelImporterMock
             .Setup(x => x.Read<ImportCustomerDTO>(It.Is<Stream>(str => str.Length == memoryStream.Length)))
             .Returns(importCustomerDtos);
 
         _customerManagerMock
-            .Setup(x => x.GenerateCustomersAsync(createCustomerDtos, CancellationToken.None))
+            .Setup(x => x.CreateCustomersAsync(createCustomerDtos, CancellationToken.None))
             .ReturnsAsync(customerDtos);
 
         _validatorMock

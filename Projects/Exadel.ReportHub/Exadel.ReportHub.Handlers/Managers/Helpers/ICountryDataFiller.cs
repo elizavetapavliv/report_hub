@@ -2,7 +2,7 @@
 
 namespace Exadel.ReportHub.Handlers.Managers.Helpers;
 
-public interface ICountryBasedHelper
+public interface ICountryDataFiller
 {
     Task FillCountryDataAsync<TEntity>(IList<TEntity> entities, CancellationToken cancellationToken)
         where TEntity : class, ICountryBasedDocument;

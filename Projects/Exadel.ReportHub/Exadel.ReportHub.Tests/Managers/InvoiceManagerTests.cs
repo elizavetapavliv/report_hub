@@ -77,7 +77,7 @@ public class InvoiceManagerTests : BaseTestFixture
             .ReturnsAsync(new List<Data.Models.Client> { client });
 
         // Act
-        var result = await _invoiceManager.GenerateInvoiceAsync(createInvoiceDto, CancellationToken.None);
+        var result = await _invoiceManager.CreateInvoiceAsync(createInvoiceDto, CancellationToken.None);
 
         // Assert
         Assert.That(result, Is.Not.Null);
@@ -146,7 +146,7 @@ public class InvoiceManagerTests : BaseTestFixture
             .ReturnsAsync(clients);
 
         // Act
-        var result = await _invoiceManager.GenerateInvoicesAsync(createInvoiceDtos, CancellationToken.None);
+        var result = await _invoiceManager.CreateInvoicesAsync(createInvoiceDtos, CancellationToken.None);
 
         // Assert
         Assert.That(result, Is.Not.Empty);

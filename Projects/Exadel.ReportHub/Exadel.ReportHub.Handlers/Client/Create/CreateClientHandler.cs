@@ -10,6 +10,6 @@ public class CreateClientHandler(IClientManager clientManager) : IRequestHandler
 {
     public async Task<ErrorOr<ClientDTO>> Handle(CreateClientRequest request, CancellationToken cancellationToken)
     {
-        return await clientManager.GenerateClientAsync(request.CreateClientDto, cancellationToken);
+        return await clientManager.CreateClientAsync(request.CreateClientDto, cancellationToken);
     }
 }

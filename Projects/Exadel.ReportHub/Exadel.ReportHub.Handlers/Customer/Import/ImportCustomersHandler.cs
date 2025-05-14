@@ -23,8 +23,8 @@ public class ImportCustomersHandler(
 
         var importCustomerDtos = excelImporter.Read<ImportCustomerDTO>(stream);
 
-        var tasks = importCustomerDtos.Select(dto => createCustomerValidator.ValidateAsync(dto, cancellationToken));
-        var validationResults = await Task.WhenAll(tasks);
+        var validationTasks = importCustomerDtos.Select(dto => createCustomerValidator.ValidateAsync(dto, cancellationToken));
+        var validationResults = await Task.WhenAll(validationTasks);
 
         var validationErrors = validationResults
             .SelectMany((result, index) => result.Errors.Select(error => (RowIndex: index, Error: error.ErrorMessage)))
@@ -44,7 +44,7 @@ public class ImportCustomersHandler(
             dto.ClientId = request.ClientId;
         }
 
-        var customerDtos = await customerManager.GenerateCustomersAsync(createCustomerDtos, cancellationToken);
+        var customerDtos = await customerManager.CreateCustomersAsync(createCustomerDtos, cancellationToken);
 
         return new ImportResultDTO { ImportedCount = customerDtos.Count };
     }

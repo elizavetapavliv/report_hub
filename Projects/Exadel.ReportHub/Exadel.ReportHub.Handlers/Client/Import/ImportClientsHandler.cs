@@ -21,8 +21,8 @@ public class ImportClientsHandler(
 
         var createClientDtos = excelImporter.Read<CreateClientDTO>(stream);
 
-        var tasks = createClientDtos.Select(dto => createClientValidator.ValidateAsync(dto, cancellationToken));
-        var validationResults = await Task.WhenAll(tasks);
+        var validationTasks = createClientDtos.Select(dto => createClientValidator.ValidateAsync(dto, cancellationToken));
+        var validationResults = await Task.WhenAll(validationTasks);
 
         var validationErrors = validationResults
             .SelectMany((result, index) => result.Errors.Select(error => (RowIndex: index, Error: error.ErrorMessage)))
@@ -36,7 +36,7 @@ public class ImportClientsHandler(
                 .ToList();
         }
 
-        var clientDtos = await clientManager.GenerateClientsAsync(createClientDtos, cancellationToken);
+        var clientDtos = await clientManager.CreateClientsAsync(createClientDtos, cancellationToken);
 
         return new ImportResultDTO { ImportedCount = clientDtos.Count };
     }

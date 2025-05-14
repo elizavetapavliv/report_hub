@@ -27,10 +27,14 @@ public class CreateCustomerHandlerTests : BaseTestFixture
     {
         // Arrange
         var createCustomerDto = Fixture.Create<CreateCustomerDTO>();
+<<<<<<< HEAD
         var customerDto = Fixture.Create<CustomerDTO>();
+=======
+        var country = Fixture.Build<Data.Models.Country>().With(x => x.Id, createCustomerDto.CountryId).Create();
+>>>>>>> origin/master
 
         _customerManagerMock
-            .Setup(x => x.GenerateCustomerAsync(createCustomerDto, CancellationToken.None))
+            .Setup(x => x.CreateCustomerAsync(createCustomerDto, CancellationToken.None))
             .ReturnsAsync(customerDto);
 
         // Act

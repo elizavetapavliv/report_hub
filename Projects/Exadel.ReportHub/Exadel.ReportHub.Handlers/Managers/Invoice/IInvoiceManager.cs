@@ -4,7 +4,7 @@ namespace Exadel.ReportHub.Handlers.Managers.Invoice;
 
 public interface IInvoiceManager
 {
-    Task<InvoiceDTO> GenerateInvoiceAsync(CreateInvoiceDTO createInvoiceDto, CancellationToken cancellationToken);
+    Task<InvoiceDTO> CreateInvoiceAsync(CreateInvoiceDTO createInvoiceDto, CancellationToken cancellationToken);
 
-    Task<IList<InvoiceDTO>> GenerateInvoicesAsync(IEnumerable<CreateInvoiceDTO> createInvoiceDtos, CancellationToken cancellationToken);
+    Task<IList<InvoiceDTO>> CreateInvoicesAsync(IEnumerable<CreateInvoiceDTO> createInvoiceDtos, CancellationToken cancellationToken);
 }

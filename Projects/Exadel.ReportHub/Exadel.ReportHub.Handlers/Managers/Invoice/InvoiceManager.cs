@@ -13,12 +13,12 @@ public class InvoiceManager(
     ICurrencyConverter currencyConverter,
     IMapper mapper) : IInvoiceManager
 {
-    public async Task<InvoiceDTO> GenerateInvoiceAsync(CreateInvoiceDTO createInvoiceDto, CancellationToken cancellationToken)
+    public async Task<InvoiceDTO> CreateInvoiceAsync(CreateInvoiceDTO createInvoiceDto, CancellationToken cancellationToken)
     {
-        return (await GenerateInvoicesAsync([createInvoiceDto], cancellationToken)).Single();
+        return (await CreateInvoicesAsync([createInvoiceDto], cancellationToken)).Single();
     }
 
-    public async Task<IList<InvoiceDTO>> GenerateInvoicesAsync(IEnumerable<CreateInvoiceDTO> createInvoiceDtos, CancellationToken cancellationToken)
+    public async Task<IList<InvoiceDTO>> CreateInvoicesAsync(IEnumerable<CreateInvoiceDTO> createInvoiceDtos, CancellationToken cancellationToken)
     {
         var invoices = mapper.Map<IList<Data.Models.Invoice>>(createInvoiceDtos);
 

@@ -46,7 +46,7 @@ public class CreateInvoiceValidatorTests : BaseTestFixture
     public async Task ValidateAsync_EverythingIsValid_NoErrorReturned()
     {
         // Arrange
-        var invoice = GetValidInvoice();
+        var invoice = SetupValidInvoice();
 
         // Act
         var result = await _invoiceValidator.TestValidateAsync(invoice);
@@ -60,7 +60,7 @@ public class CreateInvoiceValidatorTests : BaseTestFixture
     public async Task ValidateAsync_ClientIdIsEmpty_ErrorReturned()
     {
         // Arrange
-        var invoice = GetValidInvoice();
+        var invoice = SetupValidInvoice();
         invoice.ClientId = Guid.Empty;
 
         // Act
@@ -79,7 +79,7 @@ public class CreateInvoiceValidatorTests : BaseTestFixture
     public async Task ValidateAsync_InvoiceNumberIsNullOrEmpty_ErrorReturned(string value)
     {
         // Arrange
-        var invoice = GetValidInvoice();
+        var invoice = SetupValidInvoice();
         invoice.InvoiceNumber = value;
 
         // Act
@@ -96,7 +96,7 @@ public class CreateInvoiceValidatorTests : BaseTestFixture
     public async Task ValidateAsync_ClientDoesntExists_ErrorReturned()
     {
         // Arrange
-        var invoice = GetValidInvoice();
+        var invoice = SetupValidInvoice();
         var clientId = Guid.NewGuid();
         invoice.ClientId = clientId;
         _clientRepositoryMock.Setup(x => x.ExistsAsync(clientId, CancellationToken.None))
@@ -116,7 +116,7 @@ public class CreateInvoiceValidatorTests : BaseTestFixture
     public async Task ValidateAsync_CustomerDoesntExistsOnClient_ErrorReturned()
     {
         // Arrange
-        var invoice = GetValidInvoice();
+        var invoice = SetupValidInvoice();
         var customerId = Guid.NewGuid();
         invoice.CustomerId = customerId;
         _customerRepositoryMock.Setup(x => x.ExistsOnClientAsync(customerId, invoice.ClientId, CancellationToken.None))
@@ -136,7 +136,7 @@ public class CreateInvoiceValidatorTests : BaseTestFixture
     public async Task ValidateAsync_InvoiceNumberBigLength_ErrorReturned()
     {
         // Arrange
-        var invoice = GetValidInvoice();
+        var invoice = SetupValidInvoice();
         invoice.InvoiceNumber = "INV122334323423434324233";
 
         // Act
@@ -154,7 +154,7 @@ public class CreateInvoiceValidatorTests : BaseTestFixture
     public async Task ValidateAsync_InvoiceNumberNotStartsWithINV_ErrorReturned()
     {
         // Arrange
-        var invoice = GetValidInvoice();
+        var invoice = SetupValidInvoice();
         invoice.InvoiceNumber = "123456789";
 
         // Act
@@ -171,7 +171,7 @@ public class CreateInvoiceValidatorTests : BaseTestFixture
     public async Task ValidateAsync_InvoiceNumberExists_ErrorReturned()
     {
         // Arrange
-        var invoice = GetValidInvoice();
+        var invoice = SetupValidInvoice();
         _invoiceRepositoryMock.Setup(x => x.ExistsAsync(invoice.InvoiceNumber, CancellationToken.None))
             .ReturnsAsync(true);
 
@@ -185,7 +185,7 @@ public class CreateInvoiceValidatorTests : BaseTestFixture
         Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo(Constants.Validation.Invoice.DuplicateInvoice));
     }
 
-    private CreateInvoiceDTO GetValidInvoice()
+    private CreateInvoiceDTO SetupValidInvoice()
     {
         var clientId = Guid.Parse("ba18cc29-c7ff-48c4-9b7b-456bcef231d0");
         var customerId = Guid.Parse("6d024627-568b-4d57-b477-2274c9d807b9");

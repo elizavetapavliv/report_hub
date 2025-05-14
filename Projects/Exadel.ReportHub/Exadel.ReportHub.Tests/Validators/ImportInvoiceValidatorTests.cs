@@ -55,7 +55,7 @@ public class ImportInvoiceValidatorTests : BaseTestFixture
     public async Task ValidateAsync_EverythingIsValid_NoErrorReturned()
     {
         // Arrange
-        var invoice = GetValidInvoice();
+        var invoice = SetupValidInvoice();
 
         // Act
         var result = await _invoiceValidator.TestValidateAsync(invoice);
@@ -69,7 +69,7 @@ public class ImportInvoiceValidatorTests : BaseTestFixture
     public async Task ValidateAsync_CustomerIdIsEmpty_ErrorReturned()
     {
         // Arrange
-        var invoice = GetValidInvoice();
+        var invoice = SetupValidInvoice();
         invoice.CustomerId = Guid.Empty;
 
         // Act
@@ -88,7 +88,7 @@ public class ImportInvoiceValidatorTests : BaseTestFixture
     public async Task ValidateAsync_InvoiceNumberIsNullOrEmpty_ErrorReturned(string value)
     {
         // Arrange
-        var invoice = GetValidInvoice();
+        var invoice = SetupValidInvoice();
         invoice.InvoiceNumber = value;
 
         // Act
@@ -105,7 +105,7 @@ public class ImportInvoiceValidatorTests : BaseTestFixture
     public async Task ValidateAsync_DueDateIsDefault_ErrorReturned()
     {
         // Arrange
-        var invoice = GetValidInvoice();
+        var invoice = SetupValidInvoice();
         invoice.DueDate = DateTime.MinValue;
 
         // Act
@@ -122,7 +122,7 @@ public class ImportInvoiceValidatorTests : BaseTestFixture
     public async Task ValidateAsync_IssueDateIsDefault_ErrorReturned()
     {
         // Arrange
-        var invoice = GetValidInvoice();
+        var invoice = SetupValidInvoice();
         invoice.IssueDate = DateTime.MinValue;
 
         // Act
@@ -139,7 +139,7 @@ public class ImportInvoiceValidatorTests : BaseTestFixture
     public async Task ValidateAsync_ItemIdsIsEmpty_ErrorReturned()
     {
         // Arrange
-        var invoice = GetValidInvoice();
+        var invoice = SetupValidInvoice();
         invoice.ItemIds = new List<Guid>();
 
         // Act
@@ -156,7 +156,7 @@ public class ImportInvoiceValidatorTests : BaseTestFixture
     public async Task ValidateAsync_CustomerDoesntExists_ErrorReturned()
     {
         // Arrange
-        var invoice = GetValidInvoice();
+        var invoice = SetupValidInvoice();
         var customerId = Guid.NewGuid();
         invoice.CustomerId = customerId;
         _customerRepositoryMock.Setup(x => x.ExistsAsync(customerId, CancellationToken.None))
@@ -176,7 +176,7 @@ public class ImportInvoiceValidatorTests : BaseTestFixture
     public async Task ValidateAsync_ItemDoesntExists_ErrorReturned()
     {
         // Arrange
-        var invoice = GetValidInvoice();
+        var invoice = SetupValidInvoice();
         _itemRepositoryMock.Setup(x => x.AllExistAsync(invoice.ItemIds, CancellationToken.None))
             .ReturnsAsync(false);
 
@@ -194,7 +194,7 @@ public class ImportInvoiceValidatorTests : BaseTestFixture
     public async Task ValidateAsync_InvoiceNumberBigLength_ErrorReturned()
     {
         // Arrange
-        var invoice = GetValidInvoice();
+        var invoice = SetupValidInvoice();
         invoice.InvoiceNumber = "INV122334323423434324233";
 
         // Act
@@ -212,7 +212,7 @@ public class ImportInvoiceValidatorTests : BaseTestFixture
     public async Task ValidateAsync_InvoiceNumberNotStartsWithINV_ErrorReturned()
     {
         // Arrange
-        var invoice = GetValidInvoice();
+        var invoice = SetupValidInvoice();
         invoice.InvoiceNumber = "123456789";
 
         // Act
@@ -229,7 +229,7 @@ public class ImportInvoiceValidatorTests : BaseTestFixture
     public async Task ValidateAsync_InvoiceNumberExists_ErrorReturned()
     {
         // Arrange
-        var invoice = GetValidInvoice();
+        var invoice = SetupValidInvoice();
         _invoiceRepositoryMock.Setup(x => x.ExistsAsync(invoice.InvoiceNumber, CancellationToken.None))
             .ReturnsAsync(true);
 
@@ -247,7 +247,7 @@ public class ImportInvoiceValidatorTests : BaseTestFixture
     public async Task ValidateAsync_IssueDateIsInFuture_ErrorReturned()
     {
         // Arrange
-        var invoice = GetValidInvoice();
+        var invoice = SetupValidInvoice();
         invoice.IssueDate = DateTime.UtcNow.Date.AddDays(5);
 
         // Act
@@ -264,7 +264,7 @@ public class ImportInvoiceValidatorTests : BaseTestFixture
     public async Task ValidateAsync_DueDateIsLessThenIssueDate_ErrorReturned()
     {
         // Arrange
-        var invoice = GetValidInvoice();
+        var invoice = SetupValidInvoice();
         invoice.IssueDate = DateTime.UtcNow.Date.AddDays(-5);
         invoice.DueDate = DateTime.UtcNow.Date.AddDays(-10);
 
@@ -278,7 +278,7 @@ public class ImportInvoiceValidatorTests : BaseTestFixture
         Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo(Constants.Validation.Invoice.DueDateBeforeIssueDate));
     }
 
-    private ImportInvoiceDTO GetValidInvoice()
+    private ImportInvoiceDTO SetupValidInvoice()
     {
         var customerId = Guid.Parse("6d024627-568b-4d57-b477-2274c9d807b9");
         var invoiceNumber = "INV20230051";

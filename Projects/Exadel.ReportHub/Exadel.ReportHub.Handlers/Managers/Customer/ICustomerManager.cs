@@ -4,7 +4,7 @@ namespace Exadel.ReportHub.Handlers.Managers.Customer;
 
 public interface ICustomerManager
 {
-    Task<CustomerDTO> GenerateCustomerAsync(CreateCustomerDTO createCustomerDto, CancellationToken cancellationToken);
+    Task<CustomerDTO> CreateCustomerAsync(CreateCustomerDTO createCustomerDto, CancellationToken cancellationToken);
 
-    Task<IList<CustomerDTO>> GenerateCustomersAsync(IEnumerable<CreateCustomerDTO> createCustomerDtos, CancellationToken cancellationToken);
+    Task<IList<CustomerDTO>> CreateCustomersAsync(IEnumerable<CreateCustomerDTO> createCustomerDtos, CancellationToken cancellationToken);
 }

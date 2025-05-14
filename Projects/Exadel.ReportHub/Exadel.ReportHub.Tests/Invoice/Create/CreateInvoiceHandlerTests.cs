@@ -41,7 +41,7 @@ public class CreateInvoiceHandlerTests : BaseTestFixture
         var generatedInvoiceDto = Mapper.Map<InvoiceDTO>(generatedInvoice);
 
         _invoiceManagerMock
-                .Setup(m => m.GenerateInvoiceAsync(createInvoiceDto, CancellationToken.None))
+                .Setup(m => m.CreateInvoiceAsync(createInvoiceDto, CancellationToken.None))
                 .ReturnsAsync(generatedInvoiceDto);
 
         // Act

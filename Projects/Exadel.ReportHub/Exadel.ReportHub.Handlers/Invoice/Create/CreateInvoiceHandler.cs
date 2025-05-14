@@ -11,6 +11,6 @@ public class CreateInvoiceHandler(IInvoiceManager invoiceManager) : IRequestHand
 {
     public async Task<ErrorOr<InvoiceDTO>> Handle(CreateInvoiceRequest request, CancellationToken cancellationToken)
     {
-        return await invoiceManager.GenerateInvoiceAsync(request.CreateInvoiceDto, cancellationToken);
+        return await invoiceManager.CreateInvoiceAsync(request.CreateInvoiceDto, cancellationToken);
     }
 }

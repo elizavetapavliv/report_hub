@@ -39,7 +39,7 @@ public class CreateClientValidatorTests : BaseTestFixture
     public async Task ValidateAsync_ValidClient_NoErrorReturned()
     {
         // Arrange
-        var client = GetValidClient();
+        var client = SetupValidClient();
 
         // Act
         var result = await _validator.TestValidateAsync(client);
@@ -55,7 +55,7 @@ public class CreateClientValidatorTests : BaseTestFixture
     public async Task ValidateAsync_EmptyBankAccountNumber_ErrorReturned(string bankAccountNumber)
     {
         // Arrange
-        var client = GetValidClient();
+        var client = SetupValidClient();
         client.BankAccountNumber = bankAccountNumber;
 
         // Act
@@ -72,7 +72,7 @@ public class CreateClientValidatorTests : BaseTestFixture
     public async Task ValidateAsync_InvalidCountryCode_ErrorReturned()
     {
         // Arrange
-        var client = GetValidClient();
+        var client = SetupValidClient();
         client.BankAccountNumber = "ZZ123456778";
         _countryRepositoryMock
             .Setup(x => x.CountryCodeExistsAsync(client.BankAccountNumber.Substring(0, 2), CancellationToken.None))
@@ -94,7 +94,7 @@ public class CreateClientValidatorTests : BaseTestFixture
     public async Task ValidateAsync_BankAccountNumberIsNotInValidRange_ErrorReturned(string bankAccountNumber)
     {
         // Arrange
-        var client = GetValidClient();
+        var client = SetupValidClient();
         client.BankAccountNumber = bankAccountNumber;
 
         // Act
@@ -112,7 +112,7 @@ public class CreateClientValidatorTests : BaseTestFixture
     public async Task ValidateAsync_BankAccountNumberIsNotStartingWithTwoLetters_ErrorReturned()
     {
         // Arrange
-        var client = GetValidClient();
+        var client = SetupValidClient();
         client.BankAccountNumber = "1234567890";
 
         // Act
@@ -129,7 +129,7 @@ public class CreateClientValidatorTests : BaseTestFixture
     public async Task ValidateAsync_CountryDoesNotExist_ErrorReturned()
     {
         // Arrange
-        var client = GetValidClient();
+        var client = SetupValidClient();
         client.CountryId = Guid.NewGuid();
 
         _clientRepositoryMock
@@ -150,7 +150,7 @@ public class CreateClientValidatorTests : BaseTestFixture
     public async Task ValidateAsync_EmptyCountryId_ErrorReturned()
     {
         // Arrange
-        var client = GetValidClient();
+        var client = SetupValidClient();
         client.CountryId = Guid.Empty;
 
         // Act
@@ -167,7 +167,7 @@ public class CreateClientValidatorTests : BaseTestFixture
     public async Task ValidateAsync_NameExists_ErrorReturned()
     {
         // Arrange
-        var client = GetValidClient();
+        var client = SetupValidClient();
         client.Name = "Microsoft Inc.";
 
         _clientRepositoryMock
@@ -184,7 +184,7 @@ public class CreateClientValidatorTests : BaseTestFixture
         Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo(Constants.Validation.Name.IsTaken));
     }
 
-    private CreateClientDTO GetValidClient()
+    private CreateClientDTO SetupValidClient()
     {
         var name = "Organization Inc.";
         var bankAccountNumber = "US1234567890";

@@ -19,7 +19,7 @@ public static class ManagerRegistrations
         services.AddSingleton<IReportManager, ReportManager>();
         services.AddSingleton<IClientManager, ClientManager>();
         services.AddSingleton<ICustomerManager, CustomerManager>();
-        services.AddSingleton<ICountryBasedHelper, CountryBasedHelper>();
+        services.AddSingleton<ICountryDataFiller, CountryDataFiller>();
 
         return services;
     }

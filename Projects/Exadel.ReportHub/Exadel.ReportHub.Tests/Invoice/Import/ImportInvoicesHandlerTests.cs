@@ -62,7 +62,7 @@ public class ImportInvoicesHandlerTests : BaseTestFixture
             .Returns(importInvoiceDtos);
 
         _invoiceManagerMock
-            .Setup(x => x.GenerateInvoicesAsync(createInvoiceDtos, CancellationToken.None))
+            .Setup(x => x.CreateInvoicesAsync(createInvoiceDtos, CancellationToken.None))
             .ReturnsAsync(invoiceDtos);
 
         foreach(var invoice in createInvoiceDtos)

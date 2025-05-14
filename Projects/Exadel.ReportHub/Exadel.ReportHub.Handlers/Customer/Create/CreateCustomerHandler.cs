@@ -11,6 +11,6 @@ public class CreateCustomerHandler(ICustomerManager customerManager) : IRequestH
 {
     public async Task<ErrorOr<CustomerDTO>> Handle(CreateCustomerRequest request, CancellationToken cancellationToken)
     {
-        return await customerManager.GenerateCustomerAsync(request.CreateCustomerDTO, cancellationToken);
+        return await customerManager.CreateCustomerAsync(request.CreateCustomerDTO, cancellationToken);
     }
 }

@@ -5,14 +5,14 @@ using Exadel.ReportHub.SDK.DTOs.Client;
 
 namespace Exadel.ReportHub.Handlers.Managers.Client;
 
-public class ClientManager(IClientRepository clientRepository, ICountryBasedHelper countryBasedHelper, IMapper mapper) : IClientManager
+public class ClientManager(IClientRepository clientRepository, ICountryDataFiller countryBasedHelper, IMapper mapper) : IClientManager
 {
-    public async Task<ClientDTO> GenerateClientAsync(CreateClientDTO createClientDto, CancellationToken cancellationToken)
+    public async Task<ClientDTO> CreateClientAsync(CreateClientDTO createClientDto, CancellationToken cancellationToken)
     {
-        return (await GenerateClientsAsync([createClientDto], cancellationToken)).Single();
+        return (await CreateClientsAsync([createClientDto], cancellationToken)).Single();
     }
 
-    public async Task<IList<ClientDTO>> GenerateClientsAsync(IEnumerable<CreateClientDTO> createClientDtos, CancellationToken cancellationToken)
+    public async Task<IList<ClientDTO>> CreateClientsAsync(IEnumerable<CreateClientDTO> createClientDtos, CancellationToken cancellationToken)
     {
         var clients = mapper.Map<IList<Data.Models.Client>>(createClientDtos);
 

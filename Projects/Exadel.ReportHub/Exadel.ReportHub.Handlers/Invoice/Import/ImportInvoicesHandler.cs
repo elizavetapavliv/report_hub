@@ -28,8 +28,8 @@ public class ImportInvoicesHandler(
             dto.ClientId = request.ClientId;
         }
 
-        var tasks = createInvoiceDtos.Select(dto => invoiceValidator.ValidateAsync(dto, cancellationToken));
-        var validationResults = await Task.WhenAll(tasks);
+        var validationTasks = createInvoiceDtos.Select(dto => invoiceValidator.ValidateAsync(dto, cancellationToken));
+        var validationResults = await Task.WhenAll(validationTasks);
 
         var validationErrors = validationResults
             .SelectMany((dto, index) => dto.Errors.Select(m => (RowIndex: index, Error: m.ErrorMessage)))
@@ -43,7 +43,7 @@ public class ImportInvoicesHandler(
                 .ToList();
         }
 
-        var invoiceDtos = await invoiceManager.GenerateInvoicesAsync(createInvoiceDtos, cancellationToken);
+        var invoiceDtos = await invoiceManager.CreateInvoicesAsync(createInvoiceDtos, cancellationToken);
         return new ImportResultDTO { ImportedCount = invoiceDtos.Count };
     }
 }
