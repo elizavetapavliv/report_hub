@@ -128,6 +128,7 @@ public class CreateCustomerValidatorTests : BaseTestFixture
     {
         // Arrange
         var customer = SetupValidCustomer();
+
         _clientRepositoryMock
             .Setup(x => x.ExistsAsync(customer.ClientId, CancellationToken.None))
             .ReturnsAsync(false);
@@ -145,19 +146,18 @@ public class CreateCustomerValidatorTests : BaseTestFixture
     private CreateCustomerDTO SetupValidCustomer()
     {
         var email = "customer@test.com";
-        var clientId = Guid.NewGuid();
+        var customer = Fixture.Build<CreateCustomerDTO>()
+            .With(x => x.Email, email)
+            .Create();
 
         _clientRepositoryMock
-            .Setup(x => x.ExistsAsync(clientId, CancellationToken.None))
+            .Setup(x => x.ExistsAsync(customer.ClientId, CancellationToken.None))
             .ReturnsAsync(true);
 
         _customerRepositoryMock
-            .Setup(x => x.EmailExistsAsync(email, CancellationToken.None))
+            .Setup(x => x.EmailExistsAsync(customer.Email, CancellationToken.None))
             .ReturnsAsync(false);
 
-        return Fixture.Build<CreateCustomerDTO>()
-            .With(x => x.Email, email)
-            .With(x => x.ClientId, clientId)
-            .Create();
+        return customer;
     }
 }

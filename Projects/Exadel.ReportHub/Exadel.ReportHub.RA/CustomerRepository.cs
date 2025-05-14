@@ -29,14 +29,6 @@ public class CustomerRepository(MongoDbContext context) : BaseRepository(context
         return count > 0;
     }
 
-    public async Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken)
-    {
-        var filter = _filterBuilder.Eq(x => x.Id, id).NotDeleted();
-        var count = await GetCollection<Customer>().CountDocumentsAsync(filter, cancellationToken: cancellationToken);
-
-        return count > 0;
-    }
-
     public async Task<bool> ExistsOnClientAsync(Guid id, Guid clientId, CancellationToken cancellationToken)
     {
         var filter = _filterBuilder.And(

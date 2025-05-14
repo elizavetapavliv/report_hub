@@ -7,15 +7,13 @@ namespace Exadel.ReportHub.Handlers.Validators;
 public class ImportInvoiceDtoValidator : AbstractValidator<ImportInvoiceDTO>
 {
     private readonly IInvoiceRepository _invoiceRepository;
-    private readonly ICustomerRepository _customerRepository;
     private readonly IItemRepository _itemRepository;
     private readonly IValidator<UpdateInvoiceDTO> _updateInvoiceValidator;
 
-    public ImportInvoiceDtoValidator(IInvoiceRepository invoiceRepository, ICustomerRepository customerRepository,
+    public ImportInvoiceDtoValidator(IInvoiceRepository invoiceRepository,
         IItemRepository itemRepository, IValidator<UpdateInvoiceDTO> updateInvoiceValidator)
     {
         _invoiceRepository = invoiceRepository;
-        _customerRepository = customerRepository;
         _itemRepository = itemRepository;
         _updateInvoiceValidator = updateInvoiceValidator;
         ConfigureRules();
@@ -30,9 +28,7 @@ public class ImportInvoiceDtoValidator : AbstractValidator<ImportInvoiceDTO>
             .SetValidator(_updateInvoiceValidator);
 
         RuleFor(x => x.CustomerId)
-            .NotEmpty()
-            .MustAsync(_customerRepository.ExistsAsync)
-            .WithMessage(Constants.Validation.Customer.DoesNotExist);
+            .NotEmpty();
 
         RuleFor(x => x.InvoiceNumber)
             .NotEmpty()

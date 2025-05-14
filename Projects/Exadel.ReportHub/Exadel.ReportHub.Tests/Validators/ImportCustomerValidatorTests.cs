@@ -144,22 +144,19 @@ public class ImportCustomerValidatorTests : BaseTestFixture
 
     private ImportCustomerDTO SetupValidCustomer()
     {
-        var name = "Customer name";
         var email = "customer@test.com";
-        var countryId = Guid.NewGuid();
+        var customer = Fixture.Build<ImportCustomerDTO>()
+            .With(x => x.Email, email)
+            .Create();
 
         _countryRepositoryMock
-            .Setup(x => x.ExistsAsync(countryId, CancellationToken.None))
+            .Setup(x => x.ExistsAsync(customer.CountryId, CancellationToken.None))
             .ReturnsAsync(true);
 
         _customerRepositoryMock
-            .Setup(x => x.EmailExistsAsync(email, CancellationToken.None))
+            .Setup(x => x.EmailExistsAsync(customer.Email, CancellationToken.None))
             .ReturnsAsync(false);
 
-        return Fixture.Build<ImportCustomerDTO>()
-            .With(x => x.Name, name)
-            .With(x => x.Email, email)
-            .With(x => x.CountryId, countryId)
-            .Create();
+        return customer;
     }
 }

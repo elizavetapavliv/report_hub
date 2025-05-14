@@ -1,6 +1,5 @@
 ﻿using System.Text;
 using AutoFixture;
-using AutoMapper;
 using ErrorOr;
 using Exadel.ReportHub.Csv.Abstract;
 using Exadel.ReportHub.Handlers.Invoice.Import;
@@ -21,7 +20,6 @@ public class ImportInvoicesHandlerTests : BaseTestFixture
     private Mock<IInvoiceManager> _invoiceManagerMock;
     private Mock<IValidator<CreateInvoiceDTO>> _invoiceValidatorMock;
     private ImportInvoicesHandler _handler;
-    private Mock<IMapper> _mapperMock;
 
     [SetUp]
     public void Setup()
@@ -29,12 +27,11 @@ public class ImportInvoicesHandlerTests : BaseTestFixture
         _csvImporterMock = new Mock<ICsvImporter>();
         _invoiceManagerMock = new Mock<IInvoiceManager>();
         _invoiceValidatorMock = new Mock<IValidator<CreateInvoiceDTO>>();
-        _mapperMock = new Mock<IMapper>();
         _handler = new ImportInvoicesHandler(
             _csvImporterMock.Object,
             _invoiceManagerMock.Object,
             _invoiceValidatorMock.Object,
-            _mapperMock.Object);
+            Mapper);
     }
 
     [Test]
@@ -49,10 +46,6 @@ public class ImportInvoicesHandlerTests : BaseTestFixture
             dto.ClientId = clientId;
         }
 
-        _mapperMock
-            .Setup(x => x.Map<List<CreateInvoiceDTO>>(importInvoiceDtos))
-            .Returns(createInvoiceDtos);
-
         var invoiceDtos = Fixture.Build<InvoiceDTO>().CreateMany(2).ToList();
 
         using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes("CSV content"));
@@ -62,13 +55,31 @@ public class ImportInvoicesHandlerTests : BaseTestFixture
             .Returns(importInvoiceDtos);
 
         _invoiceManagerMock
-            .Setup(x => x.CreateInvoicesAsync(createInvoiceDtos, CancellationToken.None))
+            .Setup(x => x.CreateInvoicesAsync(
+                It.Is<IEnumerable<CreateInvoiceDTO>>(dtos =>
+                    dtos.All(dto =>
+                        createInvoiceDtos.Any(expectedDto =>
+                            expectedDto.ClientId == dto.ClientId &&
+                            expectedDto.CustomerId == dto.CustomerId &&
+                            expectedDto.InvoiceNumber == dto.InvoiceNumber &&
+                            expectedDto.ItemIds.SequenceEqual(dto.ItemIds) &&
+                            expectedDto.IssueDate == dto.IssueDate &&
+                            expectedDto.DueDate == dto.DueDate))),
+                CancellationToken.None))
             .ReturnsAsync(invoiceDtos);
 
-        foreach(var invoice in createInvoiceDtos)
+        foreach (var expectedDto in createInvoiceDtos)
         {
             _invoiceValidatorMock
-                .Setup(x => x.ValidateAsync(invoice, CancellationToken.None))
+                .Setup(x => x.ValidateAsync(
+                    It.Is<CreateInvoiceDTO>(dto =>
+                        expectedDto.ClientId == dto.ClientId &&
+                        expectedDto.CustomerId == dto.CustomerId &&
+                        expectedDto.InvoiceNumber == dto.InvoiceNumber &&
+                        expectedDto.ItemIds.SequenceEqual(dto.ItemIds) &&
+                        expectedDto.IssueDate == dto.IssueDate &&
+                        expectedDto.DueDate == dto.DueDate),
+                    CancellationToken.None))
                 .ReturnsAsync(new ValidationResult());
         }
 
@@ -106,10 +117,6 @@ public class ImportInvoicesHandlerTests : BaseTestFixture
             dto.ClientId = clientId;
         }
 
-        _mapperMock
-            .Setup(x => x.Map<List<CreateInvoiceDTO>>(importInvoiceDtos))
-            .Returns(createInvoiceDtos);
-
         using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes("CSV content"));
 
         var errorsInvoice = new List<ValidationFailure>
@@ -118,10 +125,18 @@ public class ImportInvoicesHandlerTests : BaseTestFixture
             new ("IssueDateErrorMessage", "Issue date cannot be in the future")
         };
 
-        foreach(var invoice in createInvoiceDtos)
+        foreach (var expectedDto in createInvoiceDtos)
         {
             _invoiceValidatorMock
-                .Setup(x => x.ValidateAsync(invoice, CancellationToken.None))
+                .Setup(x => x.ValidateAsync(
+                    It.Is<CreateInvoiceDTO>(dto =>
+                        expectedDto.ClientId == dto.ClientId &&
+                        expectedDto.CustomerId == dto.CustomerId &&
+                        expectedDto.InvoiceNumber == dto.InvoiceNumber &&
+                        expectedDto.ItemIds.SequenceEqual(dto.ItemIds) &&
+                        expectedDto.IssueDate == dto.IssueDate &&
+                        expectedDto.DueDate == dto.DueDate),
+                    CancellationToken.None))
                 .ReturnsAsync(new ValidationResult(errorsInvoice));
         }
 
@@ -166,10 +181,6 @@ public class ImportInvoicesHandlerTests : BaseTestFixture
             dto.ClientId = clientId;
         }
 
-        _mapperMock
-            .Setup(x => x.Map<List<CreateInvoiceDTO>>(importInvoiceDtos))
-            .Returns(createInvoiceDtos);
-
         using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes("CSV content"));
 
         var errorsInvoice = new List<ValidationFailure>
@@ -179,11 +190,27 @@ public class ImportInvoicesHandlerTests : BaseTestFixture
         };
 
         _invoiceValidatorMock
-            .Setup(x => x.ValidateAsync(createInvoiceDtos[0], CancellationToken.None))
+            .Setup(x => x.ValidateAsync(
+                It.Is<CreateInvoiceDTO>(dto =>
+                    createInvoiceDtos[0].ClientId == dto.ClientId &&
+                    createInvoiceDtos[0].CustomerId == dto.CustomerId &&
+                    createInvoiceDtos[0].InvoiceNumber == dto.InvoiceNumber &&
+                    createInvoiceDtos[0].ItemIds.SequenceEqual(dto.ItemIds) &&
+                    createInvoiceDtos[0].IssueDate == dto.IssueDate &&
+                    createInvoiceDtos[0].DueDate == dto.DueDate),
+                CancellationToken.None))
             .ReturnsAsync(new ValidationResult());
 
         _invoiceValidatorMock
-            .Setup(x => x.ValidateAsync(createInvoiceDtos[1], CancellationToken.None))
+            .Setup(x => x.ValidateAsync(
+                It.Is<CreateInvoiceDTO>(dto =>
+                    createInvoiceDtos[1].ClientId == dto.ClientId &&
+                    createInvoiceDtos[1].CustomerId == dto.CustomerId &&
+                    createInvoiceDtos[1].InvoiceNumber == dto.InvoiceNumber &&
+                    createInvoiceDtos[1].ItemIds.SequenceEqual(dto.ItemIds) &&
+                    createInvoiceDtos[1].IssueDate == dto.IssueDate &&
+                    createInvoiceDtos[1].DueDate == dto.DueDate),
+                CancellationToken.None))
             .ReturnsAsync(new ValidationResult(errorsInvoice));
 
         _csvImporterMock

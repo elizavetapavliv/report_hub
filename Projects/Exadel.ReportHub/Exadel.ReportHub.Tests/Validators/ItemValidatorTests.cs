@@ -74,7 +74,6 @@ public class ItemValidatorTests : BaseTestFixture
     {
         // Arrange
         var item = SetupValidItem();
-        item.ClientId = Guid.NewGuid();
 
         _clientRepositoryMock
             .Setup(x => x.ExistsAsync(item.ClientId, It.IsAny<CancellationToken>()))
@@ -112,7 +111,6 @@ public class ItemValidatorTests : BaseTestFixture
     {
         // Arrange
         var item = SetupValidItem();
-        item.CurrencyId = Guid.NewGuid();
 
         _currencyRepositoryMock
             .Setup(x => x.ExistsAsync(item.CurrencyId, It.IsAny<CancellationToken>()))
@@ -218,20 +216,16 @@ public class ItemValidatorTests : BaseTestFixture
 
     private CreateUpdateItemDTO SetupValidItem()
     {
-        var clientId = Guid.Parse("ea94747b-3d45-46d6-8775-bf27eb5da02b");
-        var currencyId = Guid.Parse("04d123f0-dc7e-4b92-829c-dffd1ef0b89a");
+        var item = Fixture.Create<CreateUpdateItemDTO>();
 
         _clientRepositoryMock
-            .Setup(x => x.ExistsAsync(clientId, It.IsAny<CancellationToken>()))
+            .Setup(x => x.ExistsAsync(item.ClientId, CancellationToken.None))
             .ReturnsAsync(true);
 
         _currencyRepositoryMock
-            .Setup(x => x.ExistsAsync(currencyId, It.IsAny<CancellationToken>()))
+            .Setup(x => x.ExistsAsync(item.CurrencyId, CancellationToken.None))
             .ReturnsAsync(true);
 
-        return Fixture.Build<CreateUpdateItemDTO>()
-            .With(x => x.ClientId, clientId)
-            .With(x => x.CurrencyId, currencyId)
-            .Create();
+        return item;
     }
 }

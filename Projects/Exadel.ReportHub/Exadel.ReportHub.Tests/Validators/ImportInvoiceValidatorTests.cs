@@ -15,7 +15,6 @@ public class ImportInvoiceValidatorTests : BaseTestFixture
 {
     private IValidator<ImportInvoiceDTO> _invoiceValidator;
     private Mock<IInvoiceRepository> _invoiceRepositoryMock;
-    private Mock<ICustomerRepository> _customerRepositoryMock;
     private Mock<IItemRepository> _itemRepositoryMock;
 
     [SetUp]
@@ -44,11 +43,10 @@ public class ImportInvoiceValidatorTests : BaseTestFixture
         });
 
         _invoiceRepositoryMock = new Mock<IInvoiceRepository>();
-        _customerRepositoryMock = new Mock<ICustomerRepository>();
         _itemRepositoryMock = new Mock<IItemRepository>();
 
         _invoiceValidator = new ImportInvoiceDtoValidator(_invoiceRepositoryMock.Object,
-            _customerRepositoryMock.Object, _itemRepositoryMock.Object, updateInvoiceValidator);
+            _itemRepositoryMock.Object, updateInvoiceValidator);
     }
 
     [Test]
@@ -153,30 +151,11 @@ public class ImportInvoiceValidatorTests : BaseTestFixture
     }
 
     [Test]
-    public async Task ValidateAsync_CustomerDoesntExists_ErrorReturned()
-    {
-        // Arrange
-        var invoice = SetupValidInvoice();
-        var customerId = Guid.NewGuid();
-        invoice.CustomerId = customerId;
-        _customerRepositoryMock.Setup(x => x.ExistsAsync(customerId, CancellationToken.None))
-            .ReturnsAsync(false);
-
-        // Act
-        var result = await _invoiceValidator.TestValidateAsync(invoice);
-
-        // Assert
-        Assert.That(result.IsValid, Is.False);
-        Assert.That(result.Errors.Count, Is.EqualTo(1));
-        Assert.That(result.Errors[0].PropertyName, Is.EqualTo(nameof(CreateInvoiceDTO.CustomerId)));
-        Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo(Constants.Validation.Customer.DoesNotExist));
-    }
-
-    [Test]
     public async Task ValidateAsync_ItemDoesntExists_ErrorReturned()
     {
         // Arrange
         var invoice = SetupValidInvoice();
+
         _itemRepositoryMock.Setup(x => x.AllExistAsync(invoice.ItemIds, CancellationToken.None))
             .ReturnsAsync(false);
 
@@ -230,6 +209,7 @@ public class ImportInvoiceValidatorTests : BaseTestFixture
     {
         // Arrange
         var invoice = SetupValidInvoice();
+
         _invoiceRepositoryMock.Setup(x => x.ExistsAsync(invoice.InvoiceNumber, CancellationToken.None))
             .ReturnsAsync(true);
 
@@ -280,26 +260,18 @@ public class ImportInvoiceValidatorTests : BaseTestFixture
 
     private ImportInvoiceDTO SetupValidInvoice()
     {
-        var customerId = Guid.Parse("6d024627-568b-4d57-b477-2274c9d807b9");
-        var invoiceNumber = "INV20230051";
-        var itemIds = new List<Guid>
-        {
-            Guid.Parse("76fb1a23-2f77-4c26-bf45-fc655f7432e6"),
-            Guid.Parse("5c98227f-e9b7-45dd-bfdb-22dddf384598")
-        };
-        _customerRepositoryMock.Setup(x => x.ExistsAsync(customerId, CancellationToken.None))
-            .ReturnsAsync(true);
-        _invoiceRepositoryMock.Setup(x => x.ExistsAsync(invoiceNumber, CancellationToken.None))
+        var invoice = Fixture.Build<ImportInvoiceDTO>()
+            .With(x => x.InvoiceNumber, "INV" + new string('1', 8))
+            .With(x => x.IssueDate, DateTime.UtcNow.Date.AddDays(-5))
+            .With(x => x.DueDate, DateTime.UtcNow.Date.AddDays(30))
+            .Create();
+
+        _invoiceRepositoryMock.Setup(x => x.ExistsAsync(invoice.InvoiceNumber, CancellationToken.None))
             .ReturnsAsync(false);
-        _itemRepositoryMock.Setup(x => x.AllExistAsync(itemIds, CancellationToken.None))
+
+        _itemRepositoryMock.Setup(x => x.AllExistAsync(invoice.ItemIds, CancellationToken.None))
             .ReturnsAsync(true);
 
-        return Fixture.Build<CreateInvoiceDTO>()
-                .With(x => x.CustomerId, customerId)
-                .With(x => x.InvoiceNumber, invoiceNumber)
-                .With(x => x.IssueDate, DateTime.UtcNow.Date.AddDays(-5))
-                .With(x => x.DueDate, DateTime.UtcNow.Date.AddDays(30))
-                .With(x => x.ItemIds, itemIds)
-                .Create();
+        return invoice;
     }
 }

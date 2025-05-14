@@ -20,7 +20,6 @@ public class ImportCustomersHandlerTests : BaseTestFixture
     private Mock<IExcelImporter> _excelImporterMock;
     private Mock<ICustomerManager> _customerManagerMock;
     private Mock<IValidator<ImportCustomerDTO>> _validatorMock;
-    private Mock<IMapper> _mapperMock;
 
     private ImportCustomersHandler _handler;
 
@@ -30,12 +29,11 @@ public class ImportCustomersHandlerTests : BaseTestFixture
         _excelImporterMock = new Mock<IExcelImporter>();
         _customerManagerMock = new Mock<ICustomerManager>();
         _validatorMock = new Mock<IValidator<ImportCustomerDTO>>();
-        _mapperMock = new Mock<IMapper>();
         _handler = new ImportCustomersHandler(
             _excelImporterMock.Object,
             _customerManagerMock.Object,
             _validatorMock.Object,
-            _mapperMock.Object);
+            Mapper);
     }
 
     [Test]
@@ -50,10 +48,6 @@ public class ImportCustomersHandlerTests : BaseTestFixture
             dto.ClientId = clientId;
         }
 
-        _mapperMock
-            .Setup(x => x.Map<List<CreateCustomerDTO>>(importCustomerDtos))
-            .Returns(createCustomerDtos);
-
         var customerDtos = Fixture.Build<CustomerDTO>().CreateMany(2).ToList();
 
         using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes("Excel content"));
@@ -63,7 +57,15 @@ public class ImportCustomersHandlerTests : BaseTestFixture
             .Returns(importCustomerDtos);
 
         _customerManagerMock
-            .Setup(x => x.CreateCustomersAsync(createCustomerDtos, CancellationToken.None))
+            .Setup(x => x.CreateCustomersAsync(
+                It.Is<IEnumerable<CreateCustomerDTO>>(dtos =>
+                    dtos.All(dto =>
+                        createCustomerDtos.Any(expectedDto =>
+                            expectedDto.ClientId == dto.ClientId &&
+                            expectedDto.CountryId == dto.CountryId &&
+                            expectedDto.Name == dto.Name &&
+                            expectedDto.Email == dto.Email))),
+                CancellationToken.None))
             .ReturnsAsync(customerDtos);
 
         _validatorMock

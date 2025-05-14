@@ -73,7 +73,7 @@ public class CreateClientValidatorTests : BaseTestFixture
     {
         // Arrange
         var client = SetupValidClient();
-        client.BankAccountNumber = "ZZ123456778";
+
         _countryRepositoryMock
             .Setup(x => x.CountryCodeExistsAsync(client.BankAccountNumber.Substring(0, 2), CancellationToken.None))
             .ReturnsAsync(false);
@@ -130,9 +130,8 @@ public class CreateClientValidatorTests : BaseTestFixture
     {
         // Arrange
         var client = SetupValidClient();
-        client.CountryId = Guid.NewGuid();
 
-        _clientRepositoryMock
+        _countryRepositoryMock
             .Setup(x => x.ExistsAsync(client.CountryId, CancellationToken.None))
             .ReturnsAsync(false);
 
@@ -168,7 +167,6 @@ public class CreateClientValidatorTests : BaseTestFixture
     {
         // Arrange
         var client = SetupValidClient();
-        client.Name = "Microsoft Inc.";
 
         _clientRepositoryMock
             .Setup(x => x.NameExistsAsync(client.Name, CancellationToken.None))
@@ -186,26 +184,22 @@ public class CreateClientValidatorTests : BaseTestFixture
 
     private CreateClientDTO SetupValidClient()
     {
-        var name = "Organization Inc.";
-        var bankAccountNumber = "US1234567890";
-        var countryId = Guid.NewGuid();
+        var client = Fixture.Build<CreateClientDTO>()
+            .With(x => x.BankAccountNumber, "XX" + new string('1', 15))
+            .Create();
 
         _clientRepositoryMock
-            .Setup(x => x.NameExistsAsync(name, CancellationToken.None))
+            .Setup(x => x.NameExistsAsync(client.Name, CancellationToken.None))
             .ReturnsAsync(false);
 
         _countryRepositoryMock
-            .Setup(x => x.ExistsAsync(countryId, CancellationToken.None))
+            .Setup(x => x.ExistsAsync(client.CountryId, CancellationToken.None))
         .ReturnsAsync(true);
 
         _countryRepositoryMock
-            .Setup(x => x.CountryCodeExistsAsync(bankAccountNumber.Substring(0, 2), CancellationToken.None))
+            .Setup(x => x.CountryCodeExistsAsync(client.BankAccountNumber.Substring(0, 2), CancellationToken.None))
             .ReturnsAsync(true);
 
-        return Fixture.Build<CreateClientDTO>()
-            .With(x => x.Name, name)
-            .With(x => x.BankAccountNumber, bankAccountNumber)
-            .With(x => x.CountryId, countryId)
-            .Create();
+        return client;
     }
 }

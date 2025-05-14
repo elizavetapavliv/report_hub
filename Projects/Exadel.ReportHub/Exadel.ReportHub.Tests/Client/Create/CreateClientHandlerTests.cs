@@ -25,11 +25,7 @@ public class CreateClientHandlerTests : BaseTestFixture
     {
         // Arrange
         var createClientDto = Fixture.Create<CreateClientDTO>();
-<<<<<<< HEAD
         var clientDto = Fixture.Create<ClientDTO>();
-=======
-        var country = Fixture.Build<Data.Models.Country>().With(x => x.Id, createClientDto.CountryId).Create();
->>>>>>> origin/master
 
         _clientManagerMock
             .Setup(x => x.CreateClientAsync(createClientDto, CancellationToken.None))

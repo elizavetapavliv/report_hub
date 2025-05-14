@@ -85,14 +85,12 @@ public class UpdateCustomerValidatorTests : BaseTestFixture
 
     private UpdateCustomerDTO SetupValidCustomer()
     {
-        var countryId = Guid.NewGuid();
+        var customer = Fixture.Create<UpdateCustomerDTO>();
 
         _countryRepositoryMock
-            .Setup(x => x.ExistsAsync(countryId, CancellationToken.None))
+            .Setup(x => x.ExistsAsync(customer.CountryId, CancellationToken.None))
         .ReturnsAsync(true);
 
-        return Fixture.Build<UpdateCustomerDTO>()
-            .With(x => x.CountryId, countryId)
-            .Create();
+        return customer;
     }
 }

@@ -97,9 +97,8 @@ public class CreateInvoiceValidatorTests : BaseTestFixture
     {
         // Arrange
         var invoice = SetupValidInvoice();
-        var clientId = Guid.NewGuid();
-        invoice.ClientId = clientId;
-        _clientRepositoryMock.Setup(x => x.ExistsAsync(clientId, CancellationToken.None))
+
+        _clientRepositoryMock.Setup(x => x.ExistsAsync(invoice.ClientId, CancellationToken.None))
             .ReturnsAsync(false);
 
         // Act
@@ -117,9 +116,8 @@ public class CreateInvoiceValidatorTests : BaseTestFixture
     {
         // Arrange
         var invoice = SetupValidInvoice();
-        var customerId = Guid.NewGuid();
-        invoice.CustomerId = customerId;
-        _customerRepositoryMock.Setup(x => x.ExistsOnClientAsync(customerId, invoice.ClientId, CancellationToken.None))
+
+        _customerRepositoryMock.Setup(x => x.ExistsOnClientAsync(invoice.CustomerId, invoice.ClientId, CancellationToken.None))
             .ReturnsAsync(false);
 
         // Act
@@ -172,6 +170,7 @@ public class CreateInvoiceValidatorTests : BaseTestFixture
     {
         // Arrange
         var invoice = SetupValidInvoice();
+
         _invoiceRepositoryMock.Setup(x => x.ExistsAsync(invoice.InvoiceNumber, CancellationToken.None))
             .ReturnsAsync(true);
 
@@ -187,23 +186,19 @@ public class CreateInvoiceValidatorTests : BaseTestFixture
 
     private CreateInvoiceDTO SetupValidInvoice()
     {
-        var clientId = Guid.Parse("ba18cc29-c7ff-48c4-9b7b-456bcef231d0");
-        var customerId = Guid.Parse("6d024627-568b-4d57-b477-2274c9d807b9");
-        var invoiceNumber = "INV20230051";
+        var invoice = Fixture.Build<CreateInvoiceDTO>()
+            .With(x => x.InvoiceNumber, "INV" + new string('1', 8))
+            .With(x => x.IssueDate, DateTime.UtcNow.Date.AddDays(-5))
+            .With(x => x.DueDate, DateTime.UtcNow.Date.AddDays(30))
+            .Create();
 
-        _clientRepositoryMock.Setup(x => x.ExistsAsync(clientId, CancellationToken.None))
+        _clientRepositoryMock.Setup(x => x.ExistsAsync(invoice.ClientId, CancellationToken.None))
             .ReturnsAsync(true);
-        _customerRepositoryMock.Setup(x => x.ExistsOnClientAsync(customerId, clientId, CancellationToken.None))
+        _customerRepositoryMock.Setup(x => x.ExistsOnClientAsync(invoice.CustomerId, invoice.ClientId, CancellationToken.None))
             .ReturnsAsync(true);
-        _invoiceRepositoryMock.Setup(x => x.ExistsAsync(invoiceNumber, CancellationToken.None))
+        _invoiceRepositoryMock.Setup(x => x.ExistsAsync(invoice.InvoiceNumber, CancellationToken.None))
             .ReturnsAsync(false);
 
-        return Fixture.Build<CreateInvoiceDTO>()
-                .With(x => x.ClientId, clientId)
-                .With(x => x.CustomerId, customerId)
-                .With(x => x.InvoiceNumber, invoiceNumber)
-                .With(x => x.IssueDate, DateTime.UtcNow.Date.AddDays(-5))
-                .With(x => x.DueDate, DateTime.UtcNow.Date.AddDays(30))
-                .Create();
+        return invoice;
     }
 }

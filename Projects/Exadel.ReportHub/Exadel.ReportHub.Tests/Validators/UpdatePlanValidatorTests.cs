@@ -102,12 +102,9 @@ public class UpdatePlanValidatorTests : BaseTestFixture
 
     private UpdatePlanDTO SetupValidPlan()
     {
-        var startDate = DateTime.UtcNow.AddDays(-1);
-        var endDate = startDate.AddDays(Random.Shared.Next(1, 7));
-
         return Fixture.Build<UpdatePlanDTO>()
-            .With(x => x.StartDate, startDate)
-            .With(x => x.EndDate, endDate)
+            .With(x => x.StartDate, DateTime.UtcNow.AddDays(-1))
+            .With(x => x.EndDate, DateTime.UtcNow.AddDays(7))
             .Create();
     }
 }
