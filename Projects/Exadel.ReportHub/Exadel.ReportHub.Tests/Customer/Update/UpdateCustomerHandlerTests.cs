@@ -31,26 +31,15 @@ public class UpdateCustomerHandlerTests : BaseTestFixture
         var customerId = Guid.NewGuid();
         var clientId = Guid.NewGuid();
         var updateDto = Fixture.Create<UpdateCustomerDTO>();
-        var country = Fixture.Build<Country>().With(x => x.Id, updateDto.CountryId).Create();
+        var country = Fixture.Build<Data.Models.Country>().With(x => x.Id, updateDto.CountryId).Create();
 
         _countryRepositoryMock
             .Setup(x => x.GetByIdAsync(updateDto.CountryId, CancellationToken.None))
             .ReturnsAsync(country);
 
-        var customer = Fixture.Build<Data.Models.Customer>()
-            .With(x => x.Name, updateDto.Name)
-            .With(x => x.CountryId, updateDto.CountryId)
-            .With(x => x.Country, country.Name)
-            .With(x => x.CurrencyId, country.CurrencyId)
-            .With(x => x.CurrencyCode, country.CurrencyCode)
-            .Create();
-
         _customerRepositoryMock
-            .Setup(x => x.ExistsAsync(customerId, clientId, CancellationToken.None))
+            .Setup(x => x.ExistsOnClientAsync(customerId, clientId, CancellationToken.None))
             .ReturnsAsync(true);
-
-        _customerRepositoryMock
-            .Setup(x => x.UpdateAsync(customer, CancellationToken.None));
 
         // Act
         var request = new UpdateCustomerRequest(customerId, clientId, updateDto);
@@ -73,7 +62,7 @@ public class UpdateCustomerHandlerTests : BaseTestFixture
             Times.Once);
 
         _customerRepositoryMock.Verify(
-            x => x.ExistsAsync(customerId, clientId, CancellationToken.None),
+            x => x.ExistsOnClientAsync(customerId, clientId, CancellationToken.None),
             Times.Once);
 
         _countryRepositoryMock.Verify(
@@ -91,7 +80,7 @@ public class UpdateCustomerHandlerTests : BaseTestFixture
         _customerRepositoryMock
             .Setup(x => x.UpdateAsync(customer, CancellationToken.None));
         _customerRepositoryMock
-            .Setup(x => x.ExistsAsync(customer.Id, customer.ClientId, CancellationToken.None))
+            .Setup(x => x.ExistsOnClientAsync(customer.Id, customer.ClientId, CancellationToken.None))
             .ReturnsAsync(false);
 
         // Act
@@ -104,7 +93,7 @@ public class UpdateCustomerHandlerTests : BaseTestFixture
         Assert.That(result.FirstError.Type, Is.EqualTo(ErrorType.NotFound));
 
         _customerRepositoryMock.Verify(
-            x => x.ExistsAsync(customer.Id, customer.ClientId, CancellationToken.None),
+            x => x.ExistsOnClientAsync(customer.Id, customer.ClientId, CancellationToken.None),
             Times.Once);
 
         _customerRepositoryMock.Verify(
