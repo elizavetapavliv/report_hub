@@ -47,7 +47,7 @@ public class ExcelExporterTests : BaseTestFixture
         var reports = new List<InvoicesReport> { report };
 
         // Act
-        var result = await _excelExporter.ExportAsync(reports, CancellationToken.None);
+        var result = await _excelExporter.ExportAsync(reports, null, CancellationToken.None);
 
         // Assert
         using var workbook = new Workbook(result);

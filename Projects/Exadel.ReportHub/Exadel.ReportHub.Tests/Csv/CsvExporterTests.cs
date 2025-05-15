@@ -46,7 +46,7 @@ public class CsvExporterTests : BaseTestFixture
         var report = Fixture.Create<InvoicesReport>();
 
         // Act
-        var stream = await _csvExporter.ExportAsync(report, CancellationToken.None);
+        var stream = await _csvExporter.ExportAsync(report, null, CancellationToken.None);
 
         // Assert
         using var reader = new StreamReader(stream, Encoding.UTF8);
@@ -79,7 +79,7 @@ public class CsvExporterTests : BaseTestFixture
         var reports = Fixture.CreateMany<InvoicesReport>(3).ToList();
 
         // Act
-        var stream = await _csvExporter.ExportAsync(reports, CancellationToken.None);
+        var stream = await _csvExporter.ExportAsync(reports, null, CancellationToken.None);
 
         // Assert
         using var reader = new StreamReader(stream, Encoding.UTF8);

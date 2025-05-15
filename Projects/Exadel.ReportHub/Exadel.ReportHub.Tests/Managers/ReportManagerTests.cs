@@ -1,4 +1,6 @@
 ﻿using AutoFixture;
+using Exadel.ReportHub.Data.Models;
+using Exadel.ReportHub.Ecb.Abstract;
 using Exadel.ReportHub.Export.Abstract;
 using Exadel.ReportHub.Export.Abstract.Models;
 using Exadel.ReportHub.Handlers.Managers.Report;
@@ -19,6 +21,7 @@ public class ReportManagerTests : BaseTestFixture
     private Mock<IItemRepository> _itemRepositoryMock;
     private Mock<IPlanRepository> _planRepositoryMock;
     private Mock<IClientRepository> _clientRepositoryMock;
+    private Mock<ICurrencyConverter> _currencyConverterMock;
     private Mock<IExportStrategyFactory> _exportStrategyFactoryMock;
     private Mock<IExportStrategy> _exportStrategyMock;
 
@@ -31,6 +34,7 @@ public class ReportManagerTests : BaseTestFixture
         _itemRepositoryMock = new Mock<IItemRepository>();
         _planRepositoryMock = new Mock<IPlanRepository>();
         _clientRepositoryMock = new Mock<IClientRepository>();
+        _currencyConverterMock = new Mock<ICurrencyConverter>();
         _exportStrategyFactoryMock = new Mock<IExportStrategyFactory>();
         _exportStrategyMock = new Mock<IExportStrategy>();
 
@@ -39,6 +43,7 @@ public class ReportManagerTests : BaseTestFixture
             _itemRepositoryMock.Object,
             _planRepositoryMock.Object,
             _clientRepositoryMock.Object,
+            _currencyConverterMock.Object,
             _exportStrategyFactoryMock.Object);
     }
 
@@ -50,7 +55,7 @@ public class ReportManagerTests : BaseTestFixture
             .With(x => x.Format, ExportFormat.CSV)
             .Create();
 
-        var report = Fixture.Create<Data.Models.InvoicesReport>();
+        var report = Fixture.Create<InvoicesReport>();
         var stream = new MemoryStream();
 
         _exportStrategyFactoryMock.Setup(x => x.GetStrategyAsync(exportReportDto.Format, CancellationToken.None))
@@ -66,7 +71,7 @@ public class ReportManagerTests : BaseTestFixture
         _clientRepositoryMock.Setup(x => x.GetCurrencyAsync(exportReportDto.ClientId, CancellationToken.None))
             .ReturnsAsync(Currency);
 
-        _exportStrategyMock.Setup(x => x.ExportAsync(report, CancellationToken.None))
+        _exportStrategyMock.Setup(x => x.ExportAsync(report, It.IsAny<ChartData>(), CancellationToken.None))
             .ReturnsAsync(stream);
 
         // Act
@@ -94,7 +99,7 @@ public class ReportManagerTests : BaseTestFixture
             x => x.GetCurrencyAsync(exportReportDto.ClientId, CancellationToken.None),
             Times.Once);
         _exportStrategyMock.Verify(
-            x => x.ExportAsync(report, CancellationToken.None),
+            x => x.ExportAsync(report, It.IsAny<ChartData>(), CancellationToken.None),
             Times.Once);
     }
 
@@ -105,36 +110,50 @@ public class ReportManagerTests : BaseTestFixture
         var exportReportDto = Fixture.Build<ExportReportDTO>()
             .With(x => x.Format, ExportFormat.Excel)
             .Create();
+        var itemNamePrice = Fixture.Build<ItemNamePrice>()
+            .With(x => x.Currency, Currency)
+            .With(x => x.Price, 10.00m)
+            .CreateMany(1).ToList();
 
-        var itemPrices = new Dictionary<Guid, decimal>
+        itemNamePrice.Add(
+            Fixture.Build<ItemNamePrice>()
+                .With(x => x.Currency, Currency)
+                .With(x => x.Price, 20.00m)
+                .Create());
+
+        var clientItemNamesPrices = new Dictionary<Guid, ItemNamePrice>();
+
+        for (int i = 0; i < 2; i++)
         {
-            [Guid.NewGuid()] = 10m,
-            [Guid.NewGuid()] = 20m
-        };
-        var itemCounts = new Dictionary<Guid, int>
+            clientItemNamesPrices.Add(Guid.NewGuid(), itemNamePrice[i]);
+        }
+
+        var itemids = clientItemNamesPrices.Keys.ToList();
+        var counts = new Dictionary<Guid, int>
         {
-            [itemPrices.First().Key] = 5,
-            [itemPrices.Last().Key] = 10
+            [itemids[0]] = 5,
+            [itemids[1]] = 10
         };
+
         var stream = new MemoryStream();
 
         _exportStrategyFactoryMock.Setup(x => x.GetStrategyAsync(exportReportDto.Format, CancellationToken.None))
             .ReturnsAsync(_exportStrategyMock.Object);
 
-        _itemRepositoryMock.Setup(x => x.GetClientItemPricesAsync(exportReportDto.ClientId, CancellationToken.None))
-            .ReturnsAsync(itemPrices);
+        _itemRepositoryMock.Setup(x => x.GetClientItemNamesPricesAsync(exportReportDto.ClientId, CancellationToken.None))
+            .ReturnsAsync(clientItemNamesPrices);
 
         _invoiceRepositoryMock.Setup(x => x.GetClientItemsCountAsync(
                 exportReportDto.ClientId,
                 exportReportDto.StartDate,
                 exportReportDto.EndDate,
                 CancellationToken.None))
-            .ReturnsAsync(itemCounts);
+            .ReturnsAsync(counts);
 
         _clientRepositoryMock.Setup(x => x.GetCurrencyAsync(exportReportDto.ClientId, CancellationToken.None))
             .ReturnsAsync(Currency);
 
-        _exportStrategyMock.Setup(x => x.ExportAsync(It.IsAny<ItemsReport>(), CancellationToken.None))
+        _exportStrategyMock.Setup(x => x.ExportAsync(It.IsAny<ItemsReport>(), It.IsAny<ChartData>(), CancellationToken.None))
             .ReturnsAsync(stream);
 
         // Act
@@ -151,10 +170,9 @@ public class ReportManagerTests : BaseTestFixture
         _exportStrategyMock.Verify(
             x => x.ExportAsync(
                 It.Is<ItemsReport>(r =>
-                    r.MostSoldItemId == itemPrices.Last().Key &&
-                    r.AveragePrice == 15m &&
-                    r.AverageRevenue == 125m &&
+                    r.MostSoldItemName == clientItemNamesPrices[counts.MaxBy(x => x.Value).Key].Name &&
                     r.ClientCurrency == Currency),
+                It.IsAny<ChartData>(),
                 CancellationToken.None),
             Times.Once);
     }
@@ -168,8 +186,25 @@ public class ReportManagerTests : BaseTestFixture
             .Create();
 
         var plans = Fixture.CreateMany<Data.Models.Plan>(3).ToList();
+
         var counts = plans.ToDictionary(x => x.Id, x => x.Count);
-        var prices = plans.ToDictionary(x => x.ItemId, x => 100m);
+        var prices = plans.ToDictionary(
+            x => x.ItemId,
+            x => Fixture.Build<ItemNamePrice>()
+                .With(p => p.Currency, Currency)
+                .Create());
+
+        var expectedRevenues = plans.Select(plan =>
+        {
+            var price = prices[plan.ItemId].Price;
+            return new
+            {
+                PlanId = plan.Id,
+                ExpectedRevenue = price * plan.Count,
+                prices[plan.ItemId].Currency
+            };
+        }).ToList();
+
         var stream = new MemoryStream();
 
         _exportStrategyFactoryMock.Setup(x => x.GetStrategyAsync(exportReportDto.Format, CancellationToken.None))
@@ -185,13 +220,13 @@ public class ReportManagerTests : BaseTestFixture
         _invoiceRepositoryMock.Setup(x => x.GetPlansActualCountAsync(plans, CancellationToken.None))
             .ReturnsAsync(counts);
 
-        _itemRepositoryMock.Setup(x => x.GetClientItemPricesAsync(exportReportDto.ClientId, CancellationToken.None))
+        _itemRepositoryMock.Setup(x => x.GetClientItemNamesPricesAsync(exportReportDto.ClientId, CancellationToken.None))
             .ReturnsAsync(prices);
 
         _clientRepositoryMock.Setup(x => x.GetCurrencyAsync(exportReportDto.ClientId, CancellationToken.None))
             .ReturnsAsync(Currency);
 
-        _exportStrategyMock.Setup(x => x.ExportAsync(It.IsAny<List<PlanReport>>(), CancellationToken.None))
+        _exportStrategyMock.Setup(x => x.ExportAsync(It.IsAny<List<PlanReport>>(), It.IsAny<ChartData>(), CancellationToken.None))
             .ReturnsAsync(stream);
 
         // Act
@@ -208,8 +243,11 @@ public class ReportManagerTests : BaseTestFixture
             x => x.ExportAsync(
                 It.Is<List<PlanReport>>(reports =>
                     reports.Count == 3 &&
-                    reports.All(r => r.ClientCurrency == Currency) &&
-                    reports.All(r => r.Revenue == 100m * r.PlannedCount)),
+                    reports.All(r =>
+                        expectedRevenues.Any(e =>
+                            e.ExpectedRevenue == r.Revenue &&
+                            e.Currency == r.ItemCurrency))),
+                It.IsAny<ChartData>(),
                 CancellationToken.None),
             Times.Once);
     }
