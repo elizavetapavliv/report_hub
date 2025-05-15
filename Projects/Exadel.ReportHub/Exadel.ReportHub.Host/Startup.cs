@@ -22,8 +22,7 @@ public class Startup(IConfiguration configuration)
         services.AddControllers(options =>
         {
             options.Filters.Add<ExceptionFilter>();
-        })
-            .AddJsonOptions(options =>
+        }).AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });

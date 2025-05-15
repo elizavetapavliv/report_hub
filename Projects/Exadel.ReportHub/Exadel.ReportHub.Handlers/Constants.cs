@@ -33,6 +33,7 @@ public static class Constants
         public static class Customer
         {
             public const string DoesNotExist = "Customer does not exist.";
+            public const string DoesNotExistOnClient = "Customer does not exist on client.";
             public const string WrongClient = "Wrong Client is provided for Customer.";
         }
 
@@ -54,7 +55,6 @@ public static class Constants
 
         public static class Name
         {
-            public const string AlreadyTaken = "Name is already taken";
             public const int MaxLength = 100;
             public const string MustStartWithCapital = "Name must begin with a capital letter.";
             public const string IsTaken = "Name is already taken";
