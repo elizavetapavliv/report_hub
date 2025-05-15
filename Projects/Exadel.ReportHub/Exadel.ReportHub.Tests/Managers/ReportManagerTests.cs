@@ -13,6 +13,8 @@ namespace Exadel.ReportHub.Tests.Managers;
 [TestFixture]
 public class ReportManagerTests : BaseTestFixture
 {
+    private const string Currency = "EUR";
+
     private Mock<IInvoiceRepository> _invoiceRepositoryMock;
     private Mock<IItemRepository> _itemRepositoryMock;
     private Mock<IPlanRepository> _planRepositoryMock;
@@ -49,7 +51,6 @@ public class ReportManagerTests : BaseTestFixture
             .Create();
 
         var report = Fixture.Create<Data.Models.InvoicesReport>();
-        var currency = "EUR";
         var stream = new MemoryStream();
 
         _exportStrategyFactoryMock.Setup(x => x.GetStrategyAsync(exportReportDto.Format, CancellationToken.None))
@@ -63,7 +64,7 @@ public class ReportManagerTests : BaseTestFixture
             .ReturnsAsync(report);
 
         _clientRepositoryMock.Setup(x => x.GetCurrencyAsync(exportReportDto.ClientId, CancellationToken.None))
-            .ReturnsAsync(currency);
+            .ReturnsAsync(Currency);
 
         _exportStrategyMock.Setup(x => x.ExportAsync(report, CancellationToken.None))
             .ReturnsAsync(stream);
@@ -77,6 +78,7 @@ public class ReportManagerTests : BaseTestFixture
         Assert.That(result.FileName, Does.StartWith("InvoicesReport_"));
         Assert.That(result.FileName, Does.EndWith(".csv"));
         Assert.That(result.ContentType, Is.EqualTo("text/csv"));
+        Assert.That(result.FileName, Is.EqualTo($"InvoicesReport_{DateTime.UtcNow:yyyy-MM-dd}.csv"));
 
         _exportStrategyFactoryMock.Verify(
             x => x.GetStrategyAsync(exportReportDto.Format, CancellationToken.None),
@@ -114,7 +116,6 @@ public class ReportManagerTests : BaseTestFixture
             [itemPrices.First().Key] = 5,
             [itemPrices.Last().Key] = 10
         };
-        var currency = "EUR";
         var stream = new MemoryStream();
 
         _exportStrategyFactoryMock.Setup(x => x.GetStrategyAsync(exportReportDto.Format, CancellationToken.None))
@@ -131,7 +132,7 @@ public class ReportManagerTests : BaseTestFixture
             .ReturnsAsync(itemCounts);
 
         _clientRepositoryMock.Setup(x => x.GetCurrencyAsync(exportReportDto.ClientId, CancellationToken.None))
-            .ReturnsAsync(currency);
+            .ReturnsAsync(Currency);
 
         _exportStrategyMock.Setup(x => x.ExportAsync(It.IsAny<ItemsReport>(), CancellationToken.None))
             .ReturnsAsync(stream);
@@ -145,6 +146,7 @@ public class ReportManagerTests : BaseTestFixture
         Assert.That(result.FileName, Does.StartWith("ItemsReport_"));
         Assert.That(result.FileName, Does.EndWith(".xlsx"));
         Assert.That(result.ContentType, Is.EqualTo("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+        Assert.That(result.FileName, Is.EqualTo($"ItemsReport_{DateTime.UtcNow:yyyy-MM-dd}.xlsx"));
 
         _exportStrategyMock.Verify(
             x => x.ExportAsync(
@@ -152,7 +154,7 @@ public class ReportManagerTests : BaseTestFixture
                     r.MostSoldItemId == itemPrices.Last().Key &&
                     r.AveragePrice == 15m &&
                     r.AverageRevenue == 125m &&
-                    r.ClientCurrency == currency),
+                    r.ClientCurrency == Currency),
                 CancellationToken.None),
             Times.Once);
     }
@@ -168,7 +170,6 @@ public class ReportManagerTests : BaseTestFixture
         var plans = Fixture.CreateMany<Data.Models.Plan>(3).ToList();
         var counts = plans.ToDictionary(x => x.Id, x => x.Count);
         var prices = plans.ToDictionary(x => x.ItemId, x => 100m);
-        var currency = "EUR";
         var stream = new MemoryStream();
 
         _exportStrategyFactoryMock.Setup(x => x.GetStrategyAsync(exportReportDto.Format, CancellationToken.None))
@@ -188,9 +189,9 @@ public class ReportManagerTests : BaseTestFixture
             .ReturnsAsync(prices);
 
         _clientRepositoryMock.Setup(x => x.GetCurrencyAsync(exportReportDto.ClientId, CancellationToken.None))
-            .ReturnsAsync(currency);
+            .ReturnsAsync(Currency);
 
-        _exportStrategyMock.Setup(x => x.ExportAsync(It.IsAny<IEnumerable<PlanReport>>(), CancellationToken.None))
+        _exportStrategyMock.Setup(x => x.ExportAsync(It.IsAny<List<PlanReport>>(), CancellationToken.None))
             .ReturnsAsync(stream);
 
         // Act
@@ -207,7 +208,7 @@ public class ReportManagerTests : BaseTestFixture
             x => x.ExportAsync(
                 It.Is<List<PlanReport>>(reports =>
                     reports.Count == 3 &&
-                    reports.All(r => r.ClientCurrency == currency) &&
+                    reports.All(r => r.ClientCurrency == Currency) &&
                     reports.All(r => r.Revenue == 100m * r.PlannedCount)),
                 CancellationToken.None),
             Times.Once);

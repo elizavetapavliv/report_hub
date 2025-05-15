@@ -35,11 +35,7 @@ public class RequestValidationBehaviorTests : BaseTestFixture
     public async Task Handle_ValidRequest_CallsNext()
     {
         // Arrange
-        var validDto = Fixture.Build<CreateClientDTO>()
-            .With(x => x.Name, "client")
-            .With(x => x.BankAccountNumber, "US1234567890")
-            .With(x => x.CountryId, Guid.NewGuid())
-            .Create();
+        var validDto = Fixture.Create<CreateClientDTO>();
 
         var request = new CreateClientRequest(validDto);
 

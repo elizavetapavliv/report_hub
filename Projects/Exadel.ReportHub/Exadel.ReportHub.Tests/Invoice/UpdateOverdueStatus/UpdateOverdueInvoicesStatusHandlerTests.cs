@@ -29,7 +29,7 @@ public class UpdateOverdueInvoicesStatusHandlerTests
     {
         // Arrange
         _invoiceRepositoryMock
-            .Setup(x => x.UpdateOverdueStatusAsync(It.IsAny<DateTime>(), CancellationToken.None))
+            .Setup(x => x.UpdateOverdueStatusAsync(DateTime.Now.Date, CancellationToken.None))
             .ReturnsAsync(ExpectedCount);
 
         // Act
@@ -40,7 +40,7 @@ public class UpdateOverdueInvoicesStatusHandlerTests
         Assert.That(result, Is.EqualTo(Unit.Value));
 
         _invoiceRepositoryMock.Verify(
-            x => x.UpdateOverdueStatusAsync(It.IsAny<DateTime>(), CancellationToken.None),
+            x => x.UpdateOverdueStatusAsync(DateTime.Now.Date, CancellationToken.None),
             Times.Once);
 
         _loggerMock.Verify(

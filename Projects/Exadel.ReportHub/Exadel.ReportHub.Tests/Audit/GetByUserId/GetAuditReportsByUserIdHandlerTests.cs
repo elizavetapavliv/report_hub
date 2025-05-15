@@ -1,4 +1,5 @@
 ﻿using AutoFixture;
+using Exadel.ReportHub.Handlers;
 using Exadel.ReportHub.Handlers.Audit.GetByUserId;
 using Exadel.ReportHub.RA.Abstract;
 using Exadel.ReportHub.SDK.DTOs.Pagination;
@@ -82,5 +83,74 @@ public class GetAuditReportsByUserIdHandlerTests : BaseTestFixture
         _auditReportRepositoryMock.Verify(
             x => x.GetByUserIdAsync(userId, pageRequestDto.Skip, pageRequestDto.Top, CancellationToken.None),
             Times.Once);
+    }
+
+    [Test]
+    public async Task GetAuditReports_TopIsZero_DefaultPageSizeApplied()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+
+        var auditReports = Fixture.Build<Data.Models.AuditReport>()
+            .With(x => x.UserId, userId)
+            .CreateMany(Constants.Validation.Pagination.MaxValue)
+            .ToList();
+
+        var pageRequestDto = new PageRequestDTO
+        {
+            Top = 0,
+            Skip = 0
+        };
+
+        _auditReportRepositoryMock
+            .Setup(x => x.GetByUserIdAsync(userId, pageRequestDto.Skip, Constants.Validation.Pagination.MaxValue, CancellationToken.None))
+            .ReturnsAsync(auditReports);
+
+        _auditReportRepositoryMock
+            .Setup(x => x.GetCountAsync(userId, CancellationToken.None))
+            .ReturnsAsync(Constants.Validation.Pagination.MaxValue);
+
+        // Act
+        var request = new GetAuditReportsByUserIdRequest(userId, pageRequestDto);
+        var result = await _handler.Handle(request, CancellationToken.None);
+
+        // Assert
+        Assert.That(result.IsError, Is.False);
+        Assert.That(result.Value.Items.Count, Is.EqualTo(Constants.Validation.Pagination.MaxValue));
+        Assert.That(result.Value.Count, Is.EqualTo(Constants.Validation.Pagination.MaxValue));
+
+        _auditReportRepositoryMock.Verify(
+            x => x.GetByUserIdAsync(userId, pageRequestDto.Skip, Constants.Validation.Pagination.MaxValue, CancellationToken.None),
+            Times.Once);
+    }
+
+    [Test]
+    public async Task GetAuditReports_TopIsNonZero_ReturnsExpectedReports()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var top = 5;
+        var skip = 0;
+        var auditReports = Fixture.Build<Data.Models.AuditReport>()
+            .With(x => x.UserId, userId)
+            .CreateMany(top).ToList();
+
+        var pageRequestDto = new PageRequestDTO
+        {
+            Top = top,
+            Skip = skip
+        };
+
+        _auditReportRepositoryMock
+            .Setup(x => x.GetByUserIdAsync(userId, skip, top, CancellationToken.None))
+            .ReturnsAsync(auditReports);
+
+        // Act
+        var request = new GetAuditReportsByUserIdRequest(userId, pageRequestDto);
+        var result = await _handler.Handle(request, CancellationToken.None);
+
+        // Assert
+        Assert.That(result.IsError, Is.False);
+        Assert.That(result.Value.Items, Has.Count.EqualTo(top));
     }
 }

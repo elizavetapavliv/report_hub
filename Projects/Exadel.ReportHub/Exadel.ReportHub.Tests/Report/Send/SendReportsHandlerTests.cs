@@ -43,6 +43,10 @@ public class SendReportsHandlerTests : BaseTestFixture
     public async Task SendReports_WithUsers_ProcessesAllUsers()
     {
         // Arrange
+        var now = DateTime.UtcNow;
+        var currentHour = now.Hour;
+        var currentDay = now.Day;
+        var currentDayOfWeek = now.DayOfWeek;
         List<Data.Models.User> users = Fixture.Build<Data.Models.User>()
             .With(u => u.NotificationSettings, Fixture.Build<NotificationSettings>()
                 .With(ns => ns.ReportPeriod, ReportPeriod.Week)
@@ -51,9 +55,9 @@ public class SendReportsHandlerTests : BaseTestFixture
             .ToList();
 
         _userRepositoryMock.Setup(x => x.GetUsersByNotificationSettingsAsync(
-                It.IsAny<int>(),
-                It.IsAny<DayOfWeek>(),
-                It.IsAny<int>(),
+                currentDay,
+                currentDayOfWeek,
+                currentHour,
                 CancellationToken.None))
             .ReturnsAsync(users);
 
@@ -90,6 +94,13 @@ public class SendReportsHandlerTests : BaseTestFixture
             It.IsAny<EmailReportData>(),
             CancellationToken.None),
             Times.Exactly(users.Count));
+
+        _userRepositoryMock.Verify(x => x.GetUsersByNotificationSettingsAsync(
+            currentDay,
+            currentDayOfWeek,
+            currentHour,
+            CancellationToken.None),
+            Times.Once);
     }
 
     [Test]
@@ -103,11 +114,11 @@ public class SendReportsHandlerTests : BaseTestFixture
             .Create();
 
         _userRepositoryMock.Setup(x => x.GetUsersByNotificationSettingsAsync(
-                It.IsAny<int>(),
-                It.IsAny<DayOfWeek>(),
-                It.IsAny<int>(),
-                CancellationToken.None))
-            .ReturnsAsync(new List<Data.Models.User> { user });
+             It.IsAny<int>(),
+             It.IsAny<DayOfWeek>(),
+             It.IsAny<int>(),
+             CancellationToken.None))
+        .ReturnsAsync(new List<Data.Models.User> { user });
 
         _reportManagerMock.Setup(x => x.GenerateInvoicesReportAsync(
                 It.IsAny<ExportReportDTO>(),

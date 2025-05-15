@@ -58,13 +58,14 @@ public class PageRequestDtoValidatorTests : BaseTestFixture
     public async Task ValidateAsync_SkipNegative_ErrorReturned()
     {
         // Arrange
-        var dto = Fixture.Build<PageRequestDTO>()
-            .With(x => x.Skip, -1)
-            .With(x => x.Top, Constants.Validation.Pagination.MaxValue - 10)
-            .Create();
+        var expectedPage = new PageRequestDTO
+        {
+            Top = Constants.Validation.Pagination.MaxValue - 10,
+            Skip = -1
+        };
 
         // Act
-        var result = await _validator.TestValidateAsync(dto);
+        var result = await _validator.TestValidateAsync(expectedPage);
 
         // Assert
         Assert.That(result.IsValid, Is.False);
@@ -77,13 +78,14 @@ public class PageRequestDtoValidatorTests : BaseTestFixture
     public async Task ValidateAsync_ValidValues_NoErrorReturned()
     {
         // Arrange
-        var dto = Fixture.Build<PageRequestDTO>()
-            .With(x => x.Top, Constants.Validation.Pagination.MaxValue - 10)
-            .With(x => x.Skip, 0)
-            .Create();
+        var expectedPage = new PageRequestDTO
+        {
+            Top = Constants.Validation.Pagination.MaxValue - 10,
+            Skip = 0
+        };
 
         // Act
-        var result = await _validator.TestValidateAsync(dto);
+        var result = await _validator.TestValidateAsync(expectedPage);
 
         // Assert
         Assert.That(result.IsValid, Is.True);
