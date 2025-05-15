@@ -9,4 +9,6 @@ public class CreateUpdateItemDTO
     public string Description { get; set; }
 
     public decimal Price { get; set; }
+
+    public Guid CurrencyId { get; set; }
 }

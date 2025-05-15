@@ -8,7 +8,8 @@ namespace Exadel.ReportHub.Handlers.Item.Update;
 
 public record UpdateItemRequest(Guid Id, CreateUpdateItemDTO UpdateItemDto) : IRequest<ErrorOr<Updated>>;
 
-public class UpdateItemHandler(IItemRepository itemRepository, IClientRepository clientRepository, IMapper mapper) : IRequestHandler<UpdateItemRequest, ErrorOr<Updated>>
+public class UpdateItemHandler(IItemRepository itemRepository, ICurrencyRepository currencyRepository, IMapper mapper)
+    : IRequestHandler<UpdateItemRequest, ErrorOr<Updated>>
 {
     public async Task<ErrorOr<Updated>> Handle(UpdateItemRequest request, CancellationToken cancellationToken)
     {
@@ -25,9 +26,7 @@ public class UpdateItemHandler(IItemRepository itemRepository, IClientRepository
 
         var item = mapper.Map<Data.Models.Item>(request.UpdateItemDto);
         item.Id = request.Id;
-        var client = await clientRepository.GetByIdAsync(item.ClientId, cancellationToken);
-        item.CurrencyId = client.CurrencyId;
-        item.CurrencyCode = client.CurrencyCode;
+        item.CurrencyCode = await currencyRepository.GetCodeByIdAsync(request.UpdateItemDto.CurrencyId, cancellationToken);
 
         await itemRepository.UpdateAsync(item, cancellationToken);
         return Result.Updated;
