@@ -76,9 +76,9 @@ public class ReportManagerTests : BaseTestFixture
         Assert.That(result, Is.Not.Null);
         Assert.That(result.Stream, Is.EqualTo(stream));
         Assert.That(result.FileName, Does.StartWith("InvoicesReport_"));
-        Assert.That(result.FileName, Does.EndWith(".csv"));
-        Assert.That(result.ContentType, Is.EqualTo("text/csv"));
-        Assert.That(result.FileName, Is.EqualTo($"InvoicesReport_{DateTime.UtcNow:yyyy-MM-dd}.csv"));
+        Assert.That(result.FileName, Does.EndWith(Constants.File.Extension.Csv));
+        Assert.That(result.ContentType, Is.EqualTo(Constants.File.ContentType.Csv));
+        Assert.That(result.FileName, Is.EqualTo($"InvoicesReport_{DateTime.Now:yyyy-MM-dd}.csv"));
 
         _exportStrategyFactoryMock.Verify(
             x => x.GetStrategyAsync(exportReportDto.Format, CancellationToken.None),
@@ -144,9 +144,9 @@ public class ReportManagerTests : BaseTestFixture
         Assert.That(result, Is.Not.Null);
         Assert.That(result.Stream, Is.EqualTo(stream));
         Assert.That(result.FileName, Does.StartWith("ItemsReport_"));
-        Assert.That(result.FileName, Does.EndWith(".xlsx"));
-        Assert.That(result.ContentType, Is.EqualTo("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
-        Assert.That(result.FileName, Is.EqualTo($"ItemsReport_{DateTime.UtcNow:yyyy-MM-dd}.xlsx"));
+        Assert.That(result.FileName, Does.EndWith(Constants.File.Extension.Excel));
+        Assert.That(result.ContentType, Is.EqualTo(Constants.File.ContentType.Excel));
+        Assert.That(result.FileName, Is.EqualTo($"ItemsReport_{DateTime.Now:yyyy-MM-dd}.xlsx"));
 
         _exportStrategyMock.Verify(
             x => x.ExportAsync(
@@ -201,8 +201,8 @@ public class ReportManagerTests : BaseTestFixture
         Assert.That(result, Is.Not.Null);
         Assert.That(result.Stream, Is.EqualTo(stream));
         Assert.That(result.FileName, Does.StartWith("PlansReport_"));
-        Assert.That(result.FileName, Does.EndWith(".csv"));
-        Assert.That(result.ContentType, Is.EqualTo("text/csv"));
+        Assert.That(result.FileName, Does.EndWith(Constants.File.Extension.Csv));
+        Assert.That(result.ContentType, Is.EqualTo(Constants.File.ContentType.Csv));
 
         _exportStrategyMock.Verify(
             x => x.ExportAsync(
