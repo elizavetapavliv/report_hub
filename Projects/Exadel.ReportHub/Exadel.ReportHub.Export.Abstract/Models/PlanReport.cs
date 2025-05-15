@@ -16,5 +16,5 @@ public class PlanReport : BaseReport
 
     public decimal Revenue { get; set; }
 
-    public string ClientCurrency { get; set; }
+    public string ItemCurrency { get; set; }
 }
