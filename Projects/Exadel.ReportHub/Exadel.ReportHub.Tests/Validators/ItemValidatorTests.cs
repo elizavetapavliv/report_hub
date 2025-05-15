@@ -13,14 +13,12 @@ namespace Exadel.ReportHub.Tests.Validators;
 [TestFixture]
 public class ItemValidatorTests : BaseTestFixture
 {
-    private Mock<ICurrencyRepository> _currencyRepositoryMock;
     private Mock<IClientRepository> _clientRepositoryMock;
     private ItemValidator _validator;
 
     [SetUp]
     public void Setup()
     {
-        _currencyRepositoryMock = new Mock<ICurrencyRepository>();
         _clientRepositoryMock = new Mock<IClientRepository>();
 
         var stringValidator = new InlineValidator<string>();
@@ -33,7 +31,6 @@ public class ItemValidatorTests : BaseTestFixture
         });
 
         _validator = new ItemValidator(
-            _currencyRepositoryMock.Object,
             _clientRepositoryMock.Object,
             stringValidator);
     }
@@ -87,43 +84,6 @@ public class ItemValidatorTests : BaseTestFixture
         Assert.That(result.Errors, Has.Exactly(1).Items);
         Assert.That(result.Errors[0].PropertyName, Is.EqualTo(nameof(CreateUpdateItemDTO.ClientId)));
         Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo(Constants.Validation.Client.DoesNotExist));
-    }
-
-    [Test]
-    public async Task ValidateAsync_EmptyCurrencyId_ErrorReturned()
-    {
-        // Arrange
-        var item = SetupValidItem();
-        item.CurrencyId = Guid.Empty;
-
-        // Act
-        var result = await _validator.TestValidateAsync(item);
-
-        // Assert
-        Assert.That(result.IsValid, Is.False);
-        Assert.That(result.Errors, Has.Exactly(1).Items);
-        Assert.That(result.Errors[0].PropertyName, Is.EqualTo(nameof(CreateUpdateItemDTO.CurrencyId)));
-        Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo("'Currency Id' must not be empty."));
-    }
-
-    [Test]
-    public async Task ValidateAsync_CurrencyDoesNotExist_ErrorReturned()
-    {
-        // Arrange
-        var item = SetupValidItem();
-
-        _currencyRepositoryMock
-            .Setup(x => x.ExistsAsync(item.CurrencyId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(false);
-
-        // Act
-        var result = await _validator.TestValidateAsync(item);
-
-        // Assert
-        Assert.That(result.IsValid, Is.False);
-        Assert.That(result.Errors, Has.Exactly(1).Items);
-        Assert.That(result.Errors[0].PropertyName, Is.EqualTo(nameof(CreateUpdateItemDTO.CurrencyId)));
-        Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo(Constants.Validation.Currency.DoesNotExist));
     }
 
     [Test]
@@ -220,10 +180,6 @@ public class ItemValidatorTests : BaseTestFixture
 
         _clientRepositoryMock
             .Setup(x => x.ExistsAsync(item.ClientId, CancellationToken.None))
-            .ReturnsAsync(true);
-
-        _currencyRepositoryMock
-            .Setup(x => x.ExistsAsync(item.CurrencyId, CancellationToken.None))
             .ReturnsAsync(true);
 
         return item;

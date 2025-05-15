@@ -12,6 +12,7 @@ public class ItemProfile : Profile
         CreateMap<CreateUpdateItemDTO, Item>()
             .ForMember(x => x.Id, opt => opt.Ignore())
             .ForMember(x => x.IsDeleted, opt => opt.Ignore())
+            .ForMember(x => x.CurrencyId, opt => opt.Ignore())
             .ForMember(x => x.CurrencyCode, opt => opt.Ignore());
     }
 }

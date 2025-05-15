@@ -6,13 +6,11 @@ namespace Exadel.ReportHub.Handlers.Validators;
 
 public class ItemValidator : AbstractValidator<CreateUpdateItemDTO>
 {
-    private readonly ICurrencyRepository _currencyRepository;
     private readonly IClientRepository _clientRepository;
     private readonly IValidator<string> _stringValidator;
 
-    public ItemValidator(ICurrencyRepository currencyRepository, IClientRepository clientRepository, IValidator<string> stringValidator)
+    public ItemValidator(IClientRepository clientRepository, IValidator<string> stringValidator)
     {
-        _currencyRepository = currencyRepository;
         _clientRepository = clientRepository;
         _stringValidator = stringValidator;
         ConfigureRules();
@@ -26,11 +24,6 @@ public class ItemValidator : AbstractValidator<CreateUpdateItemDTO>
                 .NotEmpty()
                 .MustAsync(_clientRepository.ExistsAsync)
                 .WithMessage(Constants.Validation.Client.DoesNotExist);
-
-            RuleFor(x => x.CurrencyId)
-                .NotEmpty()
-                .MustAsync(_currencyRepository.ExistsAsync)
-                .WithMessage(Constants.Validation.Currency.DoesNotExist);
 
             RuleFor(x => x.Name)
                 .SetValidator(_stringValidator, Constants.Validation.RuleSet.Names);

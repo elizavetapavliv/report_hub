@@ -1,6 +1,5 @@
 ﻿using AutoFixture;
 using ErrorOr;
-using Exadel.ReportHub.Ecb;
 using Exadel.ReportHub.Handlers.Item.Update;
 using Exadel.ReportHub.RA.Abstract;
 using Exadel.ReportHub.SDK.DTOs.Item;
@@ -13,17 +12,17 @@ namespace Exadel.ReportHub.Tests.Item.Update;
 public class UpdateItemHandlerTests : BaseTestFixture
 {
     private Mock<IItemRepository> _itemRepositoryMock;
-    private Mock<ICurrencyRepository> _currencyRepositoryMock;
+    private Mock<IClientRepository> _clientRepositoryMock;
     private UpdateItemHandler _handler;
 
     [SetUp]
     public void Setup()
     {
         _itemRepositoryMock = new Mock<IItemRepository>();
-        _currencyRepositoryMock = new Mock<ICurrencyRepository>();
+        _clientRepositoryMock = new Mock<IClientRepository>();
         _handler = new UpdateItemHandler(
             _itemRepositoryMock.Object,
-            _currencyRepositoryMock.Object,
+            _clientRepositoryMock.Object,
             Mapper);
     }
 
@@ -34,14 +33,17 @@ public class UpdateItemHandlerTests : BaseTestFixture
         var itemId = Guid.NewGuid();
         var clientId = Guid.NewGuid();
         var updateDto = Fixture.Build<CreateUpdateItemDTO>().With(x => x.ClientId, clientId).Create();
+        var client = Fixture.Build<Data.Models.Client>()
+            .With(x => x.Id, clientId)
+            .Create();
+
+        _clientRepositoryMock
+            .Setup(x => x.GetByIdAsync(clientId, CancellationToken.None))
+            .ReturnsAsync(client);
 
         _itemRepositoryMock
             .Setup(x => x.GetClientIdAsync(itemId, CancellationToken.None))
             .ReturnsAsync(clientId);
-
-        _currencyRepositoryMock
-            .Setup(x => x.GetCodeByIdAsync(updateDto.CurrencyId, CancellationToken.None))
-            .ReturnsAsync(Constants.Currency.DefaultCurrencyCode);
 
         // Act
         var request = new UpdateItemRequest(itemId, updateDto);
@@ -59,8 +61,8 @@ public class UpdateItemHandlerTests : BaseTestFixture
                     i.Name == updateDto.Name &&
                     i.Description == updateDto.Description &&
                     i.Price == updateDto.Price &&
-                    i.CurrencyId == updateDto.CurrencyId &&
-                    i.CurrencyCode == Constants.Currency.DefaultCurrencyCode),
+                    i.CurrencyId == client.CurrencyId &&
+                    i.CurrencyCode == client.CurrencyCode),
                 CancellationToken.None),
             Times.Once);
     }
