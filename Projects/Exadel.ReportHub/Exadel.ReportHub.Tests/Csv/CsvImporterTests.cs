@@ -20,11 +20,11 @@ public class CsvImporterTests : BaseTestFixture
     public void ImportCsv_ValidRequest_ImportsSuccessfully()
     {
         // Arrange
-        var expected = Fixture.CreateMany<CreateInvoiceDTO>(3).ToList();
+        var expected = Fixture.CreateMany<ImportInvoiceDTO>(3).ToList();
         var csvStream = GenerateCsvStream(expected);
 
         // Act
-        var imported = _csvImporter.Read<CreateInvoiceDTO>(csvStream);
+        var imported = _csvImporter.Read<ImportInvoiceDTO>(csvStream);
 
         // Assert
         Assert.That(imported, Is.Not.Null);
@@ -37,7 +37,6 @@ public class CsvImporterTests : BaseTestFixture
 
             Assert.Multiple(() =>
             {
-                Assert.That(actual.ClientId, Is.EqualTo(expectedItem.ClientId));
                 Assert.That(actual.CustomerId, Is.EqualTo(expectedItem.CustomerId));
                 Assert.That(actual.InvoiceNumber, Is.EqualTo(expectedItem.InvoiceNumber));
                 Assert.That(actual.IssueDate.Date, Is.EqualTo(expectedItem.IssueDate.Date));
@@ -48,15 +47,15 @@ public class CsvImporterTests : BaseTestFixture
         }
     }
 
-    private static MemoryStream GenerateCsvStream(List<CreateInvoiceDTO> items)
+    private static MemoryStream GenerateCsvStream(List<ImportInvoiceDTO> items)
     {
         var writer = new StringWriter();
 
-        writer.WriteLine("ClientId,CustomerId,InvoiceNumber,ItemIds,IssueDate,DueDate");
+        writer.WriteLine("CustomerId,InvoiceNumber,ItemIds,IssueDate,DueDate");
         foreach (var item in items)
         {
             var joinedItemIds = string.Join(";", item.ItemIds);
-            writer.WriteLine($"{item.ClientId},{item.CustomerId},{item.InvoiceNumber}," +
+            writer.WriteLine($"{item.CustomerId},{item.InvoiceNumber}," +
                 $"{joinedItemIds},{item.IssueDate.Date:yyyy-MM-dd},{item.DueDate.Date:yyyy-MM-dd}");
         }
 
