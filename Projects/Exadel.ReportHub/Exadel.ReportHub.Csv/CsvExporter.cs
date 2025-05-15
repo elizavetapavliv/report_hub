@@ -30,6 +30,7 @@ public class CsvExporter : IExportStrategy
             await using var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
 
             csv.Context.TypeConverterOptionsCache.GetOptions<Guid?>().NullValues.Add("-");
+            csv.Context.TypeConverterOptionsCache.GetOptions<string>().NullValues.Add("-");
 
             csv.Context.RegisterClassMap(ClassMapFactory.GetClassMap<TModel>());
             csv.WriteHeader<TModel>();
