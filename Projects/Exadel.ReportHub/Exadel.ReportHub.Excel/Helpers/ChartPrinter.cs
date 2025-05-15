@@ -1,8 +1,8 @@
 ﻿using System.Globalization;
 using Aspose.Cells;
 using Aspose.Cells.Charts;
-using Exadel.ReportHub.Data.Models;
 using Exadel.ReportHub.Export.Abstract;
+using Exadel.ReportHub.Export.Abstract.Models;
 
 namespace Exadel.ReportHub.Excel.Helpers;
 

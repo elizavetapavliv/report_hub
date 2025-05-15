@@ -1,4 +1,4 @@
-﻿namespace Exadel.ReportHub.Data.Models;
+﻿namespace Exadel.ReportHub.Export.Abstract.Models;
 
 public class ChartData
 {

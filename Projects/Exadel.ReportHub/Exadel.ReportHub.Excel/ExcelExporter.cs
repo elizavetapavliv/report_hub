@@ -3,6 +3,7 @@ using Aspose.Cells;
 using Exadel.ReportHub.Data.Abstract;
 using Exadel.ReportHub.Excel.Helpers;
 using Exadel.ReportHub.Export.Abstract;
+using Exadel.ReportHub.Export.Abstract.Models;
 using Exadel.ReportHub.SDK.Enums;
 
 namespace Exadel.ReportHub.Excel;
@@ -14,13 +15,13 @@ public class ExcelExporter : IExportStrategy
         return Task.FromResult(format == ExportFormat.Excel);
     }
 
-    public async Task<Stream> ExportAsync<TModel>(TModel exportModel, CancellationToken cancellationToken)
+    public async Task<Stream> ExportAsync<TModel>(TModel exportModel, ChartData chartData = null, CancellationToken cancellationToken = default)
         where TModel : BaseReport
     {
-        return await ExportAsync([exportModel], cancellationToken);
+        return await ExportAsync([exportModel], chartData, cancellationToken);
     }
 
-    public async Task<Stream> ExportAsync<TModel>(IEnumerable<TModel> exportModels, CancellationToken cancellationToken)
+    public async Task<Stream> ExportAsync<TModel>(IEnumerable<TModel> exportModels, ChartData chartData = null, CancellationToken cancellationToken = default)
         where TModel : BaseReport
     {
         var stream = new MemoryStream();
@@ -46,9 +47,9 @@ public class ExcelExporter : IExportStrategy
         PutHeaders(cells, properties);
         PutData(cells, properties, modelList, dateStyle, decimalStyle);
 
-        if (modelList.Count > 0 && modelList[0].ChartData != null)
+        if (modelList.Count > 0 && chartData != null)
         {
-            ChartPrinter.PrintChart(worksheet, modelList[0].ChartData);
+            ChartPrinter.PrintChart(worksheet, chartData);
         }
 
         worksheet.AutoFitColumns();
@@ -65,8 +66,7 @@ public class ExcelExporter : IExportStrategy
         var column = 0;
         foreach (var propertyName in properties.Select(x => x.Name))
         {
-            if (propertyName.Equals(nameof(BaseReport.ReportDate), StringComparison.Ordinal) ||
-                propertyName.Equals(nameof(BaseReport.ChartData), StringComparison.Ordinal))
+            if (propertyName.Equals(nameof(BaseReport.ReportDate), StringComparison.Ordinal))
             {
                 continue;
             }
@@ -84,8 +84,7 @@ public class ExcelExporter : IExportStrategy
             var column = 0;
             foreach (var property in properties)
             {
-                if (property.Name.Equals(nameof(BaseReport.ReportDate), StringComparison.Ordinal) ||
-                    property.Name.Equals(nameof(BaseReport.ChartData), StringComparison.Ordinal))
+                if (property.Name.Equals(nameof(BaseReport.ReportDate), StringComparison.Ordinal))
                 {
                     continue;
                 }

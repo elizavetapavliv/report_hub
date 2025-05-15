@@ -24,7 +24,7 @@ public class ReportManager(IInvoiceRepository invoiceRepository, IItemRepository
         report.ClientCurrency = clientCurrencyTask.Result;
         report.ReportDate = DateTime.UtcNow;
 
-        var stream = await exportStrategyTask.Result.ExportAsync(report, cancellationToken);
+        var stream = await exportStrategyTask.Result.ExportAsync(report, cancellationToken: cancellationToken);
 
         return new ExportResult
         {
@@ -61,7 +61,7 @@ public class ReportManager(IInvoiceRepository invoiceRepository, IItemRepository
             ReportDate = DateTime.UtcNow
         };
 
-        var stream = await exportStrategyTask.Result.ExportAsync(report, cancellationToken);
+        var stream = await exportStrategyTask.Result.ExportAsync(report, cancellationToken: cancellationToken);
 
         return new ExportResult
         {
@@ -81,7 +81,7 @@ public class ReportManager(IInvoiceRepository invoiceRepository, IItemRepository
 
         await Task.WhenAll(exportStrategyTask, plansTask);
         var plans = plansTask.Result;
-
+        var chartData = new ChartData();
         if (plans.Any())
         {
             var countsTask = invoiceRepository.GetPlansActualCountAsync(plans, cancellationToken);
@@ -111,18 +111,16 @@ public class ReportManager(IInvoiceRepository invoiceRepository, IItemRepository
             }).OrderByDescending(x => x.StartDate)
                 .ToList();
 
-            var chartData = new ChartData
+            chartData = new ChartData
             {
                 ChartTitle = string.Format(Export.Abstract.Constants.ChartInfo.PlansChartTitle, clientCurrencyTask.Result),
                 NamesTitle = Export.Abstract.Constants.ChartInfo.PlansNamesTitle,
                 ValuesTitle = Export.Abstract.Constants.ChartInfo.PlansValuesTitle,
                 NameValues = reports.GroupBy(x => x.TargetItemName, x => x.Revenue).ToDictionary(x => x.Key, g => g.Sum())
             };
-
-            reports[0].ChartData = chartData;
         }
 
-        var stream = await exportStrategyTask.Result.ExportAsync(reports, cancellationToken);
+        var stream = await exportStrategyTask.Result.ExportAsync(reports, chartData, cancellationToken);
 
         return new ExportResult
         {

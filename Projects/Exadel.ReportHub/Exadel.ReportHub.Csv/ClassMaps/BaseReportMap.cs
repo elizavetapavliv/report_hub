@@ -12,8 +12,5 @@ public abstract class BaseReportMap<TModel> : ClassMap<TModel>
     {
         AutoMap(CultureInfo.InvariantCulture);
         Map(x => x.ReportDate).TypeConverterOption.Format(Constants.Format.Date);
-        Map(x => x.ChartData.ChartTitle).Ignore();
-        Map(x => x.ChartData.ValuesTitle).Ignore();
-        Map(x => x.ChartData.NamesTitle).Ignore();
     }
 }
