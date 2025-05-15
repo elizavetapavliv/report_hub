@@ -54,13 +54,6 @@ public class ItemRepository(MongoDbContext context) : BaseRepository(context), I
         return await GetCollection<Item>().Find(filter).Project(x => (Guid?)x.ClientId).SingleOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<string> GetNameAsync(Guid id, CancellationToken cancellationToken)
-    {
-        var filter = _filterBuilder.Eq(x => x.Id, id).NotDeleted();
-
-        return await GetCollection<Item>().Find(filter).Project(x => x.Name).SingleOrDefaultAsync(cancellationToken);
-    }
-
     public Task SoftDeleteAsync(Guid id, CancellationToken cancellationToken)
     {
         return SoftDeleteAsync<Item>(id, cancellationToken);

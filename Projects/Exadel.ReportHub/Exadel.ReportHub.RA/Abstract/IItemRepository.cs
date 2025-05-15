@@ -18,8 +18,6 @@ public interface IItemRepository
 
     Task<Guid?> GetClientIdAsync(Guid id, CancellationToken cancellationToken);
 
-    Task<string> GetNameAsync(Guid id, CancellationToken cancellationToken);
-
     Task UpdateAsync(Item item, CancellationToken cancellationToken);
 
     Task SoftDeleteAsync(Guid id, CancellationToken cancellationToken);
