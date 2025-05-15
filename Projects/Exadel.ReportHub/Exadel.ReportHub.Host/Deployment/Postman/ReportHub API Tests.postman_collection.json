@@ -4,9 +4,1082 @@
 		"name": "ReportHub API Tests",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "24902136",
-		"_collection_link": "https://galactic-desert-499467.postman.co/workspace/31a352c3-8b44-446b-8bf9-071cf8037048/collection/24902136-98a9b73b-f839-4dcf-b8ad-c0271b94805b?action=share&source=collection_link&creator=24902136"
+		"_collection_link": "https://report-hub-api-team.postman.co/workspace/Report-Hub-API-Team-Workspace~31a352c3-8b44-446b-8bf9-071cf8037048/collection/24902136-98a9b73b-f839-4dcf-b8ad-c0271b94805b?action=share&source=collection_link&creator=24902136"
 	},
 	"item": [
+		{
+			"name": "Client",
+			"item": [
+				{
+					"name": "Create Client",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", () => {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response is valid JSON\", () => {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"const body = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Value has all required client fields\", () => {\r",
+									"    pm.expect(body).to.have.property(\"id\").that.is.a(\"string\");\r",
+									"    pm.expect(body).to.have.property(\"name\").that.is.a(\"string\");\r",
+									"    pm.expect(body).to.have.property(\"bankAccountNumber\").that.is.a(\"string\");\r",
+									"    pm.expect(body).to.have.property(\"countryId\").that.is.a(\"string\");\r",
+									"    pm.expect(body).to.have.property(\"country\").that.is.a(\"string\");\r",
+									"    pm.expect(body).to.have.property(\"currencyId\").that.is.a(\"string\");\r",
+									"    pm.expect(body).to.have.property(\"currencyCode\").that.is.a(\"string\");\r",
+									"});\r",
+									"\r",
+									"pm.collectionVariables.set(\"currencyId\", body.currencyId);\r",
+									"pm.collectionVariables.set(\"clientCurrencyCode\", body.currencyCode)\r",
+									"pm.collectionVariables.set(\"clientId\", body.id);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function uuidv4() {\r",
+									"  return \"10000000-1000-4000-8000-100000000000\".replace(/[018]/g, c =>\r",
+									"    (+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16)\r",
+									"  );\r",
+									"}\r",
+									"\r",
+									"const guid = uuidv4();\r",
+									"const clientName = `Client${guid}`;\r",
+									"\r",
+									"const digits = () => Math.floor(1e9 + Math.random() * 9e8).toString();\r",
+									"const bankAccount = \"CZ\" + digits();\r",
+									"\r",
+									"pm.collectionVariables.set(\"clientName\", clientName);\r",
+									"pm.collectionVariables.set(\"bankAccountNumber\", bankAccount);\r",
+									"\r",
+									"console.log(\"Using clientName =\", clientName);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"{{clientName}}\",\r\n  \"bankAccountNumber\": \"{{bankAccountNumber}}\",\r\n  \"countryId\": \"{{countryId}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/clients",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"clients"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Customer",
+			"item": [
+				{
+					"name": "Create Customer",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function uuidv4() {\r",
+									"  return \"10000000-1000-4000-8000-100000000000\".replace(/[018]/g, c =>\r",
+									"    (+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16)\r",
+									"  );\r",
+									"}\r",
+									"const guid = uuidv4();\r",
+									"\r",
+									"const customerName = `Customer ${guid}`;\r",
+									"const customerEmail = `${guid}@example.com`;\r",
+									"\r",
+									"pm.collectionVariables.set(\"customerName\", customerName);\r",
+									"pm.collectionVariables.set(\"customerEmail\", customerEmail);\r",
+									"\r",
+									"console.log(\"Creating customer:\", customerName, customerEmail);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", () => {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response is valid JSON\", () => {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"const body = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Response has all required customer fields\", () => {\r",
+									"    pm.expect(body).to.have.property(\"id\").that.is.a(\"string\");\r",
+									"    pm.expect(body).to.have.property(\"name\").that.is.a(\"string\");\r",
+									"    pm.expect(body).to.have.property(\"email\").that.is.a(\"string\");\r",
+									"    pm.expect(body).to.have.property(\"countryId\").that.is.a(\"string\");\r",
+									"    pm.expect(body).to.have.property(\"country\").that.is.a(\"string\");\r",
+									"    pm.expect(body).to.have.property(\"currencyId\").that.is.a(\"string\");\r",
+									"    pm.expect(body).to.have.property(\"currencyCode\").that.is.a(\"string\");\r",
+									"    pm.expect(body).to.have.property(\"clientId\").that.is.a(\"string\");\r",
+									"});\r",
+									"\r",
+									"pm.collectionVariables.set(\"customerId\", body.id);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"{{customerName}}\",\r\n  \"countryId\": \"{{countryId}}\",\r\n  \"email\": \"{{customerEmail}}\",\r\n  \"clientId\": \"{{clientId}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/customers",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"customers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Import Customers",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Import status is 201\", () => {\r",
+									"  pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response is valid JSON with importedCount\", () => {\r",
+									"  pm.response.to.be.json;\r",
+									"  const json = pm.response.json();\r",
+									"  pm.expect(json).to.have.property(\"value\");\r",
+									"  pm.expect(json.value).to.have.property(\"importedCount\").that.is.a(\"number\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"packages": {},
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "File",
+									"type": "file",
+									"src": "postman-cloud:///1f0309bf-1027-46a0-9e32-d806ab533111"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/customers/import?clientId={{clientId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"customers",
+								"import"
+							],
+							"query": [
+								{
+									"key": "clientId",
+									"value": "{{clientId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Invoice",
+			"item": [
+				{
+					"name": "Create Invoice",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const now = Date.now();\r",
+									"pm.collectionVariables.set(\"issueDate\", new Date(now - 10*24*60*60*1000).toISOString().slice(0,10));\r",
+									"pm.collectionVariables.set(\"dueDate\", new Date(now - 5*24*60*60*1000).toISOString().slice(0,10));\r",
+									"pm.collectionVariables.set(\"invoiceNumber\", `INV${Math.floor(100000 + Math.random() * 900000).toString()}`);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", () => {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response is valid JSON\", () => {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"const body  = pm.response.json();\r",
+									"\r",
+									"pm.test(\"value contains required fields\", () => {\r",
+									"  pm.expect(body).to.have.property(\"id\").that.is.a(\"string\");\r",
+									"  pm.expect(body).to.have.property(\"clientId\", pm.environment.get(\"clientId\"));\r",
+									"  pm.expect(body).to.have.property(\"customerId\", pm.environment.get(\"customerId\"));\r",
+									"  pm.expect(body).to.have.property(\"invoiceNumber\", pm.environment.get(\"invoiceNumber\"));\r",
+									"  pm.expect(body).to.have.property(\"issueDate\").that.is.a(\"string\");\r",
+									"  pm.expect(body).to.have.property(\"dueDate\").that.is.a(\"string\");\r",
+									"  pm.expect(body).to.have.property(\"clientBankAccountNumber\").that.is.a(\"string\");\r",
+									"  pm.expect(body).to.have.property(\"clientCurrencyAmount\").that.is.a(\"number\");\r",
+									"  pm.expect(body).to.have.property(\"paymentStatus\", \"Unpaid\");\r",
+									"  pm.expect(body).to.have.property(\"itemIds\").that.eql(JSON.parse(pm.environment.get(\"itemIds\")));\r",
+									"});\r",
+									"\r",
+									"pm.collectionVariables.set(\"invoiceId\", body.id);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"issueDate\": \"{{issueDate}}\",           \r\n    \"dueDate\": \"{{dueDate}}\",               \r\n    \"clientId\": \"{{clientId}}\",\r\n    \"customerId\": \"{{customerId}}\",\r\n    \"invoiceNumber\": \"{{invoiceNumber}}\",\r\n    \"itemIds\": {{itemIds}}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/invoices",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"invoices"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Export Invoice",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));\r",
+									"\r",
+									"pm.test(\"Content-Type is application/pdf\", () => {\r",
+									"  pm.response.to.have.header(\"content-type\", \"application/pdf\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Content-Disposition includes .pdf\", () => {\r",
+									"  const cd = pm.response.headers.get(\"content-disposition\") || \"\";\r",
+									"  pm.expect(cd.toLowerCase()).to.include(\".pdf\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response body starts with %PDF-\", () => {\r",
+									"  const start = pm.response.text().slice(0,5);\r",
+									"  pm.expect(start).to.eql(\"%PDF-\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Body is non-empty\", () => {\r",
+									"  pm.expect(pm.response.text().length).to.be.above(1000);\r",
+									"});\r",
+									"\r",
+									"pm.collectionVariables.set(\"currentAction\", \"ExportInvoicesAuditAction\");\r",
+									"pm.execution.setNextRequest(\"Audit Report\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/invoices/{{invoiceId}}/export?clientId={{clientId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"invoices",
+								"{{invoiceId}}",
+								"export"
+							],
+							"query": [
+								{
+									"key": "clientId",
+									"value": "{{clientId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Generate Invoice Report",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));\r",
+									"\r",
+									"pm.test(\"Content-Type is exactly text/csv\", () => {\r",
+									"  pm.response.to.have.header(\"content-type\", \"text/csv\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Content-Disposition header contains .csv\", () => {\r",
+									"  const cd = pm.response.headers.get(\"content-disposition\") || \"\";\r",
+									"  pm.expect(cd.toLowerCase()).to.include(\".csv\");\r",
+									"});\r",
+									"\r",
+									"const csv = pm.response.text().trim();\r",
+									"pm.test(\"CSV is non-empty\", () => pm.expect(csv.length).to.be.above(0));\r",
+									"\r",
+									"const lines = csv.split(/\\r?\\n/);\r",
+									"const headers = lines[0].split(\",\");\r",
+									"const values = lines[1].split(\",\");\r",
+									"\r",
+									"const columns = [\r",
+									"  \"TotalCount\",\r",
+									"  \"AverageMonthCount\",\r",
+									"  \"TotalAmount\",\r",
+									"  \"AverageAmount\",\r",
+									"  \"ClientCurrency\",\r",
+									"  \"UnpaidCount\",\r",
+									"  \"OverdueCount\",\r",
+									"  \"PaidOnTimeCount\",\r",
+									"  \"PaidLateCount\",\r",
+									"  \"ReportDate\"\r",
+									"];\r",
+									"const index = {};\r",
+									"columns.forEach(name => {\r",
+									"  index[name] = headers.indexOf(name);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"CSV header contains all required columns\", () => {\r",
+									"  columns.forEach(name => {\r",
+									"    pm.expect(index[name], `${name} column should exist`).to.be.at.least(0);\r",
+									"  });\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Numeric columns are valid numbers\", () => {\r",
+									"  [\"TotalCount\",\"AverageMonthCount\",\"UnpaidCount\",\"OverdueCount\",\"PaidOnTimeCount\",\"PaidLateCount\"]\r",
+									"    .forEach(name => {\r",
+									"      const v = parseInt(values[index[name]], 10);\r",
+									"      pm.expect(v, `${name} should be integer`).to.be.a(\"number\").and.to.be.at.least(0);\r",
+									"    });\r",
+									"  [\"TotalAmount\",\"AverageAmount\"]\r",
+									"    .forEach(name => {\r",
+									"      const v = parseFloat(values[index[name]]);\r",
+									"      pm.expect(v, `${name} should be float`).to.be.a(\"number\").and.to.be.at.least(0);\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"pm.test(\"ReportDate equals today\", () => {\r",
+									"  const reportDate = values[index[\"ReportDate\"]];\r",
+									"  const today = new Date().toISOString().slice(0,10);\r",
+									"  pm.expect(reportDate, \"ReportDate\").to.eql(today);\r",
+									"});\r",
+									"\r",
+									"pm.collectionVariables.set(\"currentAction\", \"ExportInvoicesReportAction\");\r",
+									"pm.execution.setNextRequest(\"Audit Report\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/reports/invoices?clientId={{clientId}}&format={{CsvFormat}}&startDate=&endDate=",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reports",
+								"invoices"
+							],
+							"query": [
+								{
+									"key": "clientId",
+									"value": "{{clientId}}"
+								},
+								{
+									"key": "format",
+									"value": "{{CsvFormat}}"
+								},
+								{
+									"key": "startDate",
+									"value": ""
+								},
+								{
+									"key": "endDate",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Plan",
+			"item": [
+				{
+					"name": "Create Plan",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"if (!pm.collectionVariables.get(\"planIndex\")) {\r",
+									"  pm.collectionVariables.set(\"planIndex\", \"0\");\r",
+									"  pm.collectionVariables.set(\"planIds\", JSON.stringify([]));\r",
+									"}\r",
+									"\r",
+									"const itemIds = JSON.parse(pm.collectionVariables.get(\"itemIds\") || \"[]\");\r",
+									"const itemIndex = parseInt(pm.collectionVariables.get(\"planIndex\"), 10);\r",
+									"\r",
+									"const itemId = itemIds[itemIndex];\r",
+									"pm.collectionVariables.set(\"itemId\", itemId);\r",
+									"\r",
+									"const now = Date.now();\r",
+									"const startDate = new Date(now - 12*24*3600*1000).toISOString();\r",
+									"const endDate = new Date(now + 7*24*3600*1000).toISOString();\r",
+									"\r",
+									"pm.collectionVariables.set(\"planStartDate\", startDate);\r",
+									"pm.collectionVariables.set(\"planEndDate\",   endDate);\r",
+									"pm.collectionVariables.set(\"planCount\", \"7\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", () => pm.response.to.have.status(201));\r",
+									"\r",
+									"pm.test(\"Response is JSON with value\", () => {\r",
+									"  pm.response.to.be.json;\r",
+									"  pm.expect(pm.response.json()).to.have.property(\"value\");\r",
+									"});\r",
+									"\r",
+									"const body = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Response has all required customer fields\", () => {\r",
+									"    pm.expect(body).to.have.property(\"count\").that.is.a(\"string\");\r",
+									"    pm.expect(body).to.have.property(\"startDate\").that.is.a(\"string\");\r",
+									"    pm.expect(body).to.have.property(\"endDate\").that.is.a(\"string\");\r",
+									"    pm.expect(body).to.have.property(\"id\").that.is.a(\"string\");\r",
+									"    pm.expect(body).to.have.property(\"clientId\").that.is.a(\"string\");\r",
+									"    pm.expect(body).to.have.property(\"itemId\").that.is.a(\"string\");\r",
+									"});\r",
+									"\r",
+									"let planIds = JSON.parse(pm.collectionVariables.get(\"planIds\") || \"[]\");\r",
+									"planIds.push(body.id);\r",
+									"pm.collectionVariables.set(\"planIds\", JSON.stringify(planIds));\r",
+									"\r",
+									"let index = parseInt(pm.collectionVariables.get(\"planIndex\"), 10) + 1;\r",
+									"const itemIds = JSON.parse(pm.collectionVariables.get(\"itemIds\"));\r",
+									"\r",
+									"if (index < itemIds.length) {\r",
+									"  pm.collectionVariables.set(\"planIndex\", index.toString());\r",
+									"  pm.execution.setNextRequest(\"Create Plan\");\r",
+									"} else {\r",
+									"  pm.collectionVariables.unset(\"planIndex\");\r",
+									"  pm.execution.setNextRequest(null);\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"count\": {{planCount}},\r\n    \"startDate\": \"{{planStartDate}}\",\r\n    \"endDate\": \"{{planEndDate}}\",\r\n    \"clientId\": \"{{clientId}}\",\r\n    \"itemId\": \"{{itemId}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/plans",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"plans"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Generate Plan Report",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));\r",
+									"\r",
+									"pm.test(\"Content-Type is Excel\", () => {\r",
+									"  const ct = pm.response.headers.get(\"content-type\") || \"\";\r",
+									"  pm.expect(ct.toLowerCase()).to.be.oneOf([\r",
+									"    \"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\",\r",
+									"    \"application/vnd.ms-excel\"\r",
+									"  ]);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Content-Disposition includes .xlsx\", () => {\r",
+									"  const cd = pm.response.headers.get(\"content-disposition\") || \"\";\r",
+									"  pm.expect(cd.toLowerCase()).to.include(\".xlsx\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response body starts with PK\", () => {\r",
+									"  const start = pm.response.text().slice(0, 2);\r",
+									"  pm.expect(start).to.eql(\"PK\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Body is non-empty\", () => {\r",
+									"  pm.expect(pm.response.text().length).to.be.above(100);\r",
+									"});\r",
+									"\r",
+									"pm.collectionVariables.set(\"currentAction\", \"ExportPlansReportAction\");\r",
+									"pm.execution.setNextRequest(\"Audit Report\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/reports/plans?clientId={{clientId}}&format={{ExcelFormat}}&startDate=&endDate=",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reports",
+								"plans"
+							],
+							"query": [
+								{
+									"key": "clientId",
+									"value": "{{clientId}}"
+								},
+								{
+									"key": "format",
+									"value": "{{ExcelFormat}}"
+								},
+								{
+									"key": "startDate",
+									"value": ""
+								},
+								{
+									"key": "endDate",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Item",
+			"item": [
+				{
+					"name": "Create Item",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"if (!pm.collectionVariables.get(\"items\")) {\r",
+									"  const items = [\r",
+									"    { name: \"Item-1\", description: \"Test-description 1\" },\r",
+									"    { name: \"Item-2\", description: \"Test-description 2\" },\r",
+									"    { name: \"Item-3\", description: \"Test-description 3\" }\r",
+									"  ];\r",
+									"  pm.collectionVariables.set(\"items\", JSON.stringify(items));\r",
+									"  pm.collectionVariables.set(\"itemIndex\", \"0\");\r",
+									"}\r",
+									"\r",
+									"const items = JSON.parse(pm.collectionVariables.get(\"items\"));\r",
+									"const rawIds = pm.collectionVariables.get(\"itemIds\");\r",
+									"if (rawIds) {\r",
+									"  const parsedIds = JSON.parse(rawIds);\r",
+									"  if (parsedIds.length >= items.length) {\r",
+									"    pm.collectionVariables.set(\"itemIds\", JSON.stringify([]));\r",
+									"  }\r",
+									"}\r",
+									"\r",
+									"const currentItem = items[pm.collectionVariables.get(\"itemIndex\")];\r",
+									"const randomPrice = (Math.random() * 1000).toFixed(2);\r",
+									"\r",
+									"pm.collectionVariables.set(\"itemPrice\", randomPrice);\r",
+									"pm.collectionVariables.set(\"itemName\", currentItem.name);\r",
+									"pm.collectionVariables.set(\"itemDescription\", currentItem.description);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", () => pm.response.to.have.status(201));\r",
+									"\r",
+									"pm.test(\"Response is valid JSON\", () => {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"const body = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Value has all required item fields\", () => {\r",
+									"    pm.expect(body).to.have.property(\"id\").that.is.a(\"string\");\r",
+									"    pm.expect(body).to.have.property(\"clientId\").that.is.a(\"string\");\r",
+									"    pm.expect(body).to.have.property(\"name\").that.is.a(\"string\");\r",
+									"    pm.expect(body).to.have.property(\"description\").that.is.a(\"string\");\r",
+									"    pm.expect(body).to.have.property(\"price\").that.is.a(\"number\");\r",
+									"    pm.expect(body).to.have.property(\"currencyId\").that.is.a(\"string\");\r",
+									"    pm.expect(body).to.have.property(\"currencyCode\").that.is.a(\"string\");\r",
+									"});\r",
+									"\r",
+									"let ids = pm.collectionVariables.get(\"itemIds\");\r",
+									"ids = ids ? JSON.parse(ids) : [];\r",
+									"ids.push(body.id);\r",
+									"pm.collectionVariables.set(\"itemIds\", JSON.stringify(ids));\r",
+									"\r",
+									"let index = parseInt(pm.collectionVariables.get(\"itemIndex\"), 10) + 1;\r",
+									"const items = JSON.parse(pm.collectionVariables.get(\"items\"));\r",
+									"\r",
+									"if (index < items.length) {\r",
+									"  pm.collectionVariables.set(\"itemIndex\", index.toString());\r",
+									"  pm.execution.setNextRequest(\"Create Item\");\r",
+									"} else {\r",
+									"  pm.collectionVariables.unset(\"itemIndex\");\r",
+									"  pm.collectionVariables.unset(\"items\");\r",
+									"  pm.execution.setNextRequest(null);\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"clientId\": \"{{clientId}}\",\r\n  \"name\": \"{{itemName}}-{{clientId}}\",\r\n  \"description\": \"{{itemDescription}}\",\r\n  \"price\": {{itemPrice}},\r\n  \"currencyId\": \"{{currencyId}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/items",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"items"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Generate Item Report",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));\r",
+									"\r",
+									"pm.test(\"Content-Type is exactly text/csv\", () => {\r",
+									"  pm.response.to.have.header(\"content-type\", \"text/csv\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Content-Disposition header contains .csv\", () => {\r",
+									"  const cd = pm.response.headers.get(\"content-disposition\") || \"\";\r",
+									"  pm.expect(cd.toLowerCase()).to.include(\".csv\");\r",
+									"});\r",
+									"\r",
+									"const csv = pm.response.text().trim();\r",
+									"pm.test(\"CSV is non-empty\", () => pm.expect(csv.length).to.be.above(0));\r",
+									"\r",
+									"const lines = csv.split(/\\r?\\n/);\r",
+									"pm.test(\"At least header + 1 data row\", () => pm.expect(lines.length).to.be.above(1));\r",
+									"\r",
+									"const headers = lines[0].split(\",\");\r",
+									"const values  = lines[1].split(\",\");\r",
+									"\r",
+									"const columns = [\r",
+									"  \"MostSoldItemId\",\r",
+									"  \"AveragePrice\",\r",
+									"  \"AverageRevenue\",\r",
+									"  \"ClientCurrency\",\r",
+									"  \"ReportDate\"\r",
+									"];\r",
+									"\r",
+									"const index = {};\r",
+									"columns.forEach(name => {\r",
+									"  index[name] = headers.indexOf(name);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"CSV header contains all required columns\", () => {\r",
+									"  columns.forEach(name => {\r",
+									"    pm.expect(index[name], `${name} column should exist`).to.be.at.least(0);\r",
+									"  });\r",
+									"});\r",
+									"\r",
+									"pm.test(\"AveragePrice and AverageRevenue are valid numbers\", () => {\r",
+									"  const price = parseFloat(values[index[\"AveragePrice\"]]);\r",
+									"  const revenue = parseFloat(values[index[\"AverageRevenue\"]]);\r",
+									"  pm.expect(price, \"AveragePrice\").to.be.a(\"number\").and.to.be.at.least(0);\r",
+									"  pm.expect(revenue, \"AverageRevenue\").to.be.a(\"number\").and.to.be.at.least(0);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"ClientCurrency matches environment\", () => {\r",
+									"  const cc = values[index[\"ClientCurrency\"]];\r",
+									"  pm.expect(cc).to.eql(pm.collectionVariables.get(\"clientCurrencyCode\"));\r",
+									"});\r",
+									"\r",
+									"pm.test(\"ReportDate equals today\", () => {\r",
+									"  const reportDate = values[index[\"ReportDate\"]];\r",
+									"  const today = new Date().toISOString().slice(0,10);\r",
+									"  pm.expect(reportDate).to.eql(today);\r",
+									"});\r",
+									"\r",
+									"pm.collectionVariables.set(\"currentAction\", \"ExportItemsReportAction\");\r",
+									"pm.execution.setNextRequest(\"Audit Report\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/reports/items?clientId={{clientId}}&format={{CsvFormat}}&startDate=&endDate=",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reports",
+								"items"
+							],
+							"query": [
+								{
+									"key": "clientId",
+									"value": "{{clientId}}"
+								},
+								{
+									"key": "format",
+									"value": "{{CsvFormat}}"
+								},
+								{
+									"key": "startDate",
+									"value": ""
+								},
+								{
+									"key": "endDate",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Audit Report",
+			"item": [
+				{
+					"name": "Audit Report",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));\r",
+									"\r",
+									"pm.test(\"Response is JSON\", () => pm.response.to.be.json);\r",
+									"\r",
+									"const body = pm.response.json();\r",
+									"const entries = Array.isArray(body) ? body : (body.items || []);\r",
+									"\r",
+									"pm.test(\"Returned exactly one entry\", () => {\r",
+									"  pm.expect(entries.length, \"entries.length\").to.eql(1);\r",
+									"});\r",
+									"\r",
+									"const latest = entries[0];\r",
+									"pm.test(\"Audit entry has expected shape\", () => {\r",
+									"  pm.expect(latest).to.have.property(\"action\");\r",
+									"  pm.expect(latest).to.have.property(\"userId\");\r",
+									"  pm.expect(latest).to.have.property(\"properties\");\r",
+									"  pm.expect(latest).to.have.property(\"timeStamp\");\r",
+									"  pm.expect(latest).to.have.property(\"isSuccess\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"timeStamp is within the last minute\", () => {\r",
+									"  const ts = Date.parse(latest.timeStamp);\r",
+									"  const ageMs = Date.now() - ts;\r",
+									"  pm.expect(ageMs, `timestamp age ${ageMs}ms`).to.be.a(\"number\").and.to.be.below(60 * 1000);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Latest action is ExportInvoicePdf\", () => {\r",
+									"  pm.expect(latest.action).to.eql(pm.collectionVariables.get(\"currentAction\"));\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"packages": {},
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/audit-reports?userId={{userId}}&clientId={{clientId}}&top=1&skip=0",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"audit-reports"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "{{userId}}"
+								},
+								{
+									"key": "clientId",
+									"value": "{{clientId}}"
+								},
+								{
+									"key": "top",
+									"value": "1"
+								},
+								{
+									"key": "skip",
+									"value": "0"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Create User",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function uuidv4() {\r",
+									"  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {\r",
+									"    const r = crypto.getRandomValues(new Uint8Array(1))[0] % 16;\r",
+									"    return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);\r",
+									"  });\r",
+									"}\r",
+									"\r",
+									"const uuid = uuidv4();\r",
+									"const email = `test${uuid.substring(0,6)}@example.com`;\r",
+									"const fullName = `User S${uuid.substring(0, 8)}`;\r",
+									"const password = `P@ssw0rd!${Math.floor(1000 + Math.random()*9000)}`;\r",
+									"\r",
+									"pm.collectionVariables.set(\"userEmail\", email);\r",
+									"pm.collectionVariables.set(\"userFullName\", fullName);\r",
+									"pm.collectionVariables.set(\"userPassword\", password);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", () => {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"const body = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Value has all required user fields\", () => {\r",
+									"    pm.expect(body).to.have.property(\"id\").that.is.a(\"string\");\r",
+									"    pm.expect(body).to.have.property(\"email\").that.is.a(\"string\");\r",
+									"    pm.expect(body).to.have.property(\"fullName\").that.is.a(\"string\");\r",
+									"    pm.expect(body).to.have.property(\"isActive\").that.is.a(\"boolean\").and.true;\r",
+									"});\r",
+									"\r",
+									"pm.collectionVariables.set(\"userId\", body.id);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"{{userEmail}}\",\r\n    \"fullName\": \"{{userFullName}}\",\r\n    \"password\": \"{{userPassword}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
 		{
 			"name": "CC Create Access Token",
 			"event": [
@@ -14,18 +1087,27 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"Status code is 201\", () => pm.response.to.have.status(200));\r",
+							"pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));\r",
 							"\r",
-							"const access_token = pm.response.json().access_token;\r",
-							"\r",
-							"pm.environment.set(\"access_token\", access_token);"
+							"const json = pm.response.json();\r",
+							"pm.collectionVariables.set(\"access_token\", json.access_token);"
 						],
 						"type": "text/javascript",
 						"packages": {}
 					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"packages": {},
+						"type": "text/javascript"
+					}
 				}
 			],
 			"request": {
+				"auth": {
+					"type": "noauth"
+				},
 				"method": "POST",
 				"header": [],
 				"body": {
@@ -38,17 +1120,17 @@
 						},
 						{
 							"key": "client_id",
-							"value": "report_hub_service",
+							"value": "{{cc_client_id}}",
 							"type": "text"
 						},
 						{
 							"key": "scope",
-							"value": "report_hub_api",
+							"value": "{{cc_scope}}",
 							"type": "text"
 						},
 						{
 							"key": "client_secret",
-							"value": "ReportHubService_ClientSecret",
+							"value": "{{cc_client_secret}}",
 							"type": "text"
 						}
 					]
@@ -64,157 +1146,6 @@
 					"path": [
 						"connect",
 						"token"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create Access Token",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 201\", () => pm.response.to.have.status(200));\r",
-							"\r",
-							"const access_token = pm.response.json().access_token;\r",
-							"\r",
-							"pm.environment.set(\"access_token\", access_token);"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "urlencoded",
-					"urlencoded": [
-						{
-							"key": "grant_type",
-							"value": "password",
-							"type": "text"
-						},
-						{
-							"key": "username",
-							"value": "jimcarrey@test.com",
-							"type": "text"
-						},
-						{
-							"key": "password",
-							"value": "Jim",
-							"type": "text"
-						},
-						{
-							"key": "client_id",
-							"value": "report_hub_resource_owner",
-							"type": "text"
-						},
-						{
-							"key": "scope",
-							"value": "report_hub_api",
-							"type": "text"
-						}
-					]
-				},
-				"url": {
-					"raw": "https://report-hub-f3k3.onrender.com/connect/token",
-					"protocol": "https",
-					"host": [
-						"report-hub-f3k3",
-						"onrender",
-						"com"
-					],
-					"path": [
-						"connect",
-						"token"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create Client",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 201\", () => {\r",
-							"    pm.response.to.have.status(201);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Response is valid JSON\", () => {\r",
-							"    pm.response.to.be.json;\r",
-							"});\r",
-							"\r",
-							"const body = pm.response.json();\r",
-							"\r",
-							"pm.test(\"Value has all required client fields\", () => {\r",
-							"    pm.expect(body).to.have.property(\"id\").that.is.a(\"string\");\r",
-							"    pm.expect(body).to.have.property(\"name\").that.is.a(\"string\");\r",
-							"    pm.expect(body).to.have.property(\"bankAccountNumber\").that.is.a(\"string\");\r",
-							"    pm.expect(body).to.have.property(\"countryId\").that.is.a(\"string\");\r",
-							"    pm.expect(body).to.have.property(\"country\").that.is.a(\"string\");\r",
-							"    pm.expect(body).to.have.property(\"currencyId\").that.is.a(\"string\");\r",
-							"    pm.expect(body).to.have.property(\"currencyCode\").that.is.a(\"string\");\r",
-							"});\r",
-							"\r",
-							"pm.environment.set(\"currencyId\", body.currencyId);\r",
-							"pm.environment.set(\"clientId\", body.id);"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				},
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"function uuidv4() {\r",
-							"  return \"10000000-1000-4000-8000-100000000000\".replace(/[018]/g, c =>\r",
-							"    (+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16)\r",
-							"  );\r",
-							"}\r",
-							"\r",
-							"const guid = uuidv4();\r",
-							"const clientName = `Test${guid}`;\r",
-							"\r",
-							"const digits = () => Math.floor(1e9 + Math.random() * 9e8).toString();\r",
-							"const bankAccount = \"CZ\" + digits();\r",
-							"\r",
-							"pm.environment.set(\"clientName\", clientName);\r",
-							"pm.environment.set(\"bankAccountNumber\", bankAccount);\r",
-							"\r",
-							"console.log(\"Using clientName =\", clientName);"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"name\": \"{{clientName}}\",\r\n  \"bankAccountNumber\": \"{{bankAccountNumber}}\",\r\n  \"countryId\": \"{{countryId}}\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseUrl}}/clients",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"clients"
 					]
 				}
 			},
@@ -222,6 +1153,26 @@
 		},
 		{
 			"name": "Add User Assigment",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 204\", () => {\r",
+							"    pm.response.to.have.status(204);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response body is empty\", () => {\r",
+							"    pm.expect(pm.response.text()).to.eql(\"\");\r",
+							"});\r",
+							"\r",
+							"pm.execution.setNextRequest(\"Create Access Token\");"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
 			"request": {
 				"method": "POST",
 				"header": [],
@@ -247,386 +1198,16 @@
 			"response": []
 		},
 		{
-			"name": "Create Item-1",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"pm.environment.set(\"itemIds\", JSON.stringify([]));"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 201\", () => pm.response.to.have.status(201));\r",
-							"\r",
-							"pm.test(\"Response is valid JSON\", () => {\r",
-							"    pm.response.to.be.json;\r",
-							"});\r",
-							"\r",
-							"const body = pm.response.json();\r",
-							"\r",
-							"pm.test(\"Value has all required item fields\", () => {\r",
-							"    pm.expect(body).to.have.property(\"id\").that.is.a(\"string\");\r",
-							"    pm.expect(body).to.have.property(\"clientId\").that.is.a(\"string\");\r",
-							"    pm.expect(body).to.have.property(\"name\").that.is.a(\"string\");\r",
-							"    pm.expect(body).to.have.property(\"description\").that.is.a(\"string\");\r",
-							"    pm.expect(body).to.have.property(\"price\").that.is.a(\"number\");\r",
-							"    pm.expect(body).to.have.property(\"currencyId\").that.is.a(\"string\");\r",
-							"    pm.expect(body).to.have.property(\"currencyCode\").that.is.a(\"string\");\r",
-							"});\r",
-							"\r",
-							"let ids = pm.environment.get(\"itemIds\");\r",
-							"ids = ids ? JSON.parse(ids) : [];\r",
-							"ids.push(body.id);\r",
-							"pm.environment.set(\"itemIds\", JSON.stringify(ids));\r",
-							"\r",
-							"pm.test(\"itemIds contains one id\", () => {\r",
-							"  pm.expect(ids).to.have.lengthOf(1);\r",
-							"});"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"clientId\": \"{{clientId}}\",\r\n  \"name\": \"Item-1-{{clientId}}\",\r\n  \"description\": \"Description for item 1\",\r\n  \"price\": 123.45,\r\n  \"currencyId\": \"{{currencyId}}\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseUrl}}/items",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"items"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create Item-2",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							""
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 201\", () => pm.response.to.have.status(201));\r",
-							"\r",
-							"pm.test(\"Response is valid JSON\", () => {\r",
-							"    pm.response.to.be.json;\r",
-							"});\r",
-							"\r",
-							"const body = pm.response.json();\r",
-							"\r",
-							"pm.test(\"Value has all required item fields\", () => {\r",
-							"    pm.expect(body).to.have.property(\"id\").that.is.a(\"string\");\r",
-							"    pm.expect(body).to.have.property(\"clientId\").that.is.a(\"string\");\r",
-							"    pm.expect(body).to.have.property(\"name\").that.is.a(\"string\");\r",
-							"    pm.expect(body).to.have.property(\"description\").that.is.a(\"string\");\r",
-							"    pm.expect(body).to.have.property(\"price\").that.is.a(\"number\");\r",
-							"    pm.expect(body).to.have.property(\"currencyId\").that.is.a(\"string\");\r",
-							"    pm.expect(body).to.have.property(\"currencyCode\").that.is.a(\"string\");\r",
-							"});\r",
-							"\r",
-							"let ids = pm.environment.get(\"itemIds\");\r",
-							"ids = ids ? JSON.parse(ids) : [];\r",
-							"ids.push(body.id);\r",
-							"pm.environment.set(\"itemIds\", JSON.stringify(ids));"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"clientId\": \"{{clientId}}\",\r\n  \"name\": \"Item-2-{{clientId}}\",\r\n  \"description\": \"Description for item 2\",\r\n  \"price\": 250.34,\r\n  \"currencyId\": \"{{currencyId}}\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseUrl}}/items",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"items"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create Item-3",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							""
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 201\", () => pm.response.to.have.status(201));\r",
-							"pm.test(\"Response is valid JSON\", () => {\r",
-							"    pm.response.to.be.json;\r",
-							"});\r",
-							"\r",
-							"const body = pm.response.json();\r",
-							"\r",
-							"pm.test(\"Value has all required item fields\", () => {\r",
-							"    pm.expect(body).to.have.property(\"id\").that.is.a(\"string\");\r",
-							"    pm.expect(body).to.have.property(\"clientId\").that.is.a(\"string\");\r",
-							"    pm.expect(body).to.have.property(\"name\").that.is.a(\"string\");\r",
-							"    pm.expect(body).to.have.property(\"description\").that.is.a(\"string\");\r",
-							"    pm.expect(body).to.have.property(\"price\").that.is.a(\"number\");\r",
-							"    pm.expect(body).to.have.property(\"currencyId\").that.is.a(\"string\");\r",
-							"    pm.expect(body).to.have.property(\"currencyCode\").that.is.a(\"string\");\r",
-							"});\r",
-							"\r",
-							"let ids = pm.environment.get(\"itemIds\");\r",
-							"ids = ids ? JSON.parse(ids) : [];\r",
-							"ids.push(body.id);\r",
-							"pm.environment.set(\"itemIds\", JSON.stringify(ids));\r",
-							"\r",
-							"pm.test(\"Have exactly 3 item IDs\", () => {\r",
-							"  const ids = JSON.parse(pm.environment.get(\"itemIds\") || \"[]\");\r",
-							"  pm.expect(ids).to.have.lengthOf(3);\r",
-							"});"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"clientId\": \"{{clientId}}\",\r\n  \"name\": \"Item-3-{{clientId}}\",\r\n  \"description\": \"Description for item 3\",\r\n  \"price\": 453,\r\n  \"currencyId\": \"{{currencyId}}\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseUrl}}/items",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"items"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create Customer",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"function uuidv4() {\r",
-							"  return \"10000000-1000-4000-8000-100000000000\".replace(/[018]/g, c =>\r",
-							"    (+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16)\r",
-							"  );\r",
-							"}\r",
-							"const guid = uuidv4();\r",
-							"\r",
-							"const customerName = `Customer ${guid}`;\r",
-							"const customerEmail = `${guid}@example.com`;\r",
-							"\r",
-							"// сохраняем в окружение для тела запроса\r",
-							"pm.environment.set(\"customerName\", customerName);\r",
-							"pm.environment.set(\"customerEmail\", customerEmail);\r",
-							"\r",
-							"console.log(\"Creating customer:\", customerName, customerEmail);"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 201\", () => {\r",
-							"    pm.response.to.have.status(201);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Response is valid JSON\", () => {\r",
-							"    pm.response.to.be.json;\r",
-							"});\r",
-							"\r",
-							"const body = pm.response.json();\r",
-							"\r",
-							"pm.test(\"Response has all required customer fields\", () => {\r",
-							"    pm.expect(body).to.have.property(\"id\").that.is.a(\"string\");\r",
-							"    pm.expect(body).to.have.property(\"name\").that.is.a(\"string\");\r",
-							"    pm.expect(body).to.have.property(\"email\").that.is.a(\"string\");\r",
-							"    pm.expect(body).to.have.property(\"countryId\").that.is.a(\"string\");\r",
-							"    pm.expect(body).to.have.property(\"country\").that.is.a(\"string\");\r",
-							"    pm.expect(body).to.have.property(\"currencyId\").that.is.a(\"string\");\r",
-							"    pm.expect(body).to.have.property(\"currencyCode\").that.is.a(\"string\");\r",
-							"    pm.expect(body).to.have.property(\"clientId\").that.is.a(\"string\");\r",
-							"});\r",
-							"\r",
-							"pm.environment.set(\"customerId\", body.id);"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"name\": \"{{customerName}}\",\r\n  \"countryId\": \"{{countryId}}\",\r\n  \"email\": \"{{customerEmail}}\",\r\n  \"clientId\": \"{{clientId}}\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseUrl}}/customers",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"customers"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create Invoice",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"const now = Date.now();\r",
-							"pm.environment.set(\"issueDate\", new Date(now - 10*24*60*60*1000).toISOString().slice(0,10));\r",
-							"pm.environment.set(\"dueDate\", new Date(now - 5*24*60*60*1000).toISOString().slice(0,10));\r",
-							"pm.environment.set(\"invoiceNumber\", `INV${Math.floor(100000 + Math.random() * 900000).toString()}`);"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 201\", () => {\r",
-							"    pm.response.to.have.status(201);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Response is valid JSON\", () => {\r",
-							"    pm.response.to.be.json;\r",
-							"});\r",
-							"\r",
-							"const body  = pm.response.json();\r",
-							"\r",
-							"pm.test(\"value contains required fields\", () => {\r",
-							"  pm.expect(body).to.have.property(\"id\").that.is.a(\"string\");\r",
-							"  pm.expect(body).to.have.property(\"clientId\", pm.environment.get(\"clientId\"));\r",
-							"  pm.expect(body).to.have.property(\"customerId\", pm.environment.get(\"customerId\"));\r",
-							"  pm.expect(body).to.have.property(\"invoiceNumber\", pm.environment.get(\"invoiceNumber\"));\r",
-							"  pm.expect(body).to.have.property(\"issueDate\").that.is.a(\"string\");\r",
-							"  pm.expect(body).to.have.property(\"dueDate\").that.is.a(\"string\");\r",
-							"  pm.expect(body).to.have.property(\"clientBankAccountNumber\").that.is.a(\"string\");\r",
-							"  pm.expect(body).to.have.property(\"clientCurrencyAmount\").that.is.a(\"number\");\r",
-							"  pm.expect(body).to.have.property(\"paymentStatus\", \"Unpaid\");\r",
-							"  pm.expect(body).to.have.property(\"itemIds\").that.eql(JSON.parse(pm.environment.get(\"itemIds\")));\r",
-							"});\r",
-							"\r",
-							"pm.environment.set(\"invoiceId\", body.id);"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"issueDate\": \"{{issueDate}}\",           \r\n  \"dueDate\": \"{{dueDate}}\",               \r\n  \"clientId\": \"{{clientId}}\",\r\n  \"customerId\": \"{{customerId}}\",\r\n  \"invoiceNumber\": \"{{invoiceNumber}}\",\r\n  \"itemIds\": {{itemIds}}\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseUrl}}/invoices",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"invoices"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Generate Report",
+			"name": "Create Access Token",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"exec": [
 							"pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));\r",
-							""
+							"\r",
+							"const json = pm.response.json();\r",
+							"pm.collectionVariables.set(\"access_token\", json.access_token);"
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -634,34 +1215,49 @@
 				}
 			],
 			"request": {
-				"method": "GET",
+				"method": "POST",
 				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "password",
+							"type": "text"
+						},
+						{
+							"key": "username",
+							"value": "{{userEmail}}",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "{{userPassword}}",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "{{pc_client_id}}",
+							"type": "text"
+						},
+						{
+							"key": "scope",
+							"value": "{{pc_scope}}",
+							"type": "text"
+						}
+					]
+				},
 				"url": {
-					"raw": "{{baseUrl}}/reports/invoices?clientId={{clientId}}&format={{reportFormat}}&startDate={{issueDate}}&endDate={{dueDate}}",
+					"raw": "https://report-hub-f3k3.onrender.com/connect/token",
+					"protocol": "https",
 					"host": [
-						"{{baseUrl}}"
+						"report-hub-f3k3",
+						"onrender",
+						"com"
 					],
 					"path": [
-						"reports",
-						"invoices"
-					],
-					"query": [
-						{
-							"key": "clientId",
-							"value": "{{clientId}}"
-						},
-						{
-							"key": "format",
-							"value": "{{reportFormat}}"
-						},
-						{
-							"key": "startDate",
-							"value": "{{issueDate}}"
-						},
-						{
-							"key": "endDate",
-							"value": "{{dueDate}}"
-						}
+						"connect",
+						"token"
 					]
 				}
 			},
@@ -669,41 +1265,11 @@
 		}
 	],
 	"auth": {
-		"type": "oauth2",
-		"oauth2": [
+		"type": "bearer",
+		"bearer": [
 			{
-				"key": "grant_type",
-				"value": "password_credentials",
-				"type": "string"
-			},
-			{
-				"key": "password",
-				"value": "{{pc_password_super_admin}}",
-				"type": "string"
-			},
-			{
-				"key": "username",
-				"value": "{{pc_username_super_admin}}",
-				"type": "string"
-			},
-			{
-				"key": "clientSecret",
-				"value": "",
-				"type": "string"
-			},
-			{
-				"key": "clientId",
-				"value": "{{pc_client_id}}",
-				"type": "string"
-			},
-			{
-				"key": "accessTokenUrl",
-				"value": "https://report-hub-f3k3.onrender.com/connect/token",
-				"type": "string"
-			},
-			{
-				"key": "addTokenTo",
-				"value": "header",
+				"key": "token",
+				"value": "{{access_token}}",
 				"type": "string"
 			}
 		]
@@ -728,6 +1294,186 @@
 					""
 				]
 			}
+		}
+	],
+	"variable": [
+		{
+			"key": "clientName",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "bankAccountNumber",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "currencyId",
+			"value": "c3a29e5d-8421-4b78-9b88-abb692709441",
+			"type": "string"
+		},
+		{
+			"key": "countryId",
+			"value": "10accbc3-4c41-4840-aa9a-11b23f0e0d99",
+			"type": "string"
+		},
+		{
+			"key": "clientId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "role",
+			"value": "ClientAdmin",
+			"type": "string"
+		},
+		{
+			"key": "userId",
+			"value": "c5b92a8e-6528-4f13-bff2-7b84cdc4d721",
+			"type": "string"
+		},
+		{
+			"key": "cc_client_id",
+			"value": "report_hub_service",
+			"type": "string"
+		},
+		{
+			"key": "cc_scope",
+			"value": "report_hub_api",
+			"type": "string"
+		},
+		{
+			"key": "cc_client_secret",
+			"value": "ReportHubService_ClientSecret",
+			"type": "string"
+		},
+		{
+			"key": "pc_client_id",
+			"value": "report_hub_resource_owner",
+			"type": "string"
+		},
+		{
+			"key": "pc_scope",
+			"value": "report_hub_api",
+			"type": "string"
+		},
+		{
+			"key": "pc_username_super_admin",
+			"value": "jimcarrey@test.com",
+			"type": "string"
+		},
+		{
+			"key": "pc_password_super_admin",
+			"value": "Jim",
+			"type": "string"
+		},
+		{
+			"key": "itemIds",
+			"value": "[]",
+			"type": "string"
+		},
+		{
+			"key": "CsvFormat",
+			"value": "CSV",
+			"type": "string"
+		},
+		{
+			"key": "itemName",
+			"value": ""
+		},
+		{
+			"key": "itemDescription",
+			"value": ""
+		},
+		{
+			"key": "itemPrice",
+			"value": ""
+		},
+		{
+			"key": "planIds",
+			"value": ""
+		},
+		{
+			"key": "itemId",
+			"value": ""
+		},
+		{
+			"key": "planStartDate",
+			"value": ""
+		},
+		{
+			"key": "planEndDate",
+			"value": ""
+		},
+		{
+			"key": "planCount",
+			"value": ""
+		},
+		{
+			"key": "ExcelFormat",
+			"value": "Excel",
+			"type": "string"
+		},
+		{
+			"key": "customerName",
+			"value": ""
+		},
+		{
+			"key": "customerEmail",
+			"value": ""
+		},
+		{
+			"key": "customerId",
+			"value": ""
+		},
+		{
+			"key": "issueDate",
+			"value": ""
+		},
+		{
+			"key": "dueDate",
+			"value": ""
+		},
+		{
+			"key": "invoiceNumber",
+			"value": ""
+		},
+		{
+			"key": "invoiceId",
+			"value": ""
+		},
+		{
+			"key": "clientCurrencyCode",
+			"value": "CZK",
+			"type": "string"
+		},
+		{
+			"key": "currentAction",
+			"value": ""
+		},
+		{
+			"key": "access_token",
+			"value": ""
+		},
+		{
+			"key": "userEmail",
+			"value": ""
+		},
+		{
+			"key": "userFullName",
+			"value": ""
+		},
+		{
+			"key": "userPassword",
+			"value": ""
+		},
+		{
+			"key": "items",
+			"value": ""
+		},
+		{
+			"key": "itemIndex",
+			"value": ""
 		}
 	]
 }

@@ -3,7 +3,7 @@ using AutoMapper;
 using ErrorOr;
 using Exadel.ReportHub.Common.Providers;
 using Exadel.ReportHub.Export.Abstract;
-using Exadel.ReportHub.Handlers.Notifications.Invoice.Export;
+using Exadel.ReportHub.Handlers.Notifications;
 using Exadel.ReportHub.Pdf.Abstract;
 using Exadel.ReportHub.Pdf.Models;
 using Exadel.ReportHub.RA.Abstract;
@@ -61,7 +61,13 @@ public class ExportPdfInvoiceHandler(
         }
         finally
         {
-            var notification = new InvoiceExportedNotification(userId, request.Id, DateTime.UtcNow, isSuccess);
+            var props = new Dictionary<string, Guid>
+            {
+                ["InvoiceId"] = request.Id,
+                ["ClientId"] = request.ClientId
+            };
+
+            var notification = new BaseNotification(userId, props, DateTime.UtcNow, Constants.Notification.ExportInvoiceAction, isSuccess);
             await publisher.Publish(notification, cancellationToken);
         }
     }

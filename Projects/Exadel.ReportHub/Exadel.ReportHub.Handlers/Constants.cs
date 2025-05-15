@@ -149,4 +149,13 @@ public static class Constants
             public const string Csv = ".csv";
         }
     }
+
+    public static class Notification
+    {
+        public const string ExportInvoiceAction = nameof(ExportInvoiceAction);
+        public const string ExportInvoicesReportAction = nameof(ExportInvoicesReportAction);
+        public const string ExportItemsReportAction = nameof(ExportItemsReportAction);
+        public const string ExportPlansReportAction = nameof(ExportPlansReportAction);
+        public const string SendReportsAction = nameof(SendReportsAction);
+    }
 }
