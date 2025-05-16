@@ -19,7 +19,6 @@ public static class Constants
 
         public static class ContentType
         {
-            public const string Csv = "text/csv";
             public const string Excel = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
         }
     }
