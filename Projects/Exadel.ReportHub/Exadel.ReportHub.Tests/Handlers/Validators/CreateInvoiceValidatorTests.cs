@@ -10,6 +10,7 @@ using Moq;
 
 namespace Exadel.ReportHub.Tests.Handlers.Validators;
 
+[TestFixture]
 public class CreateInvoiceValidatorTests : BaseTestFixture
 {
     private IValidator<CreateInvoiceDTO> _invoiceValidator;

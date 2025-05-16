@@ -6,6 +6,7 @@ using Moq;
 
 namespace Exadel.ReportHub.Tests.Handlers.User.UpdateName;
 
+[TestFixture]
 public class UpdateUserNameHandlerTests
 {
     private Mock<IUserRepository> _userRepositoryMock;

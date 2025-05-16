@@ -14,6 +14,7 @@ using Moq;
 
 namespace Exadel.ReportHub.Tests.Handlers.Invoice.Import;
 
+[TestFixture]
 public class ImportInvoicesHandlerTests : BaseTestFixture
 {
     private Mock<ICsvImporter> _csvImporterMock;

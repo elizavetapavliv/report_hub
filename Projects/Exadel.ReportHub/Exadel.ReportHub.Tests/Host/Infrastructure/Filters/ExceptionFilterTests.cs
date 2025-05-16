@@ -12,6 +12,7 @@ using Moq;
 
 namespace Exadel.ReportHub.Tests.Host.Infrastructure.Filters;
 
+[TestFixture]
 public class ExceptionFilterTests
 {
     private const string ErrorMessage = "an error occured";

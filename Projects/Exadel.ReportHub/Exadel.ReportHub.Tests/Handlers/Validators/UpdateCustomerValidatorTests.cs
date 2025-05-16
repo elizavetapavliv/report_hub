@@ -10,6 +10,7 @@ using Moq;
 
 namespace Exadel.ReportHub.Tests.Handlers.Validators;
 
+[TestFixture]
 public class UpdateCustomerValidatorTests : BaseTestFixture
 {
     private UpdateCustomerValidator _validator;

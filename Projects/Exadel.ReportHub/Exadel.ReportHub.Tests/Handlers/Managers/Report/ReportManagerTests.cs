@@ -11,7 +11,7 @@ using Exadel.ReportHub.SDK.Enums;
 using Exadel.ReportHub.Tests.Abstracts;
 using Moq;
 
-namespace Exadel.ReportHub.Tests.Handlers.Managers;
+namespace Exadel.ReportHub.Tests.Handlers.Managers.Report;
 
 [TestFixture]
 public class ReportManagerTests : BaseTestFixture

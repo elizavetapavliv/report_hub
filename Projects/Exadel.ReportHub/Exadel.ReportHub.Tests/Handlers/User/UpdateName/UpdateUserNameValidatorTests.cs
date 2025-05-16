@@ -5,6 +5,7 @@ using FluentValidation.TestHelper;
 
 namespace Exadel.ReportHub.Tests.Handlers.User.UpdateName;
 
+[TestFixture]
 public class UpdateUserNameValidatorTests
 {
     private UpdateUserNameRequestValidator _validator;

@@ -6,6 +6,7 @@ using Moq;
 
 namespace Exadel.ReportHub.Tests.Handlers.User.Delete;
 
+[TestFixture]
 public class DeleteUserHandlerTests
 {
     private Mock<IUserRepository> _userRepositoryMock;

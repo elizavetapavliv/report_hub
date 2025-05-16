@@ -8,6 +8,7 @@ using Moq;
 
 namespace Exadel.ReportHub.Tests.Handlers.User.UpdatePassword;
 
+[TestFixture]
 public class UpdateUserPasswordHandlerTests
 {
     private const string Password = "TestPassword123!";
