@@ -1,8 +1,10 @@
-﻿using System.Net.Mail;
+﻿using System.Linq;
+using System.Net.Mail;
 using Exadel.ReportHub.Email.Abstract;
 using Exadel.ReportHub.Email.Models;
 using Exadel.ReportHub.Handlers.Managers.Report;
 using Exadel.ReportHub.Handlers.Notifications;
+using Exadel.ReportHub.Handlers.Notifications.Report.Send;
 using Exadel.ReportHub.RA.Abstract;
 using Exadel.ReportHub.SDK.DTOs.Report;
 using Exadel.ReportHub.SDK.Enums;
@@ -81,7 +83,7 @@ public class SendReportsHandler(
             }
             finally
             {
-                var notification = new BaseNotification(user.Id, [], DateTime.UtcNow, Constants.Notification.SendReportsAction, reportEmail.IsSuccess);
+                var notification = new SendReportsNotification(user.Id, exportReportDto.ClientId, DateTime.UtcNow, reportEmail.IsSuccess);
                 await publisher.Publish(notification, cancellationToken);
             }
 
