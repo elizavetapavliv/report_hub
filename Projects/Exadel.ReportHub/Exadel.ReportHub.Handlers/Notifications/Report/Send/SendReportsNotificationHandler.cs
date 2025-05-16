@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Exadel.ReportHub.Handlers.Notifications.Report.Send;
 
-public class SendReportsNotificationHandler(IAuditManager auditManager) : INotificationHandler<SendReportsNotification>
+public class AuditSendReportsNotificationHandler(IAuditManager auditManager) : INotificationHandler<SendReportsNotification>
 {
     public async Task Handle(SendReportsNotification notification, CancellationToken cancellationToken)
     {

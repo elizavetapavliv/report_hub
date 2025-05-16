@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Exadel.ReportHub.Handlers.Notifications.Report.Invoice;
 
-public class InvoicesReportExportedNotificationHandler(IAuditManager auditManager) : INotificationHandler<InvoicesReportExportedNotification>
+public class AuditInvoicesReportExportedNotificationHandler(IAuditManager auditManager) : INotificationHandler<InvoicesReportExportedNotification>
 {
     public async Task Handle(InvoicesReportExportedNotification notification, CancellationToken cancellationToken)
     {

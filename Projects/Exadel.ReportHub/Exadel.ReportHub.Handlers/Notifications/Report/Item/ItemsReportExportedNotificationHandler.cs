@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Exadel.ReportHub.Handlers.Notifications.Report.Item;
 
-public class ItemsReportExportedNotificationHandler(IAuditManager auditManager) : INotificationHandler<ItemsReportExportedNotification>
+public class AuditItemsReportExportedNotificationHandler(IAuditManager auditManager) : INotificationHandler<ItemsReportExportedNotification>
 {
     public async Task Handle(ItemsReportExportedNotification notification, CancellationToken cancellationToken)
     {
