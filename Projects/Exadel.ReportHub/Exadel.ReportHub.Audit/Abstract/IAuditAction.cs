@@ -4,7 +4,7 @@ public interface IAuditAction
 {
     public Guid UserId { get; }
 
-    public Guid ClientId { get; set; }
+    public Guid ClientId { get; }
 
     public Dictionary<string, Guid> Properties { get; }
 

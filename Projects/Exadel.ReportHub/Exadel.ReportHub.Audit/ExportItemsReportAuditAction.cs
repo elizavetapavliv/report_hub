@@ -6,7 +6,7 @@ public class ExportItemsReportAuditAction(Guid userId, Guid clientId, DateTime t
 {
     public Guid UserId { get; } = userId;
 
-    public Guid ClientId { get; set; } = clientId;
+    public Guid ClientId { get; } = clientId;
 
     public Dictionary<string, Guid> Properties { get; }
 
