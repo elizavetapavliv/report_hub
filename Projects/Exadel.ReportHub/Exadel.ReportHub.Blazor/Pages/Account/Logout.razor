@@ -1,5 +1,4 @@
 ﻿@page "/logout"
-@inject IJSRuntime JS
 @inject NavigationManager Navigation
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
@@ -8,10 +7,9 @@
 @code {
     protected override async Task OnInitializedAsync()
     {
-        await JS.InvokeVoidAsync("sessionStorage.removeItem", OidcConstants.TokenResponse.AccessToken);
         if (AuthenticationStateProvider is AuthStateProvider customProvider)
         {
-            customProvider.NotifyLogout();
+            await customProvider.NotifyLogoutAsync();
         }
 
         Navigation.NavigateTo("/login", forceLoad: true);

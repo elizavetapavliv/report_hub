@@ -10,7 +10,7 @@ public class AuthStateProvider(IJSRuntime js) : AuthenticationStateProvider
 {
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
-        var token = await js.InvokeAsync<string>("sessionStorage.getItem", OidcConstants.TokenResponse.AccessToken);
+        var token = await js.InvokeAsync<string>(Constants.Storage.GetItem, OidcConstants.TokenResponse.AccessToken);
 
         if (string.IsNullOrWhiteSpace(token))
         {
@@ -21,17 +21,21 @@ public class AuthStateProvider(IJSRuntime js) : AuthenticationStateProvider
         return new AuthenticationState(new ClaimsPrincipal(identity));
     }
 
-    public void NotifyLogin(string token)
+    public async Task NotifyLoginAsync(string token)
     {
         var identity = ParseClaimsFromJwt(token);
-        var user = new ClaimsPrincipal(identity);
-        NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(user)));
+        var claims = new ClaimsPrincipal(identity);
+        NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(claims)));
+
+        await js.InvokeVoidAsync(Constants.Storage.SetItem, OidcConstants.TokenResponse.AccessToken, token);
     }
 
-    public void NotifyLogout()
+    public async Task NotifyLogoutAsync()
     {
         var anonymous = new ClaimsPrincipal(new ClaimsIdentity());
         NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(anonymous)));
+
+        await js.InvokeVoidAsync(Constants.Storage.RemoveItem, OidcConstants.TokenResponse.AccessToken);
     }
 
     private ClaimsIdentity ParseClaimsFromJwt(string jwt)
@@ -41,11 +45,8 @@ public class AuthStateProvider(IJSRuntime js) : AuthenticationStateProvider
 
         var claims = token.Claims.ToList();
 
-        var roleClaims = token.Claims.Where(c => c.Type == JwtClaimTypes.Role);
-        foreach (var rc in roleClaims)
-        {
-            claims.Add(new Claim(JwtClaimTypes.Role, rc.Value));
-        }
+        var roleClaims = token.Claims.Where(c => c.Type == JwtClaimTypes.Role).ToList();
+        roleClaims.ForEach(role => claims.Add(new Claim(JwtClaimTypes.Role, role.Value)));
 
         return new ClaimsIdentity(claims, JwtClaimTypes.JwtTypes.AccessToken);
     }
