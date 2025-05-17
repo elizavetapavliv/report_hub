@@ -659,6 +659,7 @@
 							"} else {\r",
 							"  pm.variables.unset(\"itemIndex\");\r",
 							"  pm.variables.unset(\"items\");\r",
+							"  pm.execution.setNextRequest(null);\r",
 							"}"
 						],
 						"type": "text/javascript",
@@ -695,6 +696,131 @@
 					],
 					"path": [
 						"items"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Generate Item Report",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));\r",
+							"\r",
+							"pm.test(\"Content-Type is exactly text/csv\", () => {\r",
+							"  pm.response.to.have.header(\"content-type\", \"text/csv\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Content-Disposition header contains .csv\", () => {\r",
+							"  const cd = pm.response.headers.get(\"content-disposition\") || \"\";\r",
+							"  pm.expect(cd.toLowerCase()).to.include(\".csv\");\r",
+							"});\r",
+							"\r",
+							"const csv = pm.response.text().trim();\r",
+							"pm.test(\"CSV is non-empty\", () => pm.expect(csv.length).to.be.above(0));\r",
+							"\r",
+							"const lines = csv.split(/\\r?\\n/);\r",
+							"pm.test(\"At least header + 1 data row\", () => pm.expect(lines.length).to.be.above(1));\r",
+							"\r",
+							"const headers = lines[0].split(\",\");\r",
+							"const values  = lines[1].split(\",\");\r",
+							"\r",
+							"const columns = [\r",
+							"  \"MostSoldItemId\",\r",
+							"  \"AveragePrice\",\r",
+							"  \"AverageRevenue\",\r",
+							"  \"ClientCurrency\",\r",
+							"  \"ReportDate\"\r",
+							"];\r",
+							"\r",
+							"const index = {};\r",
+							"columns.forEach(name => {\r",
+							"  index[name] = headers.indexOf(name);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"CSV header contains all required columns\", () => {\r",
+							"  columns.forEach(name => {\r",
+							"    pm.expect(index[name], `${name} column should exist`).to.be.at.least(0);\r",
+							"  });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"AveragePrice and AverageRevenue are valid numbers\", () => {\r",
+							"  const price = parseFloat(values[index[\"AveragePrice\"]]);\r",
+							"  const revenue = parseFloat(values[index[\"AverageRevenue\"]]);\r",
+							"  pm.expect(price, \"AveragePrice\").to.be.a(\"number\").and.to.be.at.least(0);\r",
+							"  pm.expect(revenue, \"AverageRevenue\").to.be.a(\"number\").and.to.be.at.least(0);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"ClientCurrency matches\", () => {\r",
+							"  const cc = values[index[\"ClientCurrency\"]];\r",
+							"  pm.expect(cc).to.eql(pm.collectionVariables.get(\"сurrencyCode\"));\r",
+							"});\r",
+							"\r",
+							"pm.test(\"ReportDate equals today\", () => {\r",
+							"  const reportDate = values[index[\"ReportDate\"]];\r",
+							"  const today = new Date().toISOString().slice(0,10);\r",
+							"  pm.expect(reportDate).to.eql(today);\r",
+							"});\r",
+							"\r",
+							"pm.execution.setNextRequest(\"Audit Report\");"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.variables.set(\"currentAction\", \"ExportItemsReportAuditAction\");"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/reports/items?clientId={{clientId}}&format=CSV&startDate=&endDate=",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"reports",
+						"items"
+					],
+					"query": [
+						{
+							"key": "clientId",
+							"value": "{{clientId}}"
+						},
+						{
+							"key": "format",
+							"value": "CSV"
+						},
+						{
+							"key": "startDate",
+							"value": ""
+						},
+						{
+							"key": "endDate",
+							"value": ""
+						}
 					]
 				}
 			},
@@ -959,7 +1085,7 @@
 						{
 							"key": "endDate",
 							"value": ""
-						}
+				}
 					]
 				}
 			},
