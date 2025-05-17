@@ -1,7 +1,8 @@
 ﻿@page "/login"
-@inject IJSRuntime JSRuntime
+@inject IJSRuntime JsRuntime
 @inject NavigationManager Navigation
 @inject HttpClient Client
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <h3>Login</h3>
 
@@ -45,7 +46,12 @@
         var dto = await response.Content.ReadFromJsonAsync<LoginResult>();
         string token = dto.AccessToken;
 
-        await JSRuntime.InvokeVoidAsync("sessionStorage.setItem", OidcConstants.TokenResponse.AccessToken, token);
+        await JsRuntime.InvokeVoidAsync("sessionStorage.setItem", OidcConstants.TokenResponse.AccessToken, token);
+
+        if (AuthenticationStateProvider is AuthStateProvider stateProvider)
+        {
+            stateProvider.NotifyLogin(token);
+        }
 
         Navigation.NavigateTo("/", forceLoad: true);
     }
