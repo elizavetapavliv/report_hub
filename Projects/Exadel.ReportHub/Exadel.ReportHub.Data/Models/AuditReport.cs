@@ -8,6 +8,8 @@ public class AuditReport : IDocument
 
     public Guid UserId { get; set; }
 
+    public Guid ClientId { get; set; }
+
     public Dictionary<string, Guid> Properties { get; set; }
 
     public DateTime TimeStamp { get; set; }
